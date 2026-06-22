@@ -11,7 +11,7 @@ class SosRequest extends Model
         'num_people', 'water_level', 'has_elderly', 'has_children',
         'has_bedridden', 'has_pregnant', 'other_vulnerable', 'description',
         'status', 'priority', 'officer_id', 'volunteer_id',
-        'notes', 'assigned_at', 'resolved_at', 'urgent_needs'
+        'notes', 'assigned_at', 'resolved_at', 'urgent_needs', 'image_path'
     ];
 
     protected $casts = [

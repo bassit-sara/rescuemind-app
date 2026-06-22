@@ -148,6 +148,30 @@
             </div>
 
             <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1"><x-heroicon-o-camera class="w-5 h-5 inline-block shrink-0" /> แนบรูปภาพสถานที่เกิดเหตุ (ไม่บังคับ)</label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-red-500 transition-colors bg-gray-50 relative cursor-pointer" @click="$refs.fileInput.click()">
+                    <div class="space-y-1 text-center" x-show="!imageFile">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex text-sm text-gray-600 justify-center">
+                            <span class="relative font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
+                                อัปโหลดไฟล์รูปภาพ
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500">PNG, JPG, GIF ขนาดไม่เกิน 5MB</p>
+                    </div>
+                    <div x-ref="imagePreviewContainer" class="hidden w-full h-48 overflow-hidden rounded-lg">
+                        <img x-ref="imagePreview" class="object-cover w-full h-full" alt="Image preview">
+                    </div>
+                    <button x-show="imageFile" type="button" @click.stop="removeImage()" class="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md text-red-600 hover:text-red-800">
+                        <x-heroicon-o-x-mark class="w-5 h-5" />
+                    </button>
+                </div>
+                <input type="file" x-ref="fileInput" class="hidden" accept="image/*" @change="handleImageUpload">
+            </div>
+
+            <div class="mt-4">
                 <label class="block text-sm font-medium text-gray-700 mb-1">รายละเอียดเพิ่มเติม</label>
                 <textarea x-model="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-red-500 resize-none" placeholder="อธิบายสถานการณ์เพิ่มเติม (ถ้ามี)..."></textarea>
             </div>
@@ -245,6 +269,7 @@ function sosForm() {
         guest_name: '', guest_phone: '',
         lat: '', lng: '', address: '', province: @json(auth()->check() ? auth()->user()->province : ''),
         num_people: 1, water_level: '', has_elderly: false, has_children: false, has_bedridden: false, has_pregnant: false, has_none: false, has_other: false, other_vulnerable: '', description: '',
+        imageFile: null,
         
         urgent_needs: [],
         availableNeeds: [
@@ -423,32 +448,62 @@ function sosForm() {
             this.showConfirmModal = true;
         },
         
+        handleImageUpload(e) {
+            if(e.target.files.length > 0) {
+                const file = e.target.files[0];
+                if(file.size > 5 * 1024 * 1024) {
+                    this.errorMessage = "ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5MB";
+                    this.showErrorModal = true;
+                    e.target.value = '';
+                    return;
+                }
+                this.imageFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    this.$refs.imagePreview.src = event.target.result;
+                    this.$refs.imagePreviewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(this.imageFile);
+            }
+        },
+        
+        removeImage() {
+            this.imageFile = null;
+            this.$refs.fileInput.value = '';
+            this.$refs.imagePreviewContainer.classList.add('hidden');
+            this.$refs.imagePreview.src = '';
+        },
+
         async submitEmergencyReport() {
             this.isSubmitting = true;
-            const payload = {
-                _token: '{{ csrf_token() }}',
-                guest_name: this.guest_name,
-                guest_phone: this.guest_phone,
-                latitude: this.lat,
-                longitude: this.lng,
-                address: this.address,
-                province: this.province,
-                num_people: this.num_people,
-                water_level: this.water_level,
-                has_elderly: this.has_elderly ? 1 : 0,
-                has_children: this.has_children ? 1 : 0,
-                has_bedridden: this.has_bedridden ? 1 : 0,
-                has_pregnant: this.has_pregnant ? 1 : 0,
-                other_vulnerable: this.has_other ? this.other_vulnerable : null,
-                description: this.description,
-                urgent_needs: this.urgent_needs
-            };
+            
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('guest_name', this.guest_name);
+            formData.append('guest_phone', this.guest_phone);
+            formData.append('latitude', this.lat);
+            formData.append('longitude', this.lng);
+            formData.append('address', this.address);
+            formData.append('province', this.province);
+            formData.append('num_people', this.num_people);
+            formData.append('water_level', this.water_level);
+            formData.append('has_elderly', this.has_elderly ? 1 : 0);
+            formData.append('has_children', this.has_children ? 1 : 0);
+            formData.append('has_bedridden', this.has_bedridden ? 1 : 0);
+            formData.append('has_pregnant', this.has_pregnant ? 1 : 0);
+            if(this.has_other && this.other_vulnerable) formData.append('other_vulnerable', this.other_vulnerable);
+            formData.append('description', this.description);
+            this.urgent_needs.forEach(need => formData.append('urgent_needs[]', need));
+            
+            if(this.imageFile) {
+                formData.append('image', this.imageFile);
+            }
             
             try {
                 let response = await fetch('{{ route('sos.store') }}', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(payload)
+                    headers: { 'Accept': 'application/json' },
+                    body: formData
                 });
                 
                 let data = await response.json();

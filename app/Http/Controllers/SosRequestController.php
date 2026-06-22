@@ -31,6 +31,7 @@ class SosRequestController extends Controller
             'description'   => 'nullable|string|max:1000',
             'urgent_needs'  => 'nullable|array',
             'urgent_needs.*'=> 'string|max:100',
+            'image'         => 'nullable|image|max:5120', // Max 5MB
         ];
 
         // Add guest validation if not logged in
@@ -68,6 +69,11 @@ class SosRequestController extends Controller
             'other_vulnerable' => $request->other_vulnerable,
             'urgent_needs' => $request->urgent_needs,
         ]);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('sos_images', 'public');
+            $sosData['image_path'] = $imagePath;
+        }
 
         if (!auth()->check()) {
             $sosData['guest_name'] = $request->guest_name;

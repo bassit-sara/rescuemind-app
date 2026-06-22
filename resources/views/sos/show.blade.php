@@ -115,6 +115,15 @@
             <div class="text-sm text-gray-700">{{ $sosRequest->description }}</div>
         </div>
         @endif
+
+        @if($sosRequest->image_path)
+        <div class="mt-4">
+            <div class="text-xs text-gray-500 mb-2">ภาพสถานที่เกิดเหตุ</div>
+            <div class="rounded-xl overflow-hidden border border-gray-200">
+                <img src="{{ Storage::url($sosRequest->image_path) }}" alt="SOS Image" class="w-full object-cover">
+            </div>
+        </div>
+        @endif
     </div>
 
     {{-- Map --}}
