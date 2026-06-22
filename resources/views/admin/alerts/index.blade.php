@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'จัดการแจ้งเตือน')
-@section('page-title', '🚨 จัดการแจ้งเตือนภัย')
+@section('page-title')
+    <x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /> จัดการแจ้งเตือนภัย
+@endsection
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
@@ -12,7 +14,7 @@
         </div>
         <a href="{{ route('admin.alerts.create') }}"
            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl hover:from-red-700 hover:to-orange-700 transition-all shadow-lg text-sm font-medium">
-            ➕ สร้างแจ้งเตือนใหม่
+            <x-heroicon-o-plus class="w-5 h-5 inline-block mr-1 -mt-1" /> สร้างแจ้งเตือนใหม่
         </a>
     </div>
 
@@ -25,22 +27,22 @@
     @endphp
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-            <div class="text-2xl mb-1">🚨</div>
+            <div class="text-2xl mb-1"><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></div>
             <div class="text-2xl font-bold text-gray-800">{{ $activeAlerts }}</div>
             <div class="text-xs text-gray-500">แจ้งเตือนที่ใช้งาน</div>
         </div>
         <div class="bg-white rounded-2xl p-4 border border-red-100 shadow-sm">
-            <div class="text-2xl mb-1">🔴</div>
+            <div class="text-2xl mb-1"><span class="inline-block w-3 h-3 rounded-full bg-red-500 mr-1"></span></div>
             <div class="text-2xl font-bold text-red-600">{{ $level3 }}</div>
             <div class="text-xs text-gray-500">อพยพทันที</div>
         </div>
         <div class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm">
-            <div class="text-2xl mb-1">🟠</div>
+            <div class="text-2xl mb-1"><span class="inline-block w-3 h-3 rounded-full bg-orange-500 mr-1"></span></div>
             <div class="text-2xl font-bold text-orange-500">{{ $level2 }}</div>
             <div class="text-xs text-gray-500">เตรียมอพยพ</div>
         </div>
         <div class="bg-white rounded-2xl p-4 border border-yellow-100 shadow-sm">
-            <div class="text-2xl mb-1">🟡</div>
+            <div class="text-2xl mb-1"><span class="inline-block w-3 h-3 rounded-full bg-yellow-500 mr-1"></span></div>
             <div class="text-2xl font-bold text-yellow-500">{{ $level1 }}</div>
             <div class="text-xs text-gray-500">เฝ้าระวัง</div>
         </div>
@@ -89,14 +91,14 @@
                             <div class="flex items-center justify-center gap-1">
                                 <a href="{{ route('admin.alerts.edit', $alert) }}"
                                    class="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors" title="แก้ไข">
-                                    ✏️
+                                    <x-heroicon-o-pencil class="w-5 h-5 inline-block mr-1 -mt-1" />️
                                 </a>
                                 @if($alert->is_active)
                                 <form action="{{ route('admin.alerts.destroy', $alert) }}" method="POST"
                                       onsubmit="return confirm('ต้องการยกเลิกการแจ้งเตือนนี้?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors" title="ยกเลิก">
-                                        ❌
+                                        <x-heroicon-o-x-circle class="w-5 h-5 inline-block shrink-0" />
                                     </button>
                                 </form>
                                 @endif
@@ -106,7 +108,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="px-4 py-12 text-center text-gray-400">
-                            <div class="text-3xl mb-2">🚨</div>
+                            <div class="text-3xl mb-2"><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></div>
                             <p>ยังไม่มีการแจ้งเตือน</p>
                             <a href="{{ route('admin.alerts.create') }}" class="text-red-600 hover:underline text-sm">สร้างแจ้งเตือนใหม่ →</a>
                         </td>

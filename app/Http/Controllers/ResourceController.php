@@ -30,6 +30,10 @@ class ResourceController extends Controller
             'unit'               => 'nullable|string|max:50',
         ]);
         Resource::create($validated);
+        
+        if (auth()->user()->hasRole('super_admin')) {
+            return redirect()->route('super-admin.resources')->with('success', 'เพิ่มทรัพยากรสำเร็จ');
+        }
         return redirect()->route('admin.resources.index')->with('success', 'เพิ่มทรัพยากรสำเร็จ');
     }
 

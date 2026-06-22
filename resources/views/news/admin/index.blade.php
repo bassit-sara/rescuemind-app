@@ -1,7 +1,9 @@
 @extends('layouts.admin')
 
 @section('title', 'จัดการข่าวสาร')
-@section('page-title', '⚙️ จัดการข่าวสาร')
+@section('page-title')
+    <x-heroicon-o-cog-8-tooth class="w-5 h-5 inline-block shrink-0" /> จัดการข่าวสาร
+@endsection
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
@@ -11,7 +13,7 @@
             <p class="text-gray-500 text-sm">เพิ่ม แก้ไข และลบข่าวสารที่เผยแพร่บนระบบ</p>
         </div>
         <a href="{{ route('admin.news.create') }}" class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition shadow-sm">
-            ➕ เพิ่มข่าวสาร
+            <x-heroicon-o-plus class="w-5 h-5 inline-block mr-1 -mt-1" /> เพิ่มข่าวสาร
         </a>
     </div>
 
@@ -33,7 +35,7 @@
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-5 py-3">
                         <div class="font-medium text-gray-800 line-clamp-1">
-                            @if($item->is_pinned)<span class="text-yellow-500 mr-1">📌</span>@endif
+                            @if($item->is_pinned)<span class="text-yellow-500 mr-1"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /></span>@endif
                             {{ $item->title }}
                         </div>
                     </td>
@@ -53,11 +55,11 @@
                     </td>
                     <td class="px-4 py-3">
                         <div class="flex items-center justify-center gap-2">
-                            <a href="{{ route('news.show', $item) }}" class="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition">👁️</a>
-                            <a href="{{ route('admin.news.edit', $item) }}" class="px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">✏️</a>
+                            <a href="{{ route('news.show', $item) }}" class="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition"><x-heroicon-o-eye class="w-5 h-5 inline-block mr-1 -mt-1" />️</a>
+                            <a href="{{ route('admin.news.edit', $item) }}" class="px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition"><x-heroicon-o-pencil class="w-5 h-5 inline-block mr-1 -mt-1" />️</a>
                             <form action="{{ route('admin.news.destroy', $item) }}" method="POST" onsubmit="return confirm('ลบข่าวนี้?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="px-2.5 py-1 text-xs font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition">🗑️</button>
+                                <button type="submit" class="px-2.5 py-1 text-xs font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"><x-heroicon-o-trash class="w-5 h-5 inline-block mr-1 -mt-1" />️</button>
                             </form>
                         </div>
                     </td>

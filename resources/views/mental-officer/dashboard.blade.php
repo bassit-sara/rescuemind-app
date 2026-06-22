@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'Mental Officer Dashboard')
-@section('page-title', '🧠 ศูนย์สุขภาพจิต - เจ้าหน้าที่')
+@section('page-title')
+    <x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> ศูนย์สุขภาพจิต - เจ้าหน้าที่
+@endsection
 @section('content')
 
 {{-- Stats --}}
@@ -32,7 +34,7 @@
     {{-- Severe/High Risk Assessments --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 class="font-bold text-gray-800">🔴 เคสที่ต้องใส่ใจ</h2>
+            <h2 class="font-bold text-gray-800"><span class="inline-block w-3 h-3 rounded-full bg-red-500 mr-1"></span> เคสที่ต้องใส่ใจ</h2>
             <a href="{{ route('mental-officer.assessments') }}" class="text-sm text-purple-600 hover:underline">ดูทั้งหมด →</a>
         </div>
         <div class="divide-y divide-gray-50">
@@ -49,7 +51,7 @@
             </a>
             @empty
             <div class="p-8 text-center text-gray-400">
-                <div class="text-3xl mb-2">✅</div>
+                <div class="text-3xl mb-2"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm">ไม่มีเคสเร่งด่วน</div>
             </div>
             @endforelse
@@ -59,7 +61,7 @@
     {{-- Pending Appointments --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 class="font-bold text-gray-800">📅 นัดหมายรอยืนยัน</h2>
+            <h2 class="font-bold text-gray-800"><x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /> นัดหมายรอยืนยัน</h2>
             <a href="{{ route('mental-officer.appointments') }}" class="text-sm text-purple-600 hover:underline">ดูทั้งหมด →</a>
         </div>
         <div class="divide-y divide-gray-50">
@@ -69,7 +71,7 @@
                     <div>
                         <div class="font-medium text-gray-800">{{ $appt->user->name }}</div>
                         <div class="text-xs text-gray-500">
-                            {{ ['video'=>'💻 ออนไลน์','in_person'=>'🏥 พบหน้า'][$appt->type] ?? $appt->type }}
+                            {{ ['video'=>'<x-heroicon-o-computer-desktop class="w-5 h-5 inline-block mr-1 -mt-1" /> ออนไลน์','in_person'=>'<x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /> พบหน้า'][$appt->type] ?? $appt->type }}
                             • {{ $appt->scheduled_at?->format('d/m/Y H:i') }}
                         </div>
                         @if($appt->notes)
@@ -81,7 +83,7 @@
                     <form action="{{ route('mental-officer.appointments.status', $appt) }}" method="POST" class="flex gap-2 w-full">
                         @csrf @method('PATCH')
                         <input type="hidden" name="status" value="confirmed">
-                        <button type="submit" class="flex-1 py-1.5 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700">✅ ยืนยัน</button>
+                        <button type="submit" class="flex-1 py-1.5 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ยืนยัน</button>
                     </form>
                     <form action="{{ route('mental-officer.appointments.status', $appt) }}" method="POST">
                         @csrf @method('PATCH')
@@ -101,7 +103,7 @@
 
 {{-- Assessment Type Distribution --}}
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mt-6 p-6">
-    <h2 class="font-bold text-gray-800 mb-4">📊 การกระจายตัวระดับความรุนแรง (7 วันล่าสุด)</h2>
+    <h2 class="font-bold text-gray-800 mb-4"><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> การกระจายตัวระดับความรุนแรง (7 วันล่าสุด)</h2>
     <div class="grid grid-cols-4 gap-4">
         @foreach(['minimal' => ['label'=>'ปกติ','color'=>'bg-green-500'], 'mild' => ['label'=>'น้อย','color'=>'bg-yellow-500'], 'moderate' => ['label'=>'ปานกลาง','color'=>'bg-orange-500'], 'severe' => ['label'=>'รุนแรง','color'=>'bg-red-500']] as $sev => $info)
         <div class="text-center">

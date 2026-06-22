@@ -1,11 +1,13 @@
 @extends('layouts.app')
 @section('title', 'แจ้งจุดอันตราย')
-@section('page-title', '⚠️ รายงานจุดอันตราย')
+@section('page-title')
+    <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> รายงานจุดอันตราย
+@endsection
 @section('content')
 <div class="max-w-xl mx-auto">
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="bg-gradient-to-r from-orange-500 to-orange-700 p-6 text-white">
-            <div class="text-3xl mb-2">⚠️</div>
+            <div class="text-3xl mb-2"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></div>
             <h1 class="text-xl font-bold">รายงานจุดอันตราย</h1>
             <p class="text-orange-100 text-sm mt-1">แจ้งพื้นที่อันตราย เช่น น้ำท่วม ถนนขาด ดินโคลนถล่ม</p>
         </div>
@@ -17,12 +19,12 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">ประเภทภัย <span class="text-red-500">*</span></label>
                     <select name="type" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
                         <option value="">เลือกประเภท</option>
-                        <option value="flood" {{ old('type')=='flood'?'selected':'' }}>🌊 น้ำท่วม</option>
-                        <option value="landslide" {{ old('type')=='landslide'?'selected':'' }}>⛰️ ดินโคลนถล่ม</option>
-                        <option value="road_damage" {{ old('type')=='road_damage'?'selected':'' }}>🛣️ ถนนเสียหาย/ขาด</option>
-                        <option value="power_out" {{ old('type')=='power_out'?'selected':'' }}>⚡ ไฟฟ้าดับ</option>
-                        <option value="fire" {{ old('type')=='fire'?'selected':'' }}>🔥 ไฟไหม้</option>
-                        <option value="building_damage" {{ old('type')=='building_damage'?'selected':'' }}>🏚️ อาคารเสียหาย</option>
+                        <option value="flood" {{ old('type')=='flood'?'selected':'' }}><x-heroicon-o-globe-asia-australia class="w-5 h-5 inline-block mr-1 -mt-1" /> น้ำท่วม</option>
+                        <option value="landslide" {{ old('type')=='landslide'?'selected':'' }}><x-heroicon-o-globe-alt class="w-5 h-5 inline-block mr-1 -mt-1" />️ ดินโคลนถล่ม</option>
+                        <option value="road_damage" {{ old('type')=='road_damage'?'selected':'' }}><x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ ถนนเสียหาย/ขาด</option>
+                        <option value="power_out" {{ old('type')=='power_out'?'selected':'' }}><x-heroicon-o-bolt class="w-5 h-5 inline-block mr-1 -mt-1" /> ไฟฟ้าดับ</option>
+                        <option value="fire" {{ old('type')=='fire'?'selected':'' }}><x-heroicon-o-fire class="w-5 h-5 inline-block mr-1 -mt-1" /> ไฟไหม้</option>
+                        <option value="building_damage" {{ old('type')=='building_damage'?'selected':'' }}><x-heroicon-o-home-modern class="w-5 h-5 inline-block mr-1 -mt-1" />️ อาคารเสียหาย</option>
                         <option value="other" {{ old('type')=='other'?'selected':'' }}>อื่นๆ</option>
                     </select>
                     @error('type') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -61,7 +63,7 @@
                 </div>
 
                 <button type="button" onclick="getGPS()" class="w-full py-2.5 bg-green-50 text-green-700 font-medium rounded-xl text-sm border border-green-200 hover:bg-green-100 transition-colors">
-                    📍 ใช้ตำแหน่งปัจจุบัน
+                    <x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ใช้ตำแหน่งปัจจุบัน
                 </button>
 
                 <div>
@@ -77,7 +79,7 @@
                 </div>
 
                 <button type="submit" class="w-full py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-2xl transition-colors text-lg">
-                    📤 ส่งรายงาน
+                    <x-heroicon-o-paper-airplane class="w-5 h-5 inline-block mr-1 -mt-1" /> ส่งรายงาน
                 </button>
             </div>
         </form>

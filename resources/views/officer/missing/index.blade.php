@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'จัดการข้อมูลคนหาย')
-@section('page-title', '🔎 รายการแจ้งคนหาย (สำหรับเจ้าหน้าที่)')
+@section('page-title')
+    <x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block mr-1 -mt-1" /> รายการแจ้งคนหาย (สำหรับเจ้าหน้าที่)
+@endsection
 @section('content')
 
 <div class="max-w-6xl mx-auto space-y-6">
@@ -37,7 +39,7 @@
                                     <img src="{{ asset('storage/' . $person->photo) }}" alt="{{ $person->name }}" class="w-14 h-14 rounded-lg object-cover border border-gray-100">
                                 @else
                                     <div class="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center text-xl text-gray-400 border border-gray-100">
-                                        👤
+                                        <x-heroicon-o-user class="w-5 h-5 inline-block shrink-0" />
                                     </div>
                                 @endif
                             </td>
@@ -92,7 +94,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                                <div class="text-3xl mb-2">✅</div>
+                                <div class="text-3xl mb-2"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></div>
                                 <div class="text-sm">ไม่มีคำขอค้นหาคนหายในขณะนี้</div>
                             </td>
                         </tr>

@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'รายละเอียดการประเมินสุขภาพจิต')
-@section('page-title', '📊 รายละเอียดการประเมินสุขภาพจิต')
+@section('page-title')
+    <x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> รายละเอียดการประเมินสุขภาพจิต
+@endsection
 @section('content')
 
 @php
@@ -95,7 +97,7 @@
 
         <div class="p-6 sm:p-8 space-y-6">
             <h2 class="text-lg font-bold text-gray-800 border-b border-gray-100 pb-3 flex items-center gap-2">
-                📋 รายละเอียดคำตอบแต่ละข้อ
+                <x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /> รายละเอียดคำตอบแต่ละข้อ
             </h2>
             <div class="divide-y divide-gray-100">
                 @foreach($questions as $idx => $question)
@@ -130,7 +132,7 @@
     {{-- Assessment Context & Info --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 col-span-2 space-y-4">
-            <h3 class="font-bold text-gray-800">🧑 ข้อมูลผู้ป่วย & ประวัติติดต่อ</h3>
+            <h3 class="font-bold text-gray-800"><x-heroicon-o-user class="w-5 h-5 inline-block mr-1 -mt-1" /> ข้อมูลผู้ป่วย & ประวัติติดต่อ</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                     <span class="text-gray-400 block">ชื่อ-นามสกุล</span>
@@ -151,28 +153,28 @@
             </div>
             <div class="pt-4 border-t border-gray-100 flex gap-3">
                 <a href="tel:{{ $mentalAssessment->user->phone }}" class="flex-1 py-3 bg-purple-600 text-white font-bold text-center rounded-xl hover:bg-purple-700 transition-colors text-sm">
-                    📞 โทรหาผู้ประเมิน
+                    <x-heroicon-o-phone class="w-5 h-5 inline-block mr-1 -mt-1" /> โทรหาผู้ประเมิน
                 </a>
                 <a href="{{ route('mental-officer.appointments') }}" class="flex-1 py-3 bg-purple-50 text-purple-700 font-bold text-center rounded-xl hover:bg-purple-100 transition-colors text-sm">
-                    📅 ทำนัดหมายผู้เชี่ยวชาญ
+                    <x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /> ทำนัดหมายผู้เชี่ยวชาญ
                 </a>
             </div>
         </div>
 
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-            <h3 class="font-bold text-gray-800">📌 แนวทางปฏิบัติ</h3>
+            <h3 class="font-bold text-gray-800"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> แนวทางปฏิบัติ</h3>
             <div class="space-y-3 text-xs text-gray-600">
                 @if($mentalAssessment->severity == 'severe')
                     <div class="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium">
-                        🚨 ระดับความรุนแรงสูงมาก ควรติดต่อแพทย์ด่วนและเฝ้าระวังความปลอดภัยของผู้ป่วยตลอด 24 ชั่วโมง
+                        <x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /> ระดับความรุนแรงสูงมาก ควรติดต่อแพทย์ด่วนและเฝ้าระวังความปลอดภัยของผู้ป่วยตลอด 24 ชั่วโมง
                     </div>
                 @elseif($mentalAssessment->severity == 'moderate')
                     <div class="p-3 bg-orange-50 border border-orange-200 rounded-xl text-orange-700 font-medium">
-                        ⚠️ ระดับความรุนแรงปานกลาง ควรนัดแนะพูดคุย หรือให้คำแนะนำเบื้องต้นเพื่อติดตามผลอย่างใกล้ชิด
+                        <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> ระดับความรุนแรงปานกลาง ควรนัดแนะพูดคุย หรือให้คำแนะนำเบื้องต้นเพื่อติดตามผลอย่างใกล้ชิด
                     </div>
                 @else
                     <div class="p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 font-medium">
-                        ✅ ระดับความรุนแรงน้อย-ปกติ แนะนำให้ทำกิจกรรมผ่อนคลายและประเมินผลอีกครั้งหลังผ่านไป 14 วัน
+                        <x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ระดับความรุนแรงน้อย-ปกติ แนะนำให้ทำกิจกรรมผ่อนคลายและประเมินผลอีกครั้งหลังผ่านไป 14 วัน
                     </div>
                 @endif
                 <p class="leading-relaxed">

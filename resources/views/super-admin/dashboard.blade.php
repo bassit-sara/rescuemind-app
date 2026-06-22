@@ -1,29 +1,31 @@
 @extends('layouts.admin')
 @section('title', 'Super Admin - KPI')
-@section('page-title', '👑 Command & Control Center')
+@section('page-title')
+    <x-heroicon-o-star class="w-5 h-5 inline-block shrink-0" /> Command & Control Center
+@endsection
 @section('content')
 
 {{-- KPI Grid --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl p-5">
         <div class="text-3xl font-black">{{ $kpi['total_users'] }}</div>
-        <div class="text-slate-300 text-sm font-medium">👥 ผู้ใช้ทั้งหมด</div>
+        <div class="text-slate-300 text-sm font-medium"><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> ผู้ใช้ทั้งหมด</div>
         @if(isset($kpi['new_users_today']))
         <div class="text-green-400 text-xs mt-1">+{{ $kpi['new_users_today'] }} วันนี้</div>
         @endif
     </div>
     <div class="bg-gradient-to-br from-red-600 to-red-800 text-white rounded-2xl p-5">
         <div class="text-3xl font-black">{{ $kpi['total_sos'] }}</div>
-        <div class="text-red-100 text-sm font-medium">🆘 SOS ทั้งหมด</div>
+        <div class="text-red-100 text-sm font-medium"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> SOS ทั้งหมด</div>
         <div class="text-red-200 text-xs mt-1">{{ $kpi['sos_today'] ?? 0 }} วันนี้</div>
     </div>
     <div class="bg-gradient-to-br from-green-600 to-green-800 text-white rounded-2xl p-5">
         <div class="text-3xl font-black">{{ $kpi['rescue_rate'] }}%</div>
-        <div class="text-green-100 text-sm font-medium">✅ อัตราช่วยเหลือ</div>
+        <div class="text-green-100 text-sm font-medium"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> อัตราช่วยเหลือ</div>
     </div>
     <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-2xl p-5">
         <div class="text-3xl font-black">{{ $kpi['assessments_count'] }}</div>
-        <div class="text-purple-100 text-sm font-medium">🧠 การประเมินจิตใจ</div>
+        <div class="text-purple-100 text-sm font-medium"><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> การประเมินจิตใจ</div>
     </div>
 </div>
 
@@ -51,6 +53,36 @@
     <x-weather-widget />
 </div>
 
+{{-- AI Risk Monitor Widget --}}
+@if(isset($criticalRiskAreas) && $criticalRiskAreas->count() > 0)
+<div class="bg-gradient-to-r from-red-600 to-red-800 rounded-2xl shadow-lg border border-red-500 p-6 mb-8 text-white flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-start gap-4">
+        <div class="bg-red-900/50 p-3 rounded-xl">
+            <x-heroicon-s-exclamation-triangle class="w-8 h-8 text-red-200" />
+        </div>
+        <div>
+            <div class="text-red-200 text-sm font-bold tracking-wide uppercase flex items-center gap-2 mb-1">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                AI Risk Monitor Widget
+            </div>
+            <h2 class="text-xl font-bold">
+                พื้นที่เฝ้าระวังสูงสุด: {{ $criticalRiskAreas->first()->area_name }} 
+                (Risk Score: {{ $criticalRiskAreas->first()->risk_score }}%)
+            </h2>
+            <p class="text-sm text-red-100 mt-1">{{ $criticalRiskAreas->first()->prediction_text }}</p>
+        </div>
+    </div>
+    <div>
+        <a href="{{ route('super-admin.analytics') }}" class="px-5 py-2.5 bg-white text-red-700 hover:bg-red-50 font-bold rounded-xl shadow-sm transition-colors whitespace-nowrap">
+            ดูแผนที่ความเสี่ยง
+        </a>
+    </div>
+</div>
+@endif
+
 {{-- Live Command Center Map --}}
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 relative">
     <div class="flex items-center justify-between mb-4">
@@ -59,7 +91,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
             </span>
-            🗺️ Live Command Center (พิกัดฉุกเฉินแบบเรียลไทม์)
+            <x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ Live Command Center (พิกัดฉุกเฉินแบบเรียลไทม์)
         </h2>
         <div class="text-xs text-gray-500 flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
             <svg class="w-4 h-4 animate-spin text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -73,7 +105,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     {{-- SOS by Province --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="font-bold text-gray-800 mb-4">📊 SOS แยกตามจังหวัด (30 วัน)</h2>
+        <h2 class="font-bold text-gray-800 mb-4"><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> SOS แยกตามจังหวัด (30 วัน)</h2>
         <div class="space-y-3">
             @foreach($sosByProvince as $province => $count)
             @php $max = $sosByProvince->max(); @endphp
@@ -93,7 +125,7 @@
 
     {{-- SOS Status Distribution --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="font-bold text-gray-800 mb-4">🔄 สถานะ SOS ปัจจุบัน</h2>
+        <h2 class="font-bold text-gray-800 mb-4"><x-heroicon-o-arrow-path class="w-5 h-5 inline-block mr-1 -mt-1" /> สถานะ SOS ปัจจุบัน</h2>
         <div class="space-y-4">
             @foreach(['pending' => ['label'=>'รอดำเนินการ','color'=>'bg-red-500'], 'assigned' => ['label'=>'มอบหมายแล้ว','color'=>'bg-yellow-500'], 'in_progress' => ['label'=>'กำลังช่วยเหลือ','color'=>'bg-blue-500'], 'resolved' => ['label'=>'แก้ไขแล้ว','color'=>'bg-purple-500'], 'safe' => ['label'=>'ปลอดภัย','color'=>'bg-green-500']] as $status => $info)
             @php $count = $sosByStatus[$status] ?? 0; $total = max(1, array_sum($sosByStatus->toArray())); @endphp
@@ -112,7 +144,7 @@
 
     {{-- Role Distribution --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="font-bold text-gray-800 mb-4">👥 ผู้ใช้แยกตาม Role</h2>
+        <h2 class="font-bold text-gray-800 mb-4"><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> ผู้ใช้แยกตาม Role</h2>
         <div class="space-y-3">
             @foreach($usersByRole as $role => $count)
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
@@ -125,22 +157,22 @@
 
     {{-- Quick Navigation --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="font-bold text-gray-800 mb-4">⚡ จัดการระบบ</h2>
+        <h2 class="font-bold text-gray-800 mb-4"><x-heroicon-o-bolt class="w-5 h-5 inline-block mr-1 -mt-1" /> จัดการระบบ</h2>
         <div class="grid grid-cols-2 gap-3">
             <a href="{{ route('super-admin.users') }}" class="p-4 bg-indigo-50 rounded-xl text-center hover:bg-indigo-100 transition-colors">
-                <div class="text-2xl mb-1">👥</div>
+                <div class="text-2xl mb-1"><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm font-medium text-indigo-700">จัดการผู้ใช้</div>
             </a>
             <a href="{{ route('super-admin.shelter') }}" class="p-4 bg-green-50 rounded-xl text-center hover:bg-green-100 transition-colors">
-                <div class="text-2xl mb-1">🏕️</div>
+                <div class="text-2xl mb-1"><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm font-medium text-green-700">ที่พักพิง</div>
             </a>
             <a href="{{ route('super-admin.resources') }}" class="p-4 bg-blue-50 rounded-xl text-center hover:bg-blue-100 transition-colors">
-                <div class="text-2xl mb-1">📦</div>
+                <div class="text-2xl mb-1"><x-heroicon-o-archive-box class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm font-medium text-blue-700">ทรัพยากร</div>
             </a>
             <a href="{{ route('super-admin.analytics') }}" class="p-4 bg-purple-50 rounded-xl text-center hover:bg-purple-100 transition-colors">
-                <div class="text-2xl mb-1">📈</div>
+                <div class="text-2xl mb-1"><x-heroicon-o-presentation-chart-line class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm font-medium text-purple-700">Analytics</div>
             </a>
         </div>
@@ -185,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 var popupContent = `
                     <div class="font-sans">
-                        <div class="font-bold text-red-600 mb-1">🆘 ขอความช่วยเหลือฉุกเฉิน</div>
+                        <div class="font-bold text-red-600 mb-1"><x-heroicon-o-bell class="w-5 h-5 inline-block mr-1 -mt-1" /> ขอความช่วยเหลือฉุกเฉิน</div>
                         <div class="text-sm"><b>ผู้แจ้ง:</b> ${user}</div>
                         <div class="text-sm"><b>เบอร์โทร:</b> ${phone}</div>
                         <div class="text-sm mb-2"><b>สถานะ:</b> ${sos.status === 'pending' ? 'รอดำเนินการ' : 'รับเรื่องแล้ว'}</div>
@@ -247,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             setTimeout(() => oscillator.stop(), 500);
                         } catch(e) {}
                         
-                        alert('🚨 แจ้งเตือน: มีการขอความช่วยเหลือ (SOS) เคสใหม่เข้ามาในระบบ!');
+                        alert('<x-heroicon-o-bell class="w-5 h-5 inline-block mr-1 -mt-1" /> แจ้งเตือน: มีการขอความช่วยเหลือ (SOS) เคสใหม่เข้ามาในระบบ!');
                     }
                     
                     previousSosCount = newCount;

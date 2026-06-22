@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'จัดการรายงานจุดเสี่ยงภัย')
-@section('page-title', '⚠️ ตรวจสอบจุดอันตราย & กีดขวาง')
+@section('page-title')
+    <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> ตรวจสอบจุดอันตราย & กีดขวาง
+@endsection
 @section('content')
 
 <div class="max-w-6xl mx-auto space-y-6">
@@ -45,7 +47,7 @@
                                     <img src="{{ asset('storage/' . $r->photo) }}" alt="{{ $r->type_label }}" class="w-14 h-14 rounded-lg object-cover border border-gray-100">
                                 @else
                                     <div class="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center text-xl text-gray-400 border border-gray-100">
-                                        ⚠️
+                                        <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" />
                                     </div>
                                 @endif
                             </td>
@@ -71,11 +73,11 @@
                             <td class="px-6 py-4">
                                 @if($r->verified)
                                     <span class="inline-block px-2.5 py-1 rounded-full border text-xs font-semibold bg-green-50 text-green-700 border-green-200">
-                                        ✅ ยืนยันแล้ว
+                                        <x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ยืนยันแล้ว
                                     </span>
                                 @else
                                     <span class="inline-block px-2.5 py-1 rounded-full border text-xs font-medium bg-yellow-50 text-yellow-700 border-yellow-200">
-                                        ⏳ รอติตตามตรวจสอบ
+                                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" /> รอติตตามตรวจสอบ
                                     </span>
                                 @endif
                             </td>
@@ -83,7 +85,7 @@
                                 <div class="flex items-center justify-end gap-1.5">
                                     @if($r->latitude && $r->longitude)
                                         <a href="https://www.google.com/maps?q={{ $r->latitude }},{{ $r->longitude }}" target="_blank" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg border border-gray-200 transition-colors">
-                                            🗺️ แผนที่
+                                            <x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ แผนที่
                                         </a>
                                     @endif
 
@@ -91,7 +93,7 @@
                                         <form action="{{ route('officer.hazard.verify', $r) }}" method="POST">
                                             @csrf @method('PATCH')
                                             <button type="submit" class="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm">
-                                                ✅ ยืนยันรายงาน
+                                                <x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ยืนยันรายงาน
                                             </button>
                                         </form>
                                     @endif
@@ -101,7 +103,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                                <div class="text-3xl mb-2">✅</div>
+                                <div class="text-3xl mb-2"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></div>
                                 <div class="text-sm">ไม่มีคำขอยืนยันรายงานเหตุภัยพิบัติใดๆ ในขณะนี้</div>
                             </td>
                         </tr>

@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', $news->title)
-@section('page-title', '📰 ข่าวสาร')
+@section('page-title')
+    <x-heroicon-o-newspaper class="w-5 h-5 inline-block shrink-0" /> ข่าวสาร
+@endsection
 
 @section('content')
 @php $color = \App\Models\News::categoryColor($news->category); @endphp
@@ -30,7 +32,7 @@
                     {{ \App\Models\News::categoryLabel($news->category) }}
                 </span>
                 @if($news->is_pinned)
-                <span class="text-xs font-bold px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">📌 ปักหมุด</span>
+                <span class="text-xs font-bold px-3 py-1 rounded-full bg-yellow-100 text-yellow-700"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ปักหมุด</span>
                 @endif
             </div>
 
@@ -46,10 +48,10 @@
                 </div>
                 @hasanyrole('admin|super_admin')
                 <div class="ml-auto flex gap-2">
-                    <a href="{{ route('admin.news.edit', $news) }}" class="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">✏️ แก้ไข</a>
+                    <a href="{{ route('admin.news.edit', $news) }}" class="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition"><x-heroicon-o-pencil class="w-5 h-5 inline-block mr-1 -mt-1" />️ แก้ไข</a>
                     <form action="{{ route('admin.news.destroy', $news) }}" method="POST" onsubmit="return confirm('ยืนยันการลบข่าวนี้?')">
                         @csrf @method('DELETE')
-                        <button type="submit" class="px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition">🗑️ ลบ</button>
+                        <button type="submit" class="px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"><x-heroicon-o-trash class="w-5 h-5 inline-block mr-1 -mt-1" />️ ลบ</button>
                     </form>
                 </div>
                 @endhasanyrole
@@ -63,7 +65,7 @@
 
     {{-- Comments --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h3 class="font-bold text-gray-800 mb-4">💬 ความคิดเห็น ({{ $news->comments->count() }})</h3>
+        <h3 class="font-bold text-gray-800 mb-4"><x-heroicon-o-chat-bubble-left-ellipsis class="w-5 h-5 inline-block mr-1 -mt-1" /> ความคิดเห็น ({{ $news->comments->count() }})</h3>
 
         @auth
         <form action="{{ route('news.comment', $news) }}" method="POST" class="mb-6">
@@ -95,7 +97,7 @@
                         <span class="text-xs font-semibold text-gray-700">{{ $comment->author->name }}</span>
                         <div class="flex items-center gap-2">
                             <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
-                            @if(auth()->id() === $comment->user_id || (auth()->check() && auth()->user()->hasAnyRole(['admin','super_admin'])))
+                            @if(auth()->id() === $comment->user_id || (auth()->check() && auth()->user()->hasAnyRole(['admin','super_admin', 'volunteer'])))
                             <form action="{{ route('news.comment.destroy', $comment) }}" method="POST" onsubmit="return confirm('ลบความคิดเห็นนี้?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="text-xs text-red-400 hover:text-red-600">ลบ</button>
@@ -115,7 +117,7 @@
     {{-- Related --}}
     @if($related->count())
     <div>
-        <h3 class="font-bold text-gray-700 mb-3">📎 ข่าวที่เกี่ยวข้อง</h3>
+        <h3 class="font-bold text-gray-700 mb-3"><x-heroicon-o-paper-clip class="w-5 h-5 inline-block mr-1 -mt-1" /> ข่าวที่เกี่ยวข้อง</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             @foreach($related as $r)
             <a href="{{ route('news.show', $r) }}" class="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md transition">

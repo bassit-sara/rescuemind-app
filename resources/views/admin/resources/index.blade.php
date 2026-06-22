@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'จัดการทรัพยากร')
-@section('page-title', '📦 ระบบจัดการคลังทรัพยากรช่วยเหลือ')
+@section('page-title')
+    <x-heroicon-o-archive-box class="w-5 h-5 inline-block shrink-0" /> ระบบจัดการคลังทรัพยากรช่วยเหลือ
+@endsection
 @section('content')
 
 <div class="max-w-6xl mx-auto space-y-6">
@@ -12,7 +14,7 @@
             </p>
         </div>
         <a href="{{ route('admin.resources.create') }}" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
-            ➕ เพิ่มทรัพยากรใหม่
+            <x-heroicon-o-plus class="w-5 h-5 inline-block mr-1 -mt-1" /> เพิ่มทรัพยากรใหม่
         </a>
     </div>
 
@@ -69,12 +71,12 @@
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
                                     <a href="{{ route('admin.resources.edit', $res) }}" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg border border-gray-200 transition-colors">
-                                        ✏️ แก้ไข
+                                        <x-heroicon-o-pencil class="w-5 h-5 inline-block mr-1 -mt-1" />️ แก้ไข
                                     </a>
                                     <form action="{{ route('admin.resources.destroy', $res) }}" method="POST" onsubmit="return confirm('ยืนยันที่จะลบทรัพยากรนี้?')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold rounded-lg transition-colors border border-red-100">
-                                            🗑️ ลบ
+                                            <x-heroicon-o-trash class="w-5 h-5 inline-block mr-1 -mt-1" />️ ลบ
                                         </button>
                                     </form>
                                 </div>
@@ -83,7 +85,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                                <div class="text-3xl mb-2">📦</div>
+                                <div class="text-3xl mb-2"><x-heroicon-o-archive-box class="w-5 h-5 inline-block shrink-0" /></div>
                                 <div class="text-sm">ไม่มีทรัพยากรช่วยเหลือลงระบบในขณะนี้</div>
                             </td>
                         </tr>

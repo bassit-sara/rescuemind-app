@@ -1,12 +1,14 @@
 @extends('layouts.app')
 @section('title', 'แจ้งคนหาย')
-@section('page-title', '🔍 แจ้งคนหาย / ค้นหาผู้สูญหาย')
+@section('page-title')
+    <x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /> แจ้งคนหาย / ค้นหาผู้สูญหาย
+@endsection
 @section('content')
 
 {{-- Create Form --}}
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8">
     <div class="px-6 py-4 border-b border-gray-100">
-        <h2 class="font-bold text-gray-800">📝 แจ้งคนหาย</h2>
+        <h2 class="font-bold text-gray-800"><x-heroicon-o-pencil-square class="w-5 h-5 inline-block shrink-0" /> แจ้งคนหาย</h2>
     </div>
     <form action="{{ route('missing-persons.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
         @csrf
@@ -32,7 +34,7 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">จังหวัดที่หายไป <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">พื้นที่ ที่หายไป <span class="text-red-500">*</span></label>
                 <input type="text" name="province" required value="{{ old('province') }}"
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                 @error('province') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -48,7 +50,7 @@
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">รูปภาพ</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">รูปภาพคนที่หาย</label>
                 <input type="file" name="photo" accept="image/*"
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm">
             </div>
@@ -65,13 +67,13 @@
             </div>
         </div>
         <button type="submit" class="mt-6 w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-2xl transition-colors">
-            📤 ส่งแจ้งคนหาย
+            <x-heroicon-o-paper-airplane class="w-5 h-5 inline-block mr-1 -mt-1" /> ส่งแจ้งคนหาย
         </button>
     </form>
 </div>
 
 {{-- Missing Persons List --}}
-<h2 class="text-xl font-bold text-gray-800 mb-4">🔎 รายการคนหายล่าสุด</h2>
+<h2 class="text-xl font-bold text-gray-800 mb-4"><x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block mr-1 -mt-1" /> รายการคนหายล่าสุด</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     @forelse($missingPersons as $mp)
     <a href="{{ route('missing-persons.show', $mp) }}" class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all flex gap-4">
@@ -79,7 +81,7 @@
         <img src="{{ $mp->photo_url }}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" alt="{{ $mp->name }}">
         @else
         <div class="w-16 h-16 rounded-xl bg-amber-100 flex items-center justify-center text-2xl flex-shrink-0">
-            {{ $mp->gender == 'female' ? '👩' : '👨' }}
+            {{ $mp->gender == 'female' ? '<x-heroicon-o-user class="w-5 h-5 inline-block mr-1 -mt-1" />' : '<x-heroicon-o-user class="w-5 h-5 inline-block mr-1 -mt-1" />' }}
         </div>
         @endif
         <div class="min-w-0">
@@ -87,19 +89,23 @@
                 <h3 class="font-bold text-gray-800 truncate">{{ $mp->name }}</h3>
                 <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0
                     {{ $mp->status == 'found' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                    {{ $mp->status == 'found' ? '✅ พบแล้ว' : '🔍 ยังหาย' }}
+                    @if($mp->status == 'found')
+                        <x-heroicon-s-check-circle class="w-4 h-4 inline-block shrink-0" /> พบแล้ว
+                    @else
+                        <x-heroicon-s-magnifying-glass class="w-4 h-4 inline-block shrink-0" /> ยังหาย
+                    @endif
                 </span>
             </div>
             <div class="text-sm text-gray-500">อายุ {{ $mp->age ?? '-' }} ปี • {{ $mp->province }}</div>
             @if($mp->last_seen_location)
-            <div class="text-xs text-gray-400 mt-1 truncate">📍 {{ $mp->last_seen_location }}</div>
+            <div class="text-xs text-gray-400 mt-1 truncate"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> {{ $mp->last_seen_location }}</div>
             @endif
             <div class="text-xs text-gray-400">{{ $mp->created_at->diffForHumans() }}</div>
         </div>
     </a>
     @empty
     <div class="col-span-2 text-center py-16 text-gray-400">
-        <div class="text-5xl mb-3">✅</div>
+        <div class="text-5xl mb-3"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></div>
         <div>ไม่พบรายการคนหาย</div>
     </div>
     @endforelse

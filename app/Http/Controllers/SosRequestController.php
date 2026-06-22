@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\SosRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SosRequestController extends Controller
 {
@@ -14,7 +16,7 @@ class SosRequestController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'latitude'      => 'nullable|numeric',
             'longitude'     => 'nullable|numeric',
             'address'       => 'nullable|string|max:500',
@@ -25,20 +27,37 @@ class SosRequestController extends Controller
             'has_children'  => 'boolean',
             'has_bedridden' => 'boolean',
             'has_pregnant'  => 'boolean',
+            'other_vulnerable' => 'nullable|string|max:255',
             'description'   => 'nullable|string|max:1000',
-        ]);
+            'urgent_needs'  => 'nullable|array',
+            'urgent_needs.*'=> 'string|max:100',
+        ];
 
-        // AI Triage logic (rule-based)
+        // Add guest validation if not logged in
+        if (!auth()->check()) {
+            $rules['guest_name'] = 'required|string|max:255';
+            $rules['guest_phone'] = 'required|string|max:20';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Default rule-based Triage
         $priority = 'medium';
         if ($request->has_bedridden || $request->has_pregnant) {
             $priority = 'critical';
-        } elseif ($request->has_elderly || $request->has_children) {
+        } elseif ($request->has_elderly || $request->has_children || $request->other_vulnerable) {
             $priority = 'high';
         } elseif ($request->num_people >= 10) {
             $priority = 'high';
         }
 
-        $sos = SosRequest::create(array_merge($validated, [
+        // AI Triage
+        $aiPriority = $this->analyzePriorityWithAI($request, $priority);
+        if ($aiPriority) {
+            $priority = $aiPriority;
+        }
+
+        $sosData = array_merge($validated, [
             'user_id'      => auth()->id(),
             'status'       => 'pending',
             'priority'     => $priority,
@@ -46,17 +65,32 @@ class SosRequestController extends Controller
             'has_children' => $request->boolean('has_children'),
             'has_bedridden'=> $request->boolean('has_bedridden'),
             'has_pregnant' => $request->boolean('has_pregnant'),
-        ]));
+            'other_vulnerable' => $request->other_vulnerable,
+            'urgent_needs' => $request->urgent_needs,
+        ]);
+
+        if (!auth()->check()) {
+            $sosData['guest_name'] = $request->guest_name;
+            $sosData['guest_phone'] = $request->guest_phone;
+        }
+
+        $sos = SosRequest::create($sosData);
 
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'ส่งคำขอความช่วยเหลือสำเร็จ! เจ้าหน้าที่จะติดต่อกลับโดยเร็ว',
-                'redirect' => route('sos.my') // Redirect to history per the summary
+                'redirect' => auth()->check() ? route('sos.my') : route('sos.guest.success')
             ]);
         }
 
-        return redirect()->route('sos.show', $sos)->with('success', 'ส่งคำขอความช่วยเหลือสำเร็จ! เจ้าหน้าที่จะติดต่อกลับโดยเร็ว');
+        return redirect(auth()->check() ? route('sos.my') : route('sos.guest.success'))
+            ->with('success', 'ส่งคำขอความช่วยเหลือสำเร็จ!');
+    }
+
+    public function guestSuccess()
+    {
+        return view('sos.guest-success');
     }
 
     public function show(SosRequest $sosRequest)
@@ -104,6 +138,7 @@ class SosRequestController extends Controller
             'status'      => 'assigned',
             'assigned_at' => now(),
         ]);
+        if ($request->wantsJson()) return response()->json(['success' => true, 'message' => 'รับเคสสำเร็จ']);
         return back()->with('success', 'รับเคสสำเร็จ');
     }
 
@@ -115,6 +150,60 @@ class SosRequestController extends Controller
             $data['resolved_at'] = now();
         }
         $sosRequest->update($data);
+        if ($request->wantsJson()) return response()->json(['success' => true, 'message' => 'อัปเดตสถานะสำเร็จ']);
         return back()->with('success', 'อัปเดตสถานะสำเร็จ');
+    }
+
+    public function navigate(SosRequest $sosRequest)
+    {
+        abort_unless($sosRequest->latitude && $sosRequest->longitude, 404, 'ไม่มีข้อมูลพิกัด');
+        
+        $hazards = \App\Models\HazardReport::where('status', '!=', 'resolved')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get();
+            
+        return view('officer.navigate', compact('sosRequest', 'hazards'));
+    }
+
+    private function analyzePriorityWithAI(Request $request, $fallbackPriority)
+    {
+        $apiKey = config('services.gemini.key');
+        if (empty($apiKey) || empty($request->description)) {
+            return $fallbackPriority;
+        }
+
+        $prompt = "วิเคราะห์ระดับความรุนแรงของคำขอความช่วยเหลือ SOS ดังต่อไปนี้\n" .
+                  "- รายละเอียด/อาการ: " . $request->description . "\n" .
+                  "- จำนวนคน: " . $request->num_people . "\n" .
+                  "- มีผู้สูงอายุ: " . ($request->has_elderly ? 'ใช่' : 'ไม่') . "\n" .
+                  "- มีเด็ก: " . ($request->has_children ? 'ใช่' : 'ไม่') . "\n" .
+                  "- มีผู้ป่วยติดเตียง: " . ($request->has_bedridden ? 'ใช่' : 'ไม่') . "\n" .
+                  "- มีหญิงตั้งครรภ์: " . ($request->has_pregnant ? 'ใช่' : 'ไม่') . "\n" .
+                  "ให้ตอบกลับมาเป็นคำศัพท์ภาษาอังกฤษคำเดียวเท่านั้น จากตัวเลือกต่อไปนี้: 'low', 'medium', 'high', 'critical'";
+
+        try {
+            $response = Http::timeout(5)->withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json'
+            ])->post('https://api.groq.com/openai/v1/chat/completions', [
+                'model' => 'llama-3.3-70b-versatile',
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt]
+                ],
+                'temperature' => 0.2
+            ]);
+
+            if ($response->successful()) {
+                $text = strtolower(trim($response->json('choices.0.message.content') ?? ''));
+                if (in_array($text, ['low', 'medium', 'high', 'critical'])) {
+                    return $text;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('AI Triage Error: ' . $e->getMessage());
+        }
+
+        return $fallbackPriority;
     }
 }

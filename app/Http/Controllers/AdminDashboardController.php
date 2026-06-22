@@ -61,8 +61,12 @@ class AdminDashboardController extends Controller
 
     public function updateRole(Request $request, User $user)
     {
-        $request->validate(['role' => 'required|exists:roles,name']);
+        $request->validate([
+            'role' => 'required|exists:roles,name',
+            'province' => 'nullable|string|max:100',
+        ]);
         $user->syncRoles([$request->role]);
-        return back()->with('success', "อัปเดต role ของ {$user->name} สำเร็จ");
+        $user->update(['province' => $request->province ? 'จังหวัด' . str_replace('จังหวัด', '', $request->province) : null]);
+        return back()->with('success', "อัปเดตข้อมูลของ {$user->name} สำเร็จ");
     }
 }

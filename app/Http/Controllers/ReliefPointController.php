@@ -56,6 +56,10 @@ class ReliefPointController extends Controller
 
         $validated['has_icu'] = $request->boolean('has_icu');
         ReliefPoint::create($validated);
+        
+        if (auth()->user()->hasRole('super_admin')) {
+            return redirect()->route('super-admin.shelter')->with('success', 'เพิ่มจุดช่วยเหลือสำเร็จ');
+        }
         return redirect()->route('admin.dashboard')->with('success', 'เพิ่มจุดช่วยเหลือสำเร็จ');
     }
 

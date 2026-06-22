@@ -45,50 +45,65 @@ class AiCompanionController extends Controller
             }
         }
 
-        $systemInstruction = "คุณคือ 'RescueMind AI' ผู้เชี่ยวชาญด้านภัยพิบัติ และการเอาชีวิตรอด คุณทำหน้าที่เป็นผู้ช่วยฉุกเฉิน 24 ชั่วโมงในระบบ RescueMind. กฎในการตอบของคุณคือ: 1. ให้คำแนะนำที่กระชับ ปฏิบัติตามได้จริงเพื่อความปลอดภัยในชีวิต 2. หากมีความเสี่ยงอันตรายถึงชีวิต ให้แนะนำให้ผู้ใช้กดปุ่ม SOS ในระบบ 3. ตอบด้วยความเห็นอกเห็นใจ สุภาพ และให้กำลังใจ 4. หากคุณได้รับข้อมูลสถานะผู้ใช้ หรือการแจ้งเตือนภัย คุณต้องนำข้อมูลเหล่านั้นมาประกอบการให้คำแนะนำด้วย\n\n" .
+        $systemInfo = "ระบบ RescueMind คือ แพลตฟอร์มจัดการภัยพิบัติและช่วยเหลือฉุกเฉินครบวงจร มีฟีเจอร์หลักดังนี้:\n" .
+                      "1. ระบบแจ้งเหตุฉุกเฉิน (SOS): ผู้ใช้กดขอความช่วยเหลือได้ตลอดเวลา ระบบจะใช้ AI ประเมินความรุนแรง (Triage) จากข้อมูลผู้สูงอายุ/ผู้ป่วย/คนท้อง เจ้าหน้าที่จะเข้าถึงพิกัดเพื่อช่วยเหลือทันที\n" .
+                      "2. ระบบรายงานจุดอันตราย (Hazard Reports): แสดงแผนที่จุดเสี่ยงภัยต่างๆ (เช่น น้ำท่วมลึก ถนนขาด) ให้ประชาชนหลีกเลี่ยง\n" .
+                      "3. ระบบประสานงานทรัพยากร (Resources) และศูนย์พักพิง (Shelters): สำหรับขอเสบียงและหาที่พักพิงปลอดภัย\n" .
+                      "4. ระบบเยียวยาจิตใจ (Mental Health): มีบทความสุขภาพจิตจากนักจิตวิทยาเพื่อดูแลสภาพจิตใจผู้ประสบภัย\n" .
+                      "5. แดชบอร์ด (Dashboard): แสดงการแจ้งเตือนภัยพิบัติฉุกเฉิน (Alerts) และสรุปสถานการณ์แบบเรียลไทม์";
+
+        $systemInstruction = "คุณคือ 'RescueMind AI' ผู้เชี่ยวชาญด้านภัยพิบัติ การเอาชีวิตรอด และเป็นผู้ช่วยอัจฉริยะประจำระบบ RescueMind อย่างเป็นทางการ\n\n" .
+                             "--- ข้อมูลระบบ RescueMind ---\n" .
+                             "$systemInfo\n\n" .
+                             "--- กฎในการตอบของคุณ ---\n" .
+                             "1. ตอบคำถามอย่างเป็นธรรมชาติ สุภาพ เห็นอกเห็นใจ และให้กำลังใจผู้ประสบภัย\n" .
+                             "2. ให้คำแนะนำที่กระชับ ปฏิบัติตามได้จริงเพื่อความปลอดภัยในชีวิต\n" .
+                             "3. แนะนำการใช้งานฟีเจอร์ของระบบ RescueMind ให้ตรงกับสิ่งที่ผู้ใช้ต้องการ (เช่น แนะนำให้อ่านบทความสุขภาพจิตหากผู้ใช้เครียด)\n" .
+                             "4. หากผู้ใช้กำลังตกอยู่ในอันตราย ให้บอกให้เขากดปุ่ม 'แจ้งเหตุฉุกเฉิน SOS' ในระบบทันที\n" .
+                             "5. หากผู้ใช้สอบถามเรื่องสภาพอากาศหรือพยากรณ์อากาศ ให้ตอบว่า 'คุณสามารถตรวจสอบข้อมูลสภาพอากาศและเรดาร์ฝนแบบเรียลไทม์ได้ที่หน้าแดชบอร์ด (Dashboard) ของระบบ RescueMind ค่ะ/ครับ' โดยไม่ต้องพยากรณ์อากาศเอง\n\n" .
                              "--- ข้อมูลบริบทปัจจุบัน ---\n" .
                              "[ข้อมูลผู้ใช้]\n$userContext\n\n" .
                              "[สถานการณ์ภัยพิบัติปัจจุบัน]\n$alertContext\n" .
                              "--------------------------\n" .
-                             "กรุณาใช้ข้อมูลบริบทด้านบน (ถ้ามี) ในการตอบคำถามผู้ใช้ให้ตรงจุดที่สุด";
+                             "กรุณาใช้ข้อมูลทั้งหมดนี้ในการวิเคราะห์และตอบคำถามผู้ใช้ให้เกิดประโยชน์สูงสุด";
 
-        $contents = [];
+        $messages = [];
+        
+        // Add System Instruction
+        $messages[] = [
+            'role' => 'system',
+            'content' => $systemInstruction
+        ];
         
         // Add history
         foreach ($history as $msg) {
-            $contents[] = [
-                'role' => $msg['role'] === 'user' ? 'user' : 'model',
-                'parts' => [['text' => $msg['content']]]
+            $messages[] = [
+                'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
+                'content' => $msg['content']
             ];
         }
         
         // Add current message
-        $contents[] = [
+        $messages[] = [
             'role' => 'user',
-            'parts' => [['text' => $userMessage]]
+            'content' => $userMessage
         ];
 
         $payload = [
-            'systemInstruction' => [
-                'parts' => [
-                    ['text' => $systemInstruction]
-                ]
-            ],
-            'contents' => $contents,
-            'generationConfig' => [
-                'temperature' => 0.7,
-                'maxOutputTokens' => 1024,
-            ]
+            'model' => 'llama-3.3-70b-versatile',
+            'messages' => $messages,
+            'temperature' => 0.7
         ];
 
         try {
             $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json'
-            ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey, $payload);
+            ])->post('https://api.groq.com/openai/v1/chat/completions', $payload);
 
             if ($response->successful()) {
                 $data = $response->json();
-                $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'ขออภัย ฉันไม่สามารถประมวลผลคำตอบได้ในขณะนี้';
+                $reply = $data['choices'][0]['message']['content'] ?? 'ขออภัย เกิดข้อผิดพลาดในการประมวลผลคำตอบ';
                 
                 return response()->json([
                     'success' => true,
@@ -104,16 +119,20 @@ class AiCompanionController extends Controller
                     ]);
                 }
 
+                $errorMessage = 'Failed to connect to AI provider.';
+                if (isset($err['error']['message'])) {
+                    $errorMessage = 'Google API Error: ' . $err['error']['message'];
+                }
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to connect to AI provider.',
+                    'message' => $errorMessage,
                     'error' => $err
                 ], 500);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while contacting the AI provider.'
+                'message' => 'System Error: ' . $e->getMessage()
             ], 500);
         }
     }

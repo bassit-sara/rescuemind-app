@@ -2,12 +2,12 @@
     
     {{-- Chat Bubble Button --}}
     <button @click="toggleChat" 
-            class="relative flex items-center justify-center w-16 h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:outline-none">
-        <span class="text-3xl" x-show="!isOpen">🤖</span>
-        <span class="text-3xl" x-show="isOpen">⬇️</span>
-        <span class="absolute top-0 right-0 flex w-4 h-4">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full w-4 h-4 bg-blue-500 border-2 border-white"></span>
+            class="relative flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-tr from-blue-600 to-indigo-500 hover:from-blue-700 hover:to-indigo-600 text-white rounded-full shadow-[0_10px_25px_-5px_rgba(59,130,246,0.5)] transition-all duration-300 transform hover:scale-110 focus:outline-none ring-4 ring-blue-500/30 hover:ring-blue-500/50">
+        <span x-show="!isOpen" x-transition.opacity class="flex items-center justify-center"><x-heroicon-o-cpu-chip class="w-7 h-7 md:w-8 md:h-8" /></span>
+        <span x-show="isOpen" x-transition.opacity class="flex items-center justify-center"><x-heroicon-o-chevron-down class="w-7 h-7 md:w-8 md:h-8" /></span>
+        <span class="absolute top-0 right-0 flex w-3.5 h-3.5 md:w-4 md:h-4">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-300 opacity-75"></span>
+            <span class="relative inline-flex rounded-full w-3.5 h-3.5 md:w-4 md:h-4 bg-blue-500 border-2 border-white"></span>
         </span>
     </button>
 
@@ -24,7 +24,7 @@
         {{-- Header --}}
         <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl">🤖</div>
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
                 <div>
                     <h3 class="font-bold text-sm">RescueMind AI</h3>
                     <p class="text-xs text-blue-100">ผู้เชี่ยวชาญด้านภัยพิบัติ 24 ชม.</p>
@@ -40,9 +40,9 @@
             
             {{-- Welcome Message --}}
             <div class="flex items-end gap-2">
-                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm flex-shrink-0">🤖</div>
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm flex-shrink-0"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
                 <div class="bg-white p-3 rounded-2xl rounded-bl-none shadow-sm border border-gray-100 text-sm text-gray-700 max-w-[80%]">
-                    สวัสดีครับ ผมคือ RescueMind AI 🚨<br>
+                    สวัสดีครับ ผมคือ RescueMind AI <x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /><br>
                     มีเหตุฉุกเฉิน หรือต้องการคำแนะนำเรื่องการรับมือภัยพิบัติอะไรไหมครับ?
                 </div>
             </div>
@@ -50,7 +50,7 @@
             {{-- Chat Loop --}}
             <template x-for="(msg, index) in messages" :key="index">
                 <div class="flex items-end gap-2" :class="msg.role === 'user' ? 'flex-row-reverse' : ''">
-                    <div x-show="msg.role !== 'user'" class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm flex-shrink-0">🤖</div>
+                    <div x-show="msg.role !== 'user'" class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm flex-shrink-0"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
                     <div class="p-3 rounded-2xl shadow-sm border text-sm max-w-[80%] whitespace-pre-wrap break-words"
                          :class="msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none border-blue-700' : 'bg-white text-gray-700 rounded-bl-none border-gray-100'"
                          x-html="formatMessage(msg.content)">
@@ -60,7 +60,7 @@
 
             {{-- Typing Indicator --}}
             <div x-show="isTyping" class="flex items-end gap-2">
-                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm flex-shrink-0">🤖</div>
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm flex-shrink-0"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
                 <div class="bg-white p-4 rounded-2xl rounded-bl-none shadow-sm border border-gray-100 flex gap-1 items-center">
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>

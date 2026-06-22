@@ -58,6 +58,10 @@ class SuperAdminDashboardController extends Controller
             ->whereNotNull('latitude')->whereNotNull('longitude')
             ->latest()->take(100)->get();
 
+        $criticalRiskAreas = \App\Models\RiskArea::whereIn('risk_level', ['critical', 'warning'])
+            ->orderByDesc('risk_score')
+            ->take(5)->get();
+
         if (request()->ajax()) {
             return response()->json([
                 'activeSosRequests' => $activeSosRequests,
@@ -65,7 +69,7 @@ class SuperAdminDashboardController extends Controller
             ]);
         }
 
-        return view('super-admin.dashboard', compact('kpi', 'sosByProvince', 'sosByStatus', 'usersByRole', 'activeSosRequests'));
+        return view('super-admin.dashboard', compact('kpi', 'sosByProvince', 'sosByStatus', 'usersByRole', 'activeSosRequests', 'criticalRiskAreas'));
     }
 
     public function analytics()
@@ -84,8 +88,10 @@ class SuperAdminDashboardController extends Controller
         $sosRequests = SosRequest::with('user')
             ->whereNotNull('latitude')->whereNotNull('longitude')
             ->latest()->take(200)->get();
+            
+        $riskAreas = \App\Models\RiskArea::all();
 
-        return view('super-admin.analytics', compact('dailySos', 'mentalBySeverity', 'sosRequests'));
+        return view('super-admin.analytics', compact('dailySos', 'mentalBySeverity', 'sosRequests', 'riskAreas'));
     }
 
     public function users()
@@ -97,9 +103,19 @@ class SuperAdminDashboardController extends Controller
 
     public function updateRole(Request $request, User $user)
     {
-        $request->validate(['role' => 'required|exists:roles,name']);
+        $request->validate([
+            'role' => 'required|exists:roles,name',
+            'province' => 'nullable|string|max:100',
+        ]);
         $user->syncRoles([$request->role]);
-        return back()->with('success', "อัปเดต role ของ {$user->name} สำเร็จ");
+        $user->update(['province' => $request->province ? 'จังหวัด' . str_replace('จังหวัด', '', $request->province) : null]);
+        return back()->with('success', "อัปเดตข้อมูลของ {$user->name} สำเร็จ");
+    }
+
+    public function systemLogs()
+    {
+        $logs = \App\Models\SystemLog::with('user')->latest()->paginate(50);
+        return view('super-admin.system-logs', compact('logs'));
     }
 
     public function shelterMonitoring()

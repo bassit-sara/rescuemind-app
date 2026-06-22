@@ -1,6 +1,8 @@
-@extends(auth()->check() && auth()->user()->hasAnyRole(['super_admin', 'admin', 'officer', 'mental_officer']) ? 'layouts.admin' : 'layouts.app')
+@extends(auth()->check() && auth()->user()->hasAnyRole(['super_admin', 'admin', 'officer', 'mental_officer', 'volunteer']) ? 'layouts.admin' : 'layouts.app')
 @section('title', 'แจ้งเตือน: '.$alert->title)
-@section('page-title', '🚨 รายละเอียดการแจ้งเตือน')
+@section('page-title')
+    <x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /> รายละเอียดการแจ้งเตือน
+@endsection
 @section('content')
 <div class="max-w-2xl mx-auto">
     <div class="rounded-3xl overflow-hidden shadow-sm border
@@ -10,14 +12,14 @@
         <div class="p-8
             {{ $alert->level == 3 ? 'bg-gradient-to-br from-red-500 to-red-700' : ($alert->level == 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' : 'bg-gradient-to-br from-yellow-500 to-yellow-600') }}
             text-white">
-            <div class="text-5xl mb-4">{{ $alert->level == 3 ? '🔴' : ($alert->level == 2 ? '🟠' : '🟡') }}</div>
+            <div class="text-5xl mb-4">{!! $alert->level == 3 ? '<span class="inline-block w-3 h-3 rounded-full bg-red-500 mr-1"></span>' : ($alert->level == 2 ? '<span class="inline-block w-3 h-3 rounded-full bg-orange-500 mr-1"></span>' : '<span class="inline-block w-3 h-3 rounded-full bg-yellow-500 mr-1"></span>') !!}</div>
             <div class="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">
                 ระดับ {{ $alert->level }} • {{ $alert->level_label }} • {{ $alert->disaster_label }}
             </div>
             <h1 class="text-2xl font-black mb-2">{{ $alert->title }}</h1>
             <div class="flex items-center gap-4 text-sm opacity-90">
-                <span>📍 {{ $alert->province ?? 'ทั่วประเทศ' }}</span>
-                <span>🕐 {{ $alert->issued_at?->format('d/m/Y H:i') }}</span>
+                <span><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> {{ $alert->province ?? 'ทั่วประเทศ' }}</span>
+                <span><x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" /> {{ $alert->issued_at?->format('d/m/Y H:i') }}</span>
             </div>
         </div>
 
@@ -30,32 +32,32 @@
 
             @if($alert->instructions)
             <div class="p-5 bg-blue-50 rounded-2xl mb-6">
-                <h3 class="font-bold text-blue-800 mb-3">📋 คำแนะนำและวิธีปฏิบัติ</h3>
+                <h3 class="font-bold text-blue-800 mb-3"><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /> คำแนะนำและวิธีปฏิบัติ</h3>
                 <div class="text-blue-700 text-sm leading-relaxed whitespace-pre-wrap">{{ $alert->instructions }}</div>
             </div>
             @endif
 
             @if($alert->affected_areas)
             <div class="p-5 bg-orange-50 rounded-2xl mb-6">
-                <h3 class="font-bold text-orange-800 mb-3">⚠️ พื้นที่ที่ได้รับผลกระทบ</h3>
+                <h3 class="font-bold text-orange-800 mb-3"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> พื้นที่ที่ได้รับผลกระทบ</h3>
                 <p class="text-orange-700 text-sm">{{ $alert->affected_areas }}</p>
             </div>
             @endif
 
             {{-- Quick Actions --}}
             <div class="grid grid-cols-2 gap-3">
-                @if(auth()->check() && auth()->user()->hasAnyRole(['super_admin', 'admin', 'officer']))
+                @if(auth()->check() && auth()->user()->hasAnyRole(['super_admin', 'admin', 'officer', 'volunteer']))
                     <a href="{{ route('officer.sos.index', ['province' => $alert->province]) }}" class="py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-center transition-colors">
-                        🚨 ลงพื้นที่ช่วยเหลือ
+                        <x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /> ลงพื้นที่ช่วยเหลือ
                     </a>
                 @else
                     <a href="{{ route('sos.create') }}" class="py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-center transition-colors">
-                        🆘 ขอความช่วยเหลือ
+                        <x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> ขอความช่วยเหลือ
                     </a>
                 @endif
                 
                 <a href="{{ route('relief-points.index') }}" class="py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-center transition-colors">
-                    🏕️ จุดช่วยเหลือ
+                    <x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /> จุดช่วยเหลือ
                 </a>
             </div>
 

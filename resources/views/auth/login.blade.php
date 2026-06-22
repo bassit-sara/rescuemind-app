@@ -95,6 +95,8 @@
             animation-delay: 2s;
         }
     </style>
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body class="antialiased bg-gray-50 text-gray-900 min-h-screen flex selection:bg-red-500 selection:text-white">
@@ -169,7 +171,7 @@
             </div>
 
             <div class="mb-10 lg:mb-8 text-center lg:text-left">
-                <h2 class="text-3xl font-black text-gray-900 mb-2 tracking-tight">ยินดีต้อนรับ 👋</h2>
+                <h2 class="text-3xl font-black text-gray-900 mb-2 tracking-tight">ยินดีต้อนรับ <x-heroicon-o-hand-raised class="w-5 h-5 inline-block mr-1 -mt-1" /></h2>
                 <p class="text-gray-500 font-medium text-sm sm:text-base">เข้าสู่ระบบเพื่อดำเนินการต่อ</p>
             </div>
 
@@ -178,8 +180,8 @@
                 class="mb-6 bg-green-50 text-green-700 p-3 rounded-xl text-sm font-medium border border-green-100"
                 :status="session('status')" />
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-6"
-                onsubmit="return confirm('การเข้าสู่ระบบถือว่าคุณรับทราบและยอมรับ นโยบายความเป็นส่วนตัว (Privacy Policy) ของเรา\n\nคุณต้องการดำเนินการต่อหรือไม่?');">
+            <form id="loginForm" method="POST" action="{{ route('login') }}" class="space-y-6"
+                onsubmit="event.preventDefault(); confirmLogin();">
                 @csrf
 
                 <!-- Email Address -->
@@ -198,11 +200,15 @@
                 <!-- Password -->
                 <div class="relative input-floating">
                     <input id="password" type="password" name="password" required autocomplete="current-password"
-                        class="block w-full px-5 py-4 bg-white/80 border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all peer placeholder-transparent shadow-sm"
+                        class="block w-full px-5 py-4 pr-12 bg-white/80 border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all peer placeholder-transparent shadow-sm"
                         placeholder="Password" />
                     <label for="password"
                         class="absolute left-5 top-4 text-gray-500 text-sm transition-all peer-focus:-translate-y-6 peer-focus:text-xs peer-focus:text-red-600 font-medium pointer-events-none origin-left">รหัสผ่าน
                         (Password)</label>
+                    <button type="button" onclick="const p = document.getElementById('password'); const e1 = document.getElementById('eye-icon-1'); const e2 = document.getElementById('eye-icon-2'); if(p.type === 'password') { p.type = 'text'; e1.classList.add('hidden'); e2.classList.remove('hidden'); } else { p.type = 'password'; e1.classList.remove('hidden'); e2.classList.add('hidden'); }" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-full hover:bg-gray-100 transition-colors">
+                        <svg id="eye-icon-1" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        <svg id="eye-icon-2" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                    </button>
                     <x-input-error :messages="$errors->get('password')"
                         class="mt-2 text-xs text-red-600 font-medium ml-1" />
                 </div>
@@ -232,6 +238,16 @@
                         </a>
                     @endif
                 </div>
+
+                <!-- Cloudflare Turnstile Widget -->
+                @if(config('services.turnstile.site_key'))
+                <div class="flex justify-center my-2">
+                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}"></div>
+                </div>
+                @error('cf-turnstile-response')
+                    <div class="text-center text-xs text-red-600 font-medium">{{ $message }}</div>
+                @enderror
+                @endif
 
                 <div class="pt-4">
                     <button type="submit"
@@ -272,6 +288,30 @@
         </div>
     </div>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmLogin() {
+            Swal.fire({
+                title: 'นโยบายความเป็นส่วนตัว',
+                html: 'การเข้าสู่ระบบถือว่าคุณรับทราบและยอมรับเงื่อนไขของเรา<br><br><a href="{{ route("privacy.policy") }}" target="_blank" class="inline-block mt-2 px-4 py-2 bg-red-50 text-red-600 font-bold rounded-lg hover:bg-red-100 transition-colors text-sm"><svg class="w-4 h-4 inline-block mr-1 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> อ่าน นโยบายความเป็นส่วนตัว (Privacy Policy)</a>',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // red-500
+                cancelButtonColor: '#9ca3af', // gray-400
+                confirmButtonText: 'ยอมรับและเข้าสู่ระบบ',
+                cancelButtonText: 'ยกเลิก',
+                customClass: {
+                    popup: 'rounded-3xl',
+                    confirmButton: 'rounded-xl font-bold px-6 py-2.5',
+                    cancelButton: 'rounded-xl font-bold px-6 py-2.5'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('loginForm').submit();
+                }
+            });
+        }
+    </script>
 </body>
-
 </html>

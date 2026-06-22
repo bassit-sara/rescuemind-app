@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'เฝ้าระวังศูนย์พักพิงและโรงพยาบาล')
-@section('page-title', '🏕️ Shelter & Hospital Capacity Monitoring')
+@section('page-title')
+    <x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /> Shelter & Hospital Capacity Monitoring
+@endsection
 @section('content')
 
 <div class="max-w-6xl mx-auto space-y-6">
@@ -11,15 +13,20 @@
                 ติดตามจำนวนผู้ลี้ภัย อัตราครองเตียง และจุดอพยพทั่วทุกจังหวัดแบบเรียลไทม์
             </p>
         </div>
-        <a href="{{ route('super-admin.dashboard') }}" class="px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
-            🌐 กลับแดชบอร์ดหลัก
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.relief-points.create') }}" class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm flex items-center gap-2">
+                <x-heroicon-o-plus class="w-5 h-5 inline-block shrink-0" /> เพิ่มจุดช่วยเหลือ
+            </a>
+            <a href="{{ route('super-admin.dashboard') }}" class="px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl text-sm transition-colors shadow-sm flex items-center gap-2">
+                <x-heroicon-o-globe-alt class="w-5 h-5 inline-block shrink-0" /> กลับแดชบอร์ดหลัก
+            </a>
+        </div>
     </div>
 
     {{-- Shelters --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-teal-50">
-            <h2 class="font-bold text-gray-800 flex items-center gap-2">🏠 ศูนย์พักพิงผู้ประสบภัย (Shelters)</h2>
+            <h2 class="font-bold text-gray-800 flex items-center gap-2"><x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" /> ศูนย์พักพิงผู้ประสบภัย (Shelters)</h2>
         </div>
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             @forelse($shelters as $s)
@@ -29,7 +36,7 @@
                     $percent = min(100, round(($occ / $cap) * 100));
                     $color = $percent >= 90 ? 'bg-red-500' : ($percent >= 70 ? 'bg-orange-500' : 'bg-green-500');
                 @endphp
-                <div class="p-4 border border-gray-100 rounded-xl space-y-3">
+                <div class="p-4 border border-gray-100 rounded-xl space-y-3 relative group">
                     <div class="flex justify-between items-start">
                         <div>
                             <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">{{ $s->province }}</span>
@@ -44,6 +51,20 @@
                         <span>ติดต่อ: {{ $s->phone ?? '-' }}</span>
                         <span class="font-semibold text-gray-600">ใช้งานแล้ว {{ $percent }}%</span>
                     </div>
+                    
+                    {{-- Edit/Delete Actions --}}
+                    <div class="absolute top-4 right-4 hidden group-hover:flex items-center gap-2 bg-white/90 backdrop-blur px-2 py-1 rounded-lg border border-gray-100 shadow-sm transition-opacity">
+                        <a href="{{ route('admin.relief-points.edit', $s) }}" class="text-blue-600 hover:text-blue-800" title="แก้ไข">
+                            <x-heroicon-o-pencil-square class="w-5 h-5" />
+                        </a>
+                        <form action="{{ route('admin.relief-points.destroy', $s) }}" method="POST" class="inline" onsubmit="return confirm('ยืนยันการลบ?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-800" title="ลบ">
+                                <x-heroicon-o-trash class="w-5 h-5" />
+                            </button>
+                        </form>
+                    </div>
                 </div>
             @empty
                 <div class="col-span-full py-12 text-center text-gray-400 text-sm">
@@ -56,7 +77,7 @@
     {{-- Hospitals --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-red-50 to-pink-50">
-            <h2 class="font-bold text-gray-800 flex items-center gap-2">🏥 จุดบริการการแพทย์และสาธารณสุข (Hospitals)</h2>
+            <h2 class="font-bold text-gray-800 flex items-center gap-2"><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /> จุดบริการการแพทย์และสาธารณสุข (Hospitals)</h2>
         </div>
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             @forelse($hospitals as $h)
@@ -65,7 +86,7 @@
                     $icu = $h->has_icu ? 'มีบริการ ICU' : 'ไม่มี ICU';
                     $amb = $h->ambulance_count ?? 0;
                 @endphp
-                <div class="p-4 border border-gray-100 rounded-xl flex flex-col justify-between">
+                <div class="p-4 border border-gray-100 rounded-xl flex flex-col justify-between relative group">
                     <div class="flex justify-between items-start">
                         <div>
                             <span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">{{ $h->province }}</span>
@@ -76,9 +97,23 @@
                         </span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 mt-4 text-xs text-gray-500 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
-                        <div>🛌 ห้องฉุกเฉิน / ICU: <span class="font-bold text-gray-700">{{ $icu }}</span></div>
-                        <div>🚒 รถพยาบาลสแตนด์บาย: <span class="font-bold text-gray-700">{{ $amb }} คัน</span></div>
-                        <div class="col-span-2 pt-1">📞 ติดต่อด่วน: <span class="font-bold text-gray-700">{{ $h->phone ?? '-' }}</span></div>
+                        <div><x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" /> ห้องฉุกเฉิน / ICU: <span class="font-bold text-gray-700">{{ $icu }}</span></div>
+                        <div><x-heroicon-o-truck class="w-5 h-5 inline-block mr-1 -mt-1" /> รถพยาบาลสแตนด์บาย: <span class="font-bold text-gray-700">{{ $amb }} คัน</span></div>
+                        <div class="col-span-2 pt-1"><x-heroicon-o-phone class="w-5 h-5 inline-block mr-1 -mt-1" /> ติดต่อด่วน: <span class="font-bold text-gray-700">{{ $h->phone ?? '-' }}</span></div>
+                    </div>
+                    
+                    {{-- Edit/Delete Actions --}}
+                    <div class="absolute top-4 right-4 hidden group-hover:flex items-center gap-2 bg-white/90 backdrop-blur px-2 py-1 rounded-lg border border-gray-100 shadow-sm transition-opacity">
+                        <a href="{{ route('admin.relief-points.edit', $h) }}" class="text-blue-600 hover:text-blue-800" title="แก้ไข">
+                            <x-heroicon-o-pencil-square class="w-5 h-5" />
+                        </a>
+                        <form action="{{ route('admin.relief-points.destroy', $h) }}" method="POST" class="inline" onsubmit="return confirm('ยืนยันการลบ?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-800" title="ลบ">
+                                <x-heroicon-o-trash class="w-5 h-5" />
+                            </button>
+                        </form>
                     </div>
                 </div>
             @empty

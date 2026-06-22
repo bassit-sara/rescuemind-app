@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'Officer Dashboard')
-@section('page-title', '👮 Command Center')
+@section('page-title')
+    <x-heroicon-o-shield-exclamation class="w-5 h-5 inline-block mr-1 -mt-1" /> Command Center
+@endsection
 @section('content')
 
 {{-- Stats --}}
@@ -46,7 +48,7 @@
     {{-- Pending SOS --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 class="font-bold text-gray-800">🆘 SOS รอดำเนินการ</h2>
+            <h2 class="font-bold text-gray-800"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> SOS รอดำเนินการ</h2>
             <a href="{{ route('officer.sos.index') }}" class="text-sm text-red-600 hover:underline">ดูทั้งหมด →</a>
         </div>
         <div class="divide-y divide-gray-50">
@@ -64,8 +66,8 @@
                         <div class="text-sm font-medium text-gray-800 truncate">{{ $sos->province }} • {{ $sos->num_people }} คน</div>
                         @if($sos->has_bedridden || $sos->has_pregnant)
                         <div class="flex gap-1 mt-1">
-                            @if($sos->has_bedridden) <span class="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">🛏️ติดเตียง</span> @endif
-                            @if($sos->has_pregnant) <span class="text-xs bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded">🤰ตั้งครรภ์</span> @endif
+                            @if($sos->has_bedridden) <span class="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded"><x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" />️ติดเตียง</span> @endif
+                            @if($sos->has_pregnant) <span class="text-xs bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded"><x-heroicon-o-user-plus class="w-5 h-5 inline-block mr-1 -mt-1" />ตั้งครรภ์</span> @endif
                         </div>
                         @endif
                     </div>
@@ -77,7 +79,7 @@
             </div>
             @empty
             <div class="px-5 py-8 text-center text-gray-400">
-                <div class="text-3xl mb-2">✅</div>
+                <div class="text-3xl mb-2"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm">ไม่มี SOS รอดำเนินการ</div>
             </div>
             @endforelse
@@ -87,7 +89,7 @@
     {{-- My Active SOS --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div class="px-5 py-4 border-b border-gray-100">
-            <h2 class="font-bold text-gray-800">📋 ภารกิจของฉัน</h2>
+            <h2 class="font-bold text-gray-800"><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /> ภารกิจของฉัน</h2>
         </div>
         <div class="divide-y divide-gray-50">
             @forelse($myActiveSos as $sos)
@@ -100,7 +102,7 @@
                 <div class="flex gap-2">
                     @if($sos->latitude)
                     <a href="https://www.google.com/maps?q={{ $sos->latitude }},{{ $sos->longitude }}" target="_blank"
-                       class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700">🗺️ นำทาง</a>
+                       class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700"><x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ นำทาง</a>
                     @endif
                     <form action="{{ route('officer.sos.status', $sos) }}" method="POST" class="flex gap-1">
                         @csrf @method('PATCH')
@@ -126,7 +128,7 @@
 @if($recentReports->count() > 0)
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mt-6">
     <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-        <h2 class="font-bold text-gray-800">⚠️ รายงานภัยล่าสุด</h2>
+        <h2 class="font-bold text-gray-800"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> รายงานภัยล่าสุด</h2>
         <a href="{{ route('officer.hazard.index') }}" class="text-sm text-orange-600 hover:underline">ดูทั้งหมด →</a>
     </div>
     <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -134,7 +136,7 @@
         <div class="p-3 bg-orange-50 rounded-xl">
             <div class="flex items-center gap-2 mb-1">
                 <span class="text-sm font-medium">{{ $r->type_label }}</span>
-                @if($r->verified) <span class="text-xs text-green-600">✅ ยืนยันแล้ว</span> @endif
+                @if($r->verified) <span class="text-xs text-green-600"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ยืนยันแล้ว</span> @endif
             </div>
             <div class="text-xs text-gray-500">{{ $r->province }} • {{ $r->created_at->diffForHumans() }}</div>
             <div class="text-xs text-gray-600 mt-1 truncate">{{ $r->description }}</div>
@@ -182,7 +184,7 @@
                     <div class="p-1 min-w-[150px]">
                         <div class="mb-2">${badge}</div>
                         <div class="font-bold text-sm mb-1">${sos.name}</div>
-                        <div class="text-xs text-gray-600 mb-2">📞 ${sos.phone}</div>
+                        <div class="text-xs text-gray-600 mb-2"><x-heroicon-o-phone class="w-5 h-5 inline-block mr-1 -mt-1" /> ${sos.phone}</div>
                         <div class="text-xs font-bold text-red-600">${sos.priority.toUpperCase()} Priority</div>
                         <a href="/officer/sos/${sos.id}" class="block mt-3 text-center bg-gray-800 text-white text-xs py-1.5 rounded hover:bg-gray-700">ดูรายละเอียด</a>
                     </div>

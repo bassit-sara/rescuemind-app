@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'จัดการผู้ใช้')
-@section('page-title', '👥 จัดการผู้ใช้')
+@section('page-title')
+    <x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> จัดการผู้ใช้
+@endsection
 @section('content')
 
 {{-- Search --}}
@@ -51,6 +53,15 @@
                             <select name="role" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
                                 @foreach($roles as $role)
                                 <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
+                                @endforeach
+                            </select>
+                            @php
+                                $provincesList = ['กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา','ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก','นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน','บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา','พะเยา','พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','ภูเก็ต','มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยโสธร','ยะลา','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี','ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ','สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี','สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี','อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'];
+                            @endphp
+                            <select name="province" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-28">
+                                <option value="">ไม่มีจังหวัด</option>
+                                @foreach($provincesList as $p)
+                                <option value="{{ $p }}" {{ str_replace('จังหวัด', '', $user->province) == $p ? 'selected' : '' }}>{{ $p }}</option>
                                 @endforeach
                             </select>
                             <button type="submit" class="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700">บันทึก</button>

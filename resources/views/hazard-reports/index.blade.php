@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'รายงานภัยพิบัติ')
-@section('page-title', '⚠️ รายงานภัยในชุมชน')
+@section('page-title')
+    <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> รายงานภัยในชุมชน
+@endsection
 @section('content')
 
 <div class="max-w-6xl mx-auto space-y-6">
@@ -13,7 +15,7 @@
         </div>
         <div class="flex items-center gap-2 flex-shrink-0">
             <a href="{{ route('hazard-reports.create') }}" class="px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
-                ➕ รายงานจุดอันตราย
+                <x-heroicon-o-plus class="w-5 h-5 inline-block mr-1 -mt-1" /> รายงานจุดอันตราย
             </a>
         </div>
     </div>
@@ -34,7 +36,7 @@
                         <img src="{{ asset('storage/' . $r->photo) }}" alt="{{ $r->type_label }}" class="w-full h-48 object-cover">
                     @else
                         <div class="w-full h-48 bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center text-4xl">
-                            ⚠️
+                            <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" />
                         </div>
                     @endif
 
@@ -62,11 +64,11 @@
                     <div class="flex items-center gap-1.5">
                         @if($r->verified)
                             <span class="text-xs text-green-600 font-semibold flex items-center gap-0.5">
-                                ✅ ยืนยันแล้ว
+                                <x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ยืนยันแล้ว
                             </span>
                         @else
                             <span class="text-xs text-gray-400 font-medium">
-                                ⏳ รอติตตาม
+                                <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" /> รอติตตาม
                             </span>
                         @endif
                     </div>
@@ -77,7 +79,7 @@
                         </a>
                         @if($r->latitude && $r->longitude)
                             <a href="https://www.google.com/maps?q={{ $r->latitude }},{{ $r->longitude }}" target="_blank" class="px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold rounded-lg transition-colors">
-                                🗺️ นำทาง
+                                <x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ นำทาง
                             </a>
                         @endif
                     </div>
@@ -85,7 +87,7 @@
             </div>
         @empty
             <div class="col-span-full bg-white border border-gray-100 rounded-2xl p-12 text-center text-gray-400">
-                <div class="text-4xl mb-3">✅</div>
+                <div class="text-4xl mb-3"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm">ไม่มีรายงานภัยในชุมชน ณ ขณะนี้</div>
             </div>
         @endforelse

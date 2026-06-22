@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'รายละเอียดนัดหมาย')
-@section('page-title', '📅 รายละเอียดนัดหมาย')
+@section('page-title')
+    <x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /> รายละเอียดนัดหมาย
+@endsection
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
@@ -15,7 +17,7 @@
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-2xl flex items-center justify-center
                         {{ $appointment->type === 'video' ? 'bg-blue-100' : 'bg-purple-100' }}">
-                        <span class="text-3xl">{{ $appointment->type === 'video' ? '📹' : '🏥' }}</span>
+                        <span class="text-3xl">{{ $appointment->type === 'video' ? '<x-heroicon-o-video-camera class="w-5 h-5 inline-block mr-1 -mt-1" />' : '<x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" />' }}</span>
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-gray-800">
@@ -60,7 +62,7 @@
                 <div class="bg-gray-50 rounded-xl p-4">
                     <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">ประเภท</div>
                     <div class="font-semibold text-gray-800">
-                        {{ $appointment->type === 'video' ? '📹 ปรึกษาออนไลน์' : '🏥 พบตัว' }}
+                        {{ $appointment->type === 'video' ? '<x-heroicon-o-video-camera class="w-5 h-5 inline-block mr-1 -mt-1" /> ปรึกษาออนไลน์' : '<x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /> พบตัว' }}
                     </div>
                 </div>
                 <div class="bg-gray-50 rounded-xl p-4">
@@ -84,14 +86,14 @@
             <div class="pt-4 border-t border-gray-100">
                 <a href="{{ $appointment->meeting_link }}" target="_blank"
                    class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg text-sm font-medium">
-                    📹 เข้าร่วม Video Call
+                    <x-heroicon-o-video-camera class="w-5 h-5 inline-block mr-1 -mt-1" /> เข้าร่วม Video Call
                 </a>
             </div>
             @endif
 
             @if($appointment->status === 'pending')
             <div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-sm text-yellow-700">
-                ⏳ นัดหมายของคุณอยู่ในระหว่างรอการตอบรับจากผู้เชี่ยวชาญ เราจะแจ้งให้ทราบเมื่อมีการอัปเดต
+                <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" /> นัดหมายของคุณอยู่ในระหว่างรอการตอบรับจากผู้เชี่ยวชาญ เราจะแจ้งให้ทราบเมื่อมีการอัปเดต
             </div>
             @endif
         </div>

@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'จัดการการนัดหมาย')
-@section('page-title', '📅 ตารางการนัดหมายผู้เชี่ยวชาญ')
+@section('page-title')
+    <x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /> ตารางการนัดหมายผู้เชี่ยวชาญ
+@endsection
 @section('content')
 
 <div class="max-w-6xl mx-auto space-y-6">
@@ -41,11 +43,11 @@
                             <td class="px-6 py-4">
                                 @if($appt->type == 'video')
                                     <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 font-semibold">
-                                        💻 ออนไลน์ (VDO Call)
+                                        <x-heroicon-o-computer-desktop class="w-5 h-5 inline-block mr-1 -mt-1" /> ออนไลน์ (VDO Call)
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-teal-50 text-teal-700 rounded-full border border-teal-100 font-semibold">
-                                        🏥 พบหน้า (Onsite)
+                                        <x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /> พบหน้า (Onsite)
                                     </span>
                                 @endif
                             </td>
@@ -113,7 +115,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                                <div class="text-3xl mb-2">📅</div>
+                                <div class="text-3xl mb-2"><x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /></div>
                                 <div class="text-sm">ไม่มีคำขอนัดหมายในขณะนี้</div>
                             </td>
                         </tr>

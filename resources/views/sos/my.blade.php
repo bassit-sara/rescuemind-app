@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'SOS ของฉัน')
-@section('page-title', '📍 ติดตาม SOS ของฉัน')
+@section('page-title')
+    <x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ติดตาม SOS ของฉัน
+@endsection
 @section('content')
 <div class="flex items-center justify-between mb-6">
     <div></div>
@@ -24,10 +26,10 @@
 </a>
 @empty
 <div class="text-center py-16 text-gray-400">
-    <div class="text-5xl mb-4">🕊️</div>
+    <div class="text-5xl mb-4"><x-heroicon-o-paper-airplane class="w-5 h-5 inline-block mr-1 -mt-1" />️</div>
     <div class="text-lg font-medium">ยังไม่มีคำขอ SOS</div>
     <p class="text-sm mt-2">หากต้องการความช่วยเหลือ กดปุ่ม SOS ด้านล่าง</p>
-    <a href="{{ route('sos.create') }}" class="inline-block mt-4 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors">🆘 กด SOS</a>
+    <a href="{{ route('sos.create') }}" class="inline-block mt-4 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> กด SOS</a>
 </div>
 @endforelse
 {{ $sosRequests->links() }}

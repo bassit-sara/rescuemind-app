@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'ติดตาม SOS #' . $sosRequest->id)
-@section('page-title', 'ติดตามสถานะ SOS')
+@section('page-title')
+    ติดตามสถานะ SOS
+@endsection
 
 @section('content')
 <div class="max-w-2xl mx-auto">
@@ -51,9 +53,9 @@
     {{-- Feedback Loop Banner (ETA & Status) --}}
     @if(in_array($sosRequest->status, ['assigned', 'in_progress']))
     <div class="bg-blue-600 rounded-2xl p-5 mb-6 text-white shadow-lg relative overflow-hidden">
-        <div class="absolute -right-4 -top-4 opacity-10 text-9xl">🚁</div>
+        <div class="absolute -right-4 -top-4 opacity-10 text-9xl"><x-heroicon-o-paper-airplane class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
         <div class="relative z-10 flex items-start gap-4">
-            <div class="text-4xl animate-bounce">🚨</div>
+            <div class="text-4xl animate-bounce"><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></div>
             <div>
                 <h3 class="font-bold text-lg mb-1">เจ้าหน้าที่กำลังดำเนินการ!</h3>
                 <p class="text-blue-100 text-sm mb-3">
@@ -83,14 +85,15 @@
             <div class="text-xs text-gray-500 mb-2">ความต้องการเร่งด่วน</div>
             <div class="flex flex-wrap gap-2">
                 @foreach($sosRequest->urgent_needs as $need)
-                    @php
-                        $needLabels = [
-                            'food' => '🍱 อาหาร', 'water' => '💧 น้ำดื่ม', 'medicine' => '💊 ยารักษาโรค',
-                            'boat' => '🚤 เรืออพยพ', 'electricity' => '🔋 ไฟฟ้า/พาวเวอร์แบงก์', 'clothing' => '👕 เสื้อผ้า/ผ้าห่ม'
-                        ];
-                    @endphp
-                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full">
-                        {{ $needLabels[$need] ?? $need }}
+                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full flex items-center gap-1 inline-flex">
+                        @if($need == 'food') <x-heroicon-o-cube class="w-4 h-4" /> อาหาร
+                        @elseif($need == 'water') <x-heroicon-o-sparkles class="w-4 h-4" /> น้ำดื่ม
+                        @elseif($need == 'medicine') <x-heroicon-o-beaker class="w-4 h-4" /> ยารักษาโรค
+                        @elseif($need == 'boat') <x-heroicon-o-paper-airplane class="w-4 h-4" /> เรืออพยพ
+                        @elseif($need == 'electricity') <x-heroicon-o-battery-100 class="w-4 h-4" /> ไฟฟ้า/พาวแบงก์
+                        @elseif($need == 'clothing') <x-heroicon-o-shopping-bag class="w-4 h-4" /> เสื้อผ้า/ผ้าห่ม
+                        @else {{ $need }}
+                        @endif
                     </span>
                 @endforeach
             </div>
@@ -99,10 +102,10 @@
 
         @if($sosRequest->has_elderly || $sosRequest->has_children || $sosRequest->has_bedridden || $sosRequest->has_pregnant)
         <div class="mt-4 flex flex-wrap gap-2">
-            @if($sosRequest->has_elderly) <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">👴 ผู้สูงอายุ</span> @endif
-            @if($sosRequest->has_children) <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">👶 เด็กเล็ก</span> @endif
-            @if($sosRequest->has_bedridden) <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">🛏️ ผู้ป่วยติดเตียง</span> @endif
-            @if($sosRequest->has_pregnant) <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full">🤰 หญิงตั้งครรภ์</span> @endif
+            @if($sosRequest->has_elderly) <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full"><x-heroicon-o-user class="w-5 h-5 inline-block mr-1 -mt-1" /> ผู้สูงอายุ</span> @endif
+            @if($sosRequest->has_children) <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"><x-heroicon-o-face-smile class="w-5 h-5 inline-block mr-1 -mt-1" /> เด็กเล็ก</span> @endif
+            @if($sosRequest->has_bedridden) <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full"><x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" />️ ผู้ป่วยติดเตียง</span> @endif
+            @if($sosRequest->has_pregnant) <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full"><x-heroicon-o-user-plus class="w-5 h-5 inline-block mr-1 -mt-1" /> หญิงตั้งครรภ์</span> @endif
         </div>
         @endif
 
@@ -118,7 +121,7 @@
     @if($sosRequest->latitude && $sosRequest->longitude)
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold text-gray-800">📍 พิกัด</h2>
+            <h2 class="text-lg font-bold text-gray-800"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> พิกัด</h2>
             <a href="https://www.google.com/maps?q={{ $sosRequest->latitude }},{{ $sosRequest->longitude }}" target="_blank"
                class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
                 เปิด Google Maps →
@@ -140,7 +143,7 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     L.marker([{{ $sosRequest->latitude }}, {{ $sosRequest->longitude }}])
         .addTo(map)
-        .bindPopup('<b>🆘 จุด SOS #{{ $sosRequest->id }}</b>').openPopup();
+        .bindPopup(`<b><x-heroicon-o-bell class="w-5 h-5 inline-block mr-1 -mt-1" /> จุด SOS #{{ $sosRequest->id }}</b>`).openPopup();
 </script>
 @endif
 @endpush

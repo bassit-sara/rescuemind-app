@@ -61,7 +61,6 @@ class SuperAdminSeeder extends Seeder
         );
         $mentalOfficer->assignRole('mental_officer');
 
-        // Create a demo user
         $demoUser = User::firstOrCreate(
             ['email' => 'user@rescuemind.th'],
             [
@@ -73,5 +72,18 @@ class SuperAdminSeeder extends Seeder
             ]
         );
         $demoUser->assignRole('user');
+
+        // Create a sample volunteer
+        $volunteer = User::firstOrCreate(
+            ['email' => 'volunteer@rescuemind.th'],
+            [
+                'name'     => 'อาสาสมัครทดสอบ',
+                'password' => Hash::make('rescuemind@2024'),
+                'phone'    => '0800000006',
+                'province' => 'เชียงใหม่',
+                'is_active'=> true,
+            ]
+        );
+        $volunteer->assignRole('volunteer');
     }
 }

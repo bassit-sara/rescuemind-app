@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'รายละเอียดรายงานภัย')
-@section('page-title', '⚠️ รายละเอียดจุดอันตราย')
+@section('page-title')
+    <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> รายละเอียดจุดอันตราย
+@endsection
 @section('content')
 
 <div class="max-w-4xl mx-auto space-y-6">
@@ -15,7 +17,7 @@
                 @if($hazardReport->photo)
                     <img src="{{ asset('storage/' . $hazardReport->photo) }}" alt="{{ $hazardReport->type_label }}" class="w-full h-full object-cover">
                 @else
-                    <div class="text-7xl">⚠️</div>
+                    <div class="text-7xl"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></div>
                 @endif
                 <span class="absolute top-4 left-4 inline-block px-3 py-1.5 rounded-full border text-xs font-bold bg-white text-gray-800 border-gray-200">
                     {{ $hazardReport->type_label }}
@@ -31,11 +33,11 @@
                         </span>
                         @if($hazardReport->verified)
                             <span class="text-xs px-2.5 py-1 bg-green-50 text-green-700 rounded-full font-semibold border border-green-100">
-                                ✅ ยืนยันแล้ว
+                                <x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ยืนยันแล้ว
                             </span>
                         @else
                             <span class="text-xs px-2.5 py-1 bg-yellow-50 text-yellow-700 rounded-full font-medium border border-yellow-100">
-                                ⏳ รอติตตามตรวจสอบ
+                                <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" /> รอติตตามตรวจสอบ
                             </span>
                         @endif
                     </div>
@@ -69,13 +71,13 @@
     @if($hazardReport->latitude && $hazardReport->longitude)
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
             <h2 class="font-bold text-gray-800 flex items-center gap-2">
-                🗺️ ตำแหน่งพิกัดพื้นที่เสี่ยง
+                <x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ ตำแหน่งพิกัดพื้นที่เสี่ยง
             </h2>
             <div id="map" class="w-full h-80 rounded-xl overflow-hidden border border-gray-100"></div>
             <div class="flex gap-2">
                 <a href="https://www.google.com/maps?q={{ $hazardReport->latitude }},{{ $hazardReport->longitude }}" target="_blank"
                    class="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold text-center rounded-xl transition-colors text-sm shadow-sm">
-                    🗺️ นำทางผ่าน Google Maps
+                    <x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ นำทางผ่าน Google Maps
                 </a>
             </div>
         </div>

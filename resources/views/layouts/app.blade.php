@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#dc2626">
     <title>@yield('title', 'RescueMind') — ระบบบริหารจัดการภัยพิบัติ</title>
     <meta name="description" content="RescueMind — National Disaster Management & Mental Resilience Platform">
-
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -67,7 +67,7 @@
 @php $criticalAlerts = \App\Models\Alert::where('is_active',true)->where('level',3)->count(); @endphp
 @if($criticalAlerts > 0)
 <div class="bg-red-600 text-white text-center py-2 px-4 text-sm font-medium z-50 relative">
-    <span class="animate-pulse">⚠️</span>
+    <span class="animate-pulse"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span>
     มีการแจ้งเตือนระดับ "อพยพทันที" {{ $criticalAlerts }} จังหวัด
     <a href="{{ route('alerts.index') }}" class="underline ml-2 font-bold">ดูรายละเอียด →</a>
 </div>
@@ -104,7 +104,7 @@
                             หน้าหลัก <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </a>
                         <div x-show="open" x-transition class="absolute top-full left-0 mt-0 w-52 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50">
-                            <a href="{{ route('privacy.policy') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">🛡️ นโยบายความเป็นส่วนตัว</a>
+                            <a href="{{ route('privacy.policy') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"><x-heroicon-o-shield-check class="w-5 h-5 inline-block shrink-0" /> นโยบายความเป็นส่วนตัว</a>
                         </div>
                     </div>
                     {{-- MT1 --}}
@@ -114,9 +114,9 @@
                         </a>
                         <div x-show="open" x-transition class="absolute top-full left-0 mt-0 w-52 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50">
                             <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">ก่อนเกิดภัย</p>
-                            <a href="{{ route('alerts.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">🚨 การแจ้งเตือน</a>
-                            <a href="{{ route('relief-points.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">🏥 จุดช่วยเหลือ</a>
-                            <a href="{{ route('preparedness.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">📋 เตรียมพร้อม</a>
+                            <a href="{{ route('alerts.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /> การแจ้งเตือน</a>
+                            <a href="{{ route('relief-points.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /> จุดช่วยเหลือ</a>
+                            <a href="{{ route('preparedness.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /> เตรียมพร้อม</a>
                         </div>
                     </div>
 
@@ -127,13 +127,13 @@
                         </a>
                         <div x-show="open" x-transition class="absolute top-full left-0 mt-0 w-56 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50">
                             <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">ขอความช่วยเหลือ</p>
-                            <a href="{{ route('sos.create') }}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50">🆘 กด SOS ขอความช่วยเหลือ</a>
-                            @auth<a href="{{ route('sos.my') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">📍 ติดตาม SOS ของฉัน</a>@endauth
+                            <a href="{{ route('sos.create') }}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> กด SOS ขอความช่วยเหลือ</a>
+                            @auth<a href="{{ route('sos.my') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ติดตาม SOS ของฉัน</a>@endauth
                             <hr class="my-1 border-gray-100">
                             <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">รายงาน & แจ้งเหตุ</p>
-                            <a href="{{ route('missing-persons.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">🔍 แจ้งคนหาย</a>
-                            <a href="{{ route('hazard-reports.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">⚠️ รายงานภัย</a>
-                            @auth<a href="{{ route('family.status') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">👨‍👩‍👧‍👦 ตรวจสอบความปลอดภัย</a>@endauth
+                            <a href="{{ route('missing-persons.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"><x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /> แจ้งคนหาย</a>
+                            <a href="{{ route('hazard-reports.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> รายงานภัย</a>
+                            @auth<a href="{{ route('family.status') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"><x-heroicon-o-user-group class="w-5 h-5 inline-block shrink-0" /> ตรวจสอบความปลอดภัย</a>@endauth
                         </div>
                     </div>
 
@@ -142,53 +142,101 @@
                         <a href="{{ route('mt3') }}" class="flex items-center gap-1 text-sm font-medium {{ request()->routeIs('mt3','mental.*') ? 'text-red-600' : 'text-gray-600 hover:text-red-600' }} transition-colors whitespace-nowrap py-2">
                             MT3 หลังเกิดภัย <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </a>
-                        <div x-show="open" x-transition class="absolute top-full left-0 mt-0 w-56 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50">
+                        <div x-show="open" x-transition class="absolute top-full left-0 mt-0 w-72 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50">
+                            {{-- Section 1 --}}
+                            <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">ฟื้นฟูที่อยู่อาศัยและชุมชน</p>
+                            <a href="{{ route('mt3.home-recovery') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600"><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /> ขอความช่วยเหลือฟื้นฟูบ้าน</a>
+                            <a href="{{ route('mt3.community-needs') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600"><x-heroicon-o-megaphone class="w-5 h-5 inline-block shrink-0" /> ประเมินความต้องการชุมชน</a>
+                            <a href="{{ route('mt3.recovery-tracking') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"><x-heroicon-o-clipboard-document-check class="w-5 h-5 inline-block shrink-0" /> ติดตามการฟื้นฟู</a>
+                            <hr class="my-1 border-gray-100">
+                            
+                            {{-- Section 2 --}}
+                            <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">อาสาสมัครและการบริจาค</p>
+                            <a href="{{ route('mt3.volunteer') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600"><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> ระบบอาสาสมัครฟื้นฟู</a>
+                            <a href="{{ route('mt3.donation') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600"><x-heroicon-o-gift class="w-5 h-5 inline-block shrink-0" /> ศูนย์รับบริจาค</a>
+                            <a href="{{ route('mt3.ai-matching') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block shrink-0" /> AI Donation Matching</a>
+                            <hr class="my-1 border-gray-100">
+
+                            {{-- Section 3 --}}
+                            <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">ฟื้นฟูอาชีพและเศรษฐกิจ</p>
+                            <a href="{{ route('mt3.livelihood') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600"><x-heroicon-o-briefcase class="w-5 h-5 inline-block shrink-0" /> แจ้งความเสียหายและฟื้นฟูอาชีพ</a>
+                            <a href="{{ route('mt3.analytics') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900"><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> Recovery Analytics</a>
+                            <hr class="my-1 border-gray-100">
+
+                            {{-- Section 4 --}}
                             <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">สุขภาพจิต</p>
-                            <a href="{{ route('mental.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">🧠 ศูนย์สุขภาพจิต</a>
-                            <a href="{{ route('mental.assess.create','phq9') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">📊 ประเมิน PHQ-9</a>
-                            <a href="{{ route('mental.mood.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">😊 Mood Tracker</a>
-                            <hr class="my-1 border-gray-100">
-                            <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">บันทึก & นัดหมาย</p>
-                            <a href="{{ route('mental.journal.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">📔 บันทึกความรู้สึก</a>
-                            <a href="{{ route('mental.appointments.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">📅 นัดหมายผู้เชี่ยวชาญ</a>
-                            <hr class="my-1 border-gray-100">
-                            <a href="{{ route('mental.articles') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">📖 บทความสุขภาพจิต</a>
+                            <a href="{{ route('mental.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600"><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> ศูนย์สุขภาพจิต</a>
+                            <a href="{{ route('mental.journal.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600"><x-heroicon-o-book-open class="w-5 h-5 inline-block shrink-0" /> บันทึกความรู้สึก</a>
+                            <a href="{{ route('mental.appointments.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600"><x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /> นัดหมายผู้เชี่ยวชาญ</a>
+                            <a href="{{ route('mental.articles') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600"><x-heroicon-o-book-open class="w-5 h-5 inline-block shrink-0" /> บทความสุขภาพจิต</a>
+                            <a href="#" onclick="event.preventDefault(); document.querySelector('[x-data=\'aiCompanion()\'] button')?.click()" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600"><span class="w-5 h-5 flex items-center justify-center shrink-0 text-base"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block mr-1 -mt-1" /></span> AI Companion</a>
                         </div>
                     </div>
 
-                    <a href="{{ route('news.index') }}" class="text-sm font-medium {{ request()->routeIs('news.*') ? 'text-red-600' : 'text-gray-600 hover:text-red-600' }} transition-colors whitespace-nowrap">📰 ข่าวสาร</a>
+                    <a href="{{ route('news.index') }}" class="text-sm font-medium {{ request()->routeIs('news.*') ? 'text-red-600' : 'text-gray-600 hover:text-red-600' }} transition-colors whitespace-nowrap"><x-heroicon-o-newspaper class="w-5 h-5 inline-block shrink-0" /> ข่าวสาร</a>
                 </nav>
 
                 {{-- Right: Auth Buttons & Weather --}}
                 <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     {{-- Mini Weather --}}
                     <div class="flex items-center gap-1 sm:gap-1.5 px-2 py-1 bg-gray-50 border border-gray-200 rounded-full cursor-help group relative" title="กำลังระบุตำแหน่ง..." id="nav-weather-container">
-                        <span id="nav-weather-icon" class="text-sm">🌡️</span>
+                        <span id="nav-weather-icon" class="text-sm"><x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️</span>
                         <span class="text-xs font-bold text-gray-700">
                             <span id="nav-weather-temp">--</span>°
                         </span>
                         <div class="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 p-3 hidden group-hover:block z-[60]">
                             <div class="text-[10px] text-gray-500 mb-1" id="nav-weather-desc">กำลังโหลดข้อมูล...</div>
                             <div class="flex justify-between text-xs text-gray-700">
-                                <span id="nav-weather-wind">💨 --</span>
-                                <span id="nav-weather-humidity">💧 --</span>
+                                <span id="nav-weather-wind"><x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" /> --</span>
+                                <span id="nav-weather-humidity"><x-heroicon-o-sparkles class="w-5 h-5 inline-block mr-1 -mt-1" /> --</span>
                             </div>
                         </div>
                     </div>
 
                     @auth
+                    {{-- Notification Bell --}}
+                    <div class="relative" x-data="{ open: false, hasUnread: true }" x-init="hasUnread = (localStorage.getItem('mood_notification_read') !== 'true')" @click.outside="open=false">
+                        <button @click="open=!open" class="relative p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
+                            <x-heroicon-o-bell class="w-6 h-6" />
+                            <span x-show="hasUnread" x-cloak class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border-2 border-white"></span>
+                            </span>
+                        </button>
+                        <div x-show="open" x-transition class="absolute right-0 top-full mt-1 w-72 sm:w-80 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 overflow-hidden" style="display: none;">
+                            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                                <h3 class="font-bold text-gray-800">การแจ้งเตือน</h3>
+                                <button type="button" @click="hasUnread = false; localStorage.setItem('mood_notification_read', 'true')" class="text-xs text-blue-600 hover:text-blue-700 font-medium">อ่านทั้งหมด</button>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                <a href="{{ route('mental.mood.index') }}" @click="hasUnread = false; localStorage.setItem('mood_notification_read', 'true')" class="flex items-start gap-3 p-4 hover:bg-blue-50/50 transition-colors border-b border-gray-50 relative group" :class="hasUnread ? 'bg-blue-50/30' : ''">
+                                    <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                        <x-heroicon-o-face-smile class="w-6 h-6 inline-block" />
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-bold text-gray-800 group-hover:text-purple-700 transition-colors">ถึงเวลาบันทึกอารมณ์แล้ว!</h4>
+                                        <p class="text-[13px] text-gray-500 mt-0.5 leading-snug">แวะมาอัปเดตความรู้สึกของคุณในวันนี้ที่ Mood Tracker เพื่อสุขภาพใจที่ดี 💙</p>
+                                        <span class="text-[10px] font-medium text-gray-400 mt-1.5 block">เมื่อสักครู่</span>
+                                    </div>
+                                    <span x-show="hasUnread" class="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- ฉันปลอดภัย --}}
                     <form action="{{ route('family.safe') }}" method="POST" class="hidden sm:block">
                         @csrf
                         <button type="submit" class="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white text-xs font-semibold rounded-full hover:bg-green-600 transition-colors">
-                            ✅ ฉันปลอดภัย
+                            <x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ฉันปลอดภัย
                         </button>
                     </form>
+
                     {{-- User Dropdown --}}
                     <div class="relative" x-data="{ open: false }" @click.outside="open=false">
                         <button @click="open=!open" class="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-gray-100 transition-colors">
                             <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+                                {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
                             </div>
                             <span class="hidden sm:block text-sm text-gray-700 max-w-24 truncate">{{ auth()->user()->name }}</span>
                             <svg class="w-3.5 h-3.5 text-gray-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -198,20 +246,22 @@
                                 <div class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</div>
                                 <div class="text-xs font-semibold text-red-600">{{ auth()->user()->getRoleNames()->first() ?? 'user' }}</div>
                             </div>
-                            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">🎛️ แดชบอร์ด</a>
-                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">👤 โปรไฟล์</a>
+                            @if(auth()->user()->hasAnyRole(['super_admin', 'admin', 'officer', 'mental_officer', 'volunteer']))
+                            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><x-heroicon-o-adjustments-horizontal class="w-5 h-5 inline-block shrink-0" /> แดชบอร์ด</a>
+                            @endif
+                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><x-heroicon-o-user class="w-5 h-5 inline-block shrink-0" /> โปรไฟล์</a>
                             @auth
                             <form action="{{ route('family.safe') }}" method="POST" class="sm:hidden">
                                 @csrf
-                                <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-green-600 hover:bg-green-50">✅ ฉันปลอดภัย</button>
+                                <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-green-600 hover:bg-green-50"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ฉันปลอดภัย</button>
                             </form>
                             @endauth
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</button>
+                                <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"><x-heroicon-o-arrow-right-on-rectangle class="w-5 h-5 inline-block shrink-0" /> ออกจากระบบ</button>
                             </form>
                         </div>
-                    </div>
+
                     {{-- Hamburger for mobile → opens right sidebar --}}
                     @if($showBottomNav)
                     <button onclick="openRSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600" title="เมนูทั้งหมด">
@@ -230,13 +280,13 @@
         <main class="flex-1 p-3 sm:p-4 lg:p-6 {{ $showBottomNav ? 'has-bottom-nav' : '' }}">
             @if(session('success'))
             <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3" x-data x-init="setTimeout(()=>$el.remove(),5000)">
-                <span class="text-xl">✅</span>
+                <span class="text-xl"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></span>
                 <p class="text-green-700 text-sm font-medium">{{ session('success') }}</p>
             </div>
             @endif
             @if(session('error'))
             <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
-                <span class="text-xl">❌</span>
+                <span class="text-xl"><x-heroicon-o-x-circle class="w-5 h-5 inline-block shrink-0" /></span>
                 <p class="text-red-700 text-sm font-medium">{{ session('error') }}</p>
             </div>
             @endif
@@ -253,10 +303,10 @@
 @if($showBottomNav)
 
 {{-- RIGHT SIDEBAR OVERLAY --}}
-<div id="rsidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden lg:hidden" onclick="closeRSidebar()"></div>
+<div id="rsidebar-overlay" class="fixed inset-0 bg-black/50 z-[9998] hidden lg:hidden" onclick="closeRSidebar()"></div>
 
 {{-- RIGHT SIDEBAR DRAWER --}}
-<aside id="rsidebar" class="fixed top-0 right-0 bottom-0 z-50 w-72 bg-white shadow-2xl flex flex-col lg:hidden"
+<aside id="rsidebar" class="fixed top-0 right-0 bottom-0 z-[9999] w-72 bg-white shadow-2xl flex flex-col lg:hidden"
        style="transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);">
 
     {{-- Header --}}
@@ -266,7 +316,7 @@
                 <img src="{{ asset('images/logo.png') }}" alt="RescueMind" class="w-full h-full object-cover rounded-full">
             </div>
             <div>
-                <div class="text-white font-bold text-sm">RescueMind</div>
+                <div class="text-white font-bold text-base">RescueMind</div>
                 @auth<div class="text-red-100 text-xs truncate max-w-36">{{ auth()->user()->name }}</div>@endauth
             </div>
         </div>
@@ -280,115 +330,174 @@
         <div class="p-3 space-y-0.5 pb-24">
 
             {{-- MT1 --}}
-            <div class="pt-2 pb-1 px-2">
-                <span class="text-xs font-black text-blue-600 uppercase tracking-wider">📌 MT1 ก่อนเกิดภัย</span>
-            </div>
-            <a href="{{ route('alerts.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('alerts.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">🚨</span><span>การแจ้งเตือน</span>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="pt-3 pb-2 px-3 flex justify-between items-center cursor-pointer">
+                    <span class="text-sm font-black text-blue-600 uppercase tracking-wider"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> MT1 ก่อนเกิดภัย</span>
+                    <svg class="w-4 h-4 text-blue-600 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5">
+            <a href="{{ route('alerts.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('alerts.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></span><span>การแจ้งเตือน</span>
             </a>
-            <a href="{{ route('relief-points.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('relief-points.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">🏥</span><span>จุดช่วยเหลือ</span>
+            <a href="{{ route('relief-points.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('relief-points.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></span><span>จุดช่วยเหลือ</span>
             </a>
-            <a href="{{ route('preparedness.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('preparedness.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">📋</span><span>เตรียมพร้อม (Checklist)</span>
+            <a href="{{ route('preparedness.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('preparedness.*') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /></span><span>เตรียมพร้อม (Checklist)</span>
             </a>
 
+                </div>
+            </div>
             <div class="my-2 border-t border-gray-100"></div>
 
             {{-- MT2 --}}
-            <div class="pt-1 pb-1 px-2">
-                <span class="text-xs font-black text-red-600 uppercase tracking-wider">🆘 MT2 ระหว่างเกิดภัย</span>
-            </div>
-            <a href="{{ route('sos.create') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm">
-                <span class="text-base w-6 text-center">🆘</span><span>กด SOS ขอความช่วยเหลือ</span>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="pt-3 pb-2 px-3 flex justify-between items-center cursor-pointer">
+                    <span class="text-sm font-black text-red-600 uppercase tracking-wider"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> MT2 ระหว่างเกิดภัย</span>
+                    <svg class="w-4 h-4 text-red-600 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5">
+            <a href="{{ route('sos.create') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base font-bold bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm">
+                <span class="text-base w-6 text-center"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /></span><span>กด SOS ขอความช่วยเหลือ</span>
             </a>
             @auth
-            <a href="{{ route('sos.my') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('sos.my','sos.show') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">📍</span><span>ติดตาม SOS ของฉัน</span>
+            <a href="{{ route('sos.my') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('sos.my','sos.show') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /></span><span>ติดตาม SOS ของฉัน</span>
             </a>
             @endauth
-            <a href="{{ route('missing-persons.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('missing-persons.*') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">🔍</span><span>แจ้งคนหาย</span>
+            <a href="{{ route('missing-persons.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('missing-persons.*') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /></span><span>แจ้งคนหาย</span>
             </a>
-            <a href="{{ route('hazard-reports.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('hazard-reports.*') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">⚠️</span><span>รายงานภัย</span>
+            <a href="{{ route('hazard-reports.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('hazard-reports.*') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span><span>รายงานภัย</span>
             </a>
             @auth
-            <a href="{{ route('family.status') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('family.*') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">👨‍👩‍👧‍👦</span><span>ตรวจสอบความปลอดภัย</span>
+            <a href="{{ route('family.status') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('family.*') ? 'bg-red-50 text-red-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-user-group class="w-5 h-5 inline-block shrink-0" /></span><span>ตรวจสอบความปลอดภัย</span>
             </a>
             @endauth
 
+                </div>
+            </div>
             <div class="my-2 border-t border-gray-100"></div>
 
             {{-- MT3 --}}
-            <div class="pt-1 pb-1 px-2">
-                <span class="text-xs font-black text-purple-600 uppercase tracking-wider">🧠 MT3 หลังเกิดภัย</span>
-            </div>
-            <a href="{{ route('mental.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('mental.index','mental.assess.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">🧠</span><span>ศูนย์สุขภาพจิต</span>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="pt-3 pb-2 px-3 flex justify-between items-center cursor-pointer">
+                    <span class="text-sm font-black text-purple-600 uppercase tracking-wider"><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> MT3 หลังเกิดภัย</span>
+                    <svg class="w-4 h-4 text-purple-600 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5">
+            <p class="px-4 pt-3 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">ฟื้นฟูที่อยู่อาศัยและชุมชน</p>
+            <a href="{{ route('mt3.home-recovery') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /></span><span>ขอความช่วยเหลือฟื้นฟูบ้าน</span>
             </a>
-            <a href="{{ route('mental.assess.create','phq9') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('mental.assess.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">📊</span><span>ประเมิน PHQ-9</span>
+            <a href="{{ route('mt3.community-needs') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-megaphone class="w-5 h-5 inline-block shrink-0" /></span><span>ประเมินความต้องการชุมชน</span>
             </a>
-            <a href="{{ route('mental.mood.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('mental.mood.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">😊</span><span>Mood Tracker</span>
-            </a>
-            <a href="{{ route('mental.journal.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('mental.journal.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">📔</span><span>บันทึกความรู้สึก</span>
-            </a>
-            <a href="{{ route('mental.appointments.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('mental.appointments.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">📅</span><span>นัดหมายผู้เชี่ยวชาญ</span>
-            </a>
-            <a href="{{ route('mental.articles') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <span class="text-base w-6 text-center">📖</span><span>บทความสุขภาพจิต</span>
+            <a href="{{ route('mt3.recovery-tracking') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-clipboard-document-check class="w-5 h-5 inline-block shrink-0" /></span><span>ติดตามการฟื้นฟู</span>
             </a>
 
+            <p class="px-4 pt-3 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">อาสาสมัครและการบริจาค</p>
+            <a href="{{ route('mt3.volunteer') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /></span><span>ระบบอาสาสมัครฟื้นฟู</span>
+            </a>
+            <a href="{{ route('mt3.donation') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-gift class="w-5 h-5 inline-block shrink-0" /></span><span>ศูนย์รับบริจาค</span>
+            </a>
+            <a href="{{ route('mt3.ai-matching') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block shrink-0" /></span><span>AI Donation Matching</span>
+            </a>
+
+            <p class="px-4 pt-3 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">ฟื้นฟูอาชีพและเศรษฐกิจ</p>
+            <a href="{{ route('mt3.livelihood') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-briefcase class="w-5 h-5 inline-block shrink-0" /></span><span>แจ้งความเสียหายและฟื้นฟูอาชีพ</span>
+            </a>
+            <a href="{{ route('mt3.analytics') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-gray-50 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /></span><span>Recovery Analytics</span>
+            </a>
+
+            <p class="px-4 pt-3 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">สุขภาพจิต</p>
+            <a href="{{ route('mental.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('mental.index','mental.assess.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-purple-50 hover:text-purple-600' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /></span><span>ศูนย์สุขภาพจิต</span>
+            </a>
+            <a href="{{ route('mental.journal.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('mental.journal.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-purple-50 hover:text-purple-600' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-book-open class="w-5 h-5 inline-block shrink-0" /></span><span>บันทึกความรู้สึก</span>
+            </a>
+            <a href="{{ route('mental.appointments.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('mental.appointments.*') ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-purple-50 hover:text-purple-600' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /></span><span>นัดหมายผู้เชี่ยวชาญ</span>
+            </a>
+            <a href="{{ route('mental.articles') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-book-open class="w-5 h-5 inline-block shrink-0" /></span><span>บทความสุขภาพจิต</span>
+            </a>
+            <a href="#" onclick="event.preventDefault(); closeRSidebar(); document.querySelector('[x-data=\'aiCompanion()\'] button')?.click()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block mr-1 -mt-1" /></span><span>AI Companion</span>
+            </a>
+
+                </div>
+            </div>
             <div class="my-2 border-t border-gray-100"></div>
 
             {{-- Policy --}}
-            <div class="pt-1 pb-1 px-2">
-                <span class="text-xs font-black text-blue-500 uppercase tracking-wider">🛡️ นโยบายความเป็นส่วนตัว</span>
-            </div>
-            <a href="{{ route('privacy.policy') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('privacy.policy') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">📄</span><span>Privacy Policy</span>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="pt-3 pb-2 px-3 flex justify-between items-center cursor-pointer">
+                    <span class="text-sm font-black text-blue-500 uppercase tracking-wider"><x-heroicon-o-shield-check class="w-5 h-5 inline-block shrink-0" /> นโยบายความเป็นส่วนตัว</span>
+                    <svg class="w-4 h-4 text-blue-600 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5">
+            <a href="{{ route('privacy.policy') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('privacy.policy') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-document-text class="w-5 h-5 inline-block mr-1 -mt-1" /></span><span>Privacy Policy</span>
             </a>
 
+                </div>
+            </div>
             <div class="my-2 border-t border-gray-100"></div>
 
             {{-- Other --}}
-            <div class="pt-1 pb-1 px-2">
-                <span class="text-xs font-black text-gray-400 uppercase tracking-wider">🌐 อื่นๆ</span>
-            </div>
-            <a href="{{ route('news.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm {{ request()->routeIs('news.*') ? 'bg-gray-100 text-gray-800 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                <span class="text-base w-6 text-center">📰</span><span>ข่าวสาร & ประกาศ</span>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="pt-3 pb-2 px-3 flex justify-between items-center cursor-pointer">
+                    <span class="text-sm font-black text-gray-400 uppercase tracking-wider"><x-heroicon-o-globe-alt class="w-5 h-5 inline-block shrink-0" /> อื่นๆ</span>
+                    <svg class="w-4 h-4 text-gray-500 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5">
+            <a href="{{ route('news.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base {{ request()->routeIs('news.*') ? 'bg-gray-100 text-gray-800 font-semibold' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-newspaper class="w-5 h-5 inline-block shrink-0" /></span><span>ข่าวสาร & ประกาศ</span>
             </a>
             @auth
-            <a href="{{ route('profile.edit') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <span class="text-base w-6 text-center">👤</span><span>โปรไฟล์ของฉัน</span>
+            <a href="{{ route('profile.edit') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-gray-50 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-user class="w-5 h-5 inline-block shrink-0" /></span><span>โปรไฟล์ของฉัน</span>
             </a>
-            <form action="{{ route('family.safe') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-green-700 hover:bg-green-50 transition-colors">
-                    <span class="text-base w-6 text-center">✅</span><span>แจ้งว่าฉันปลอดภัย</span>
-                </button>
-            </form>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors">
-                    <span class="text-base w-6 text-center">🚪</span><span>ออกจากระบบ</span>
-                </button>
-            </form>
             @else
-            <a href="{{ route('login') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <span class="text-base w-6 text-center">🔑</span><span>เข้าสู่ระบบ</span>
+            <a href="{{ route('login') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-gray-50 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-key class="w-5 h-5 inline-block shrink-0" /></span><span>เข้าสู่ระบบ</span>
             </a>
-            <a href="{{ route('register') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition-colors">
-                <span class="text-base w-6 text-center">✨</span><span>สมัครสมาชิก</span>
+            <a href="{{ route('register') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base font-bold bg-red-600 text-white hover:bg-red-700 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-sparkles class="w-5 h-5 inline-block shrink-0" /></span><span>สมัครสมาชิก</span>
             </a>
             @endguest
+                </div>
+            </div>
+
         </div>
     </div>
+
+    @auth
+    <div class="p-4 border-t border-gray-100 bg-white">
+        <form action="{{ route('family.safe') }}" method="POST" class="mb-2">
+            @csrf
+            <button type="submit" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-base font-medium bg-green-50 text-green-700 hover:bg-green-100 transition-colors">
+                <span class="text-lg w-6 text-center"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></span><span>แจ้งว่าฉันปลอดภัย</span>
+            </button>
+        </form>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-base font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                <span class="text-lg w-6 text-center"><x-heroicon-o-arrow-right-on-rectangle class="w-5 h-5 inline-block shrink-0" /></span><span>ออกจากระบบ</span>
+            </button>
+        </form>
+    </div>
+    @endauth
 </aside>
 
 {{-- MOBILE BOTTOM NAV — 5 TABS --}}
@@ -465,7 +574,9 @@ function closeRSidebar(){
 @endif
 
 {{-- AI Companion --}}
-@include('components.ai-companion')
+@if(!request()->routeIs('mt3.ai-companion'))
+    @include('components.ai-companion')
+@endif
 
 
 <script>
@@ -494,22 +605,22 @@ function closeRSidebar(){
                     if(navTemp) navTemp.textContent = Math.round(c.temperature_2m);
                     
                     const navWind = document.getElementById('nav-weather-wind');
-                    if(navWind) navWind.textContent = `💨 ${Math.round(c.wind_speed_10m)} km/h`;
+                    if(navWind) navWind.innerHTML = `<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" /> ${Math.round(c.wind_speed_10m)} km/h`;
                     
                     const navHum = document.getElementById('nav-weather-humidity');
-                    if(navHum) navHum.textContent = `💧 ${c.relative_humidity_2m}%`;
+                    if(navHum) navHum.innerHTML = `<x-heroicon-o-sparkles class="w-5 h-5 inline-block mr-1 -mt-1" /> ${c.relative_humidity_2m}%`;
                     
                     const wcodes = {
-                        0: {d:'ฟ้าโปร่ง', i:'☀️'}, 1: {d:'ส่วนใหญ่โปร่ง', i:'🌤️'}, 2: {d:'มีเมฆบางส่วน', i:'⛅'}, 3: {d:'มีเมฆมาก', i:'☁️'},
-                        45: {d:'หมอก', i:'🌫️'}, 48: {d:'หมอก', i:'🌫️'},
-                        51: {d:'ฝนละออง', i:'🌦️'}, 53: {d:'ฝนละออง', i:'🌦️'}, 55: {d:'ฝนละออง', i:'🌧️'},
-                        61: {d:'ฝนตกเบา', i:'🌦️'}, 63: {d:'ฝนตกปานกลาง', i:'🌧️'}, 65: {d:'ฝนตกหนัก', i:'🌧️'}, 
-                        80: {d:'ฝนเป็นพัก', i:'🌦️'}, 81: {d:'ฝนเป็นพัก', i:'🌧️'}, 82: {d:'ฝนเป็นพัก', i:'⛈️'},
-                        95: {d:'พายุฟ้าคะนอง', i:'⛈️'}, 96: {d:'พายุฟ้าคะนอง', i:'⛈️'}, 99: {d:'พายุฟ้าคะนอง', i:'⛈️'}
+                        0: {d:'ฟ้าโปร่ง', i:`<x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 1: {d:'ส่วนใหญ่โปร่ง', i:`<x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 2: {d:'มีเมฆบางส่วน', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />`}, 3: {d:'มีเมฆมาก', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`},
+                        45: {d:'หมอก', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 48: {d:'หมอก', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`},
+                        51: {d:'ฝนละออง', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 53: {d:'ฝนละออง', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 55: {d:'ฝนละออง', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`},
+                        61: {d:'ฝนตกเบา', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 63: {d:'ฝนตกปานกลาง', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 65: {d:'ฝนตกหนัก', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 
+                        80: {d:'ฝนเป็นพัก', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 81: {d:'ฝนเป็นพัก', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 82: {d:'ฝนเป็นพัก', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`},
+                        95: {d:'พายุฟ้าคะนอง', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 96: {d:'พายุฟ้าคะนอง', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}, 99: {d:'พายุฟ้าคะนอง', i:`<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`}
                     };
-                    const info = wcodes[c.weather_code] || {d: 'ฝนตก/เมฆมาก', i: '🌦️'};
+                    const info = wcodes[c.weather_code] || {d: 'ฝนตก/เมฆมาก', i: `<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️`};
                     const navIcon = document.getElementById('nav-weather-icon');
-                    if(navIcon) navIcon.textContent = info.i;
+                    if(navIcon) navIcon.innerHTML = info.i;
                     const navDesc = document.getElementById('nav-weather-desc');
                     if(navDesc) navDesc.textContent = info.d;
                 })

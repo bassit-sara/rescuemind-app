@@ -10,19 +10,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body { font-family: 'Noto Sans Thai', 'Inter', sans-serif; }
         .sidebar-link {
             display: flex; align-items: center; gap: 10px;
-            padding: 8px 12px; border-radius: 10px; font-size: 0.85rem;
+            padding: 10px 14px; border-radius: 10px; font-size: 0.95rem;
             font-weight: 500; transition: all .15s; color: #374151;
             text-decoration: none;
         }
         .sidebar-link:hover { background: rgba(255,255,255,.12); color: #fff; }
         .sidebar-link.active { background: rgba(255,255,255,.2); color: #fff; font-weight: 700; }
-        .sidebar-section { font-size: 0.68rem; font-weight: 800; letter-spacing: .08em;
-            text-transform: uppercase; padding: 4px 12px; margin-top: 12px;
+        .sidebar-section { font-size: 0.85rem; font-weight: 800; letter-spacing: .05em;
+            text-transform: uppercase; padding: 8px 14px; margin-top: 12px;
             color: rgba(255,255,255,.5); }
         @keyframes pulse-ring {
             0%   { box-shadow: 0 0 0 0 rgba(239,68,68,.7); }
@@ -39,7 +40,7 @@
             transition: transform .3s cubic-bezier(.4,0,.2,1);
         }
         @media (max-width: 1023px) {
-            #admin-sidebar { transform: translateX(-100%); position: fixed; z-index: 50; }
+            #admin-sidebar { transform: translateX(-100%); position: fixed; z-index: 9999; }
             #admin-sidebar.open { transform: translateX(0); }
         }
     </style>
@@ -57,23 +58,25 @@ $gradients = [
     'admin'          => 'from-blue-900 via-blue-800 to-blue-900',
     'officer'        => 'from-red-900 via-red-800 to-red-900',
     'mental_officer' => 'from-purple-900 via-purple-800 to-purple-900',
+    'volunteer'      => 'from-emerald-900 via-emerald-800 to-emerald-900',
 ];
 $gradient = $gradients[$role] ?? 'from-gray-900 via-gray-800 to-gray-900';
 
 $roleLabels = [
-    'super_admin'    => '👑 Super Admin',
-    'admin'          => '🛡️ Admin',
-    'officer'        => '🚨 เจ้าหน้าที่กู้ภัย',
-    'mental_officer' => '🧠 นักจิตวิทยา',
+    'super_admin'    => 'Super Admin',
+    'admin'          => 'Admin',
+    'officer'        => 'เจ้าหน้าที่กู้ภัย',
+    'mental_officer' => 'นักจิตวิทยา',
+    'volunteer'      => 'อาสาสมัคร',
 ];
-$roleLabel = $roleLabels[$role] ?? '👤 User';
+$roleLabel = $roleLabels[$role] ?? 'User';
 @endphp
 
 {{-- Critical alert banner --}}
 @php $criticalAlerts = \App\Models\Alert::where('is_active',true)->where('level',3)->count(); @endphp
 @if($criticalAlerts > 0)
 <div class="bg-red-600 text-white text-center py-2 px-4 text-sm font-medium z-50 relative">
-    <span class="animate-pulse">⚠️</span>
+    <span class="animate-pulse"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span>
     มีการแจ้งเตือนระดับ "อพยพทันที" {{ $criticalAlerts }} จังหวัด
     <a href="{{ route('alerts.index') }}" class="underline ml-2 font-bold">ดูรายละเอียด →</a>
 </div>
@@ -94,7 +97,22 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
             </div>
             <div class="min-w-0">
                 <div class="text-white font-black text-sm leading-tight">RescueMind</div>
-                <div class="text-white/60 text-xs truncate">{{ $roleLabel }}</div>
+                <div class="text-white/60 text-xs truncate flex items-center gap-1 mt-0.5">
+                    @if($role === 'super_admin')
+                        <x-heroicon-o-star class="w-3.5 h-3.5 shrink-0" />
+                    @elseif($role === 'admin')
+                        <x-heroicon-o-shield-check class="w-3.5 h-3.5 shrink-0" />
+                    @elseif($role === 'officer')
+                        <x-heroicon-o-bell class="w-3.5 h-3.5 shrink-0" />
+                    @elseif($role === 'mental_officer')
+                        <x-heroicon-s-sparkles class="w-3.5 h-3.5 shrink-0" />
+                    @elseif($role === 'volunteer')
+                        <x-heroicon-o-heart class="w-3.5 h-3.5 shrink-0" />
+                    @else
+                        <x-heroicon-o-user class="w-3.5 h-3.5 shrink-0" />
+                    @endif
+                    {{ $roleLabel }}
+                </div>
             </div>
         </div>
 
@@ -115,7 +133,7 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
         <div id="sidebar-weather" class="px-4 py-2.5 border-b border-white/10">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <span id="sw-icon" class="text-lg">🌡️</span>
+                    <span id="sw-icon" class="text-lg"><x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️</span>
                     <div>
                         <div class="flex items-baseline gap-1">
                             <span id="sw-temp" class="text-white font-black text-lg leading-none">--</span>
@@ -125,8 +143,8 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
                     </div>
                 </div>
                 <div class="text-right">
-                    <div id="sw-wind" class="text-white/40 text-[10px]">💨 --</div>
-                    <div id="sw-humidity" class="text-white/40 text-[10px]">💧 --</div>
+                    <div id="sw-wind" class="text-white/40 text-[10px]"><x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" /> --</div>
+                    <div id="sw-humidity" class="text-white/40 text-[10px]"><x-heroicon-o-sparkles class="w-5 h-5 inline-block mr-1 -mt-1" /> --</div>
                 </div>
             </div>
         </div>
@@ -136,159 +154,333 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
 
             {{-- ─── SUPER ADMIN ─── --}}
             @if($role === 'super_admin')
-            <div class="sidebar-section">📊 ภาพรวมระบบ</div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> ภาพรวมระบบ</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('super-admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('super-admin.dashboard') ? 'active' : '' }}">
-                <span>🎛️</span><span>Command Center</span>
+                <span><x-heroicon-o-adjustments-horizontal class="w-5 h-5 inline-block shrink-0" /></span><span>Command Center</span>
             </a>
             <a href="{{ route('super-admin.analytics') }}" class="sidebar-link {{ request()->routeIs('super-admin.analytics') ? 'active' : '' }}">
-                <span>📈</span><span>Analytics</span>
+                <span><x-heroicon-o-presentation-chart-line class="w-5 h-5 inline-block shrink-0" /></span><span>Analytics</span>
             </a>
 
-            <div class="sidebar-section">👥 จัดการผู้ใช้</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> จัดการผู้ใช้</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('super-admin.users') }}" class="sidebar-link {{ request()->routeIs('super-admin.users*') ? 'active' : '' }}">
-                <span>👥</span><span>ผู้ใช้ทั้งหมด</span>
+                <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /></span><span>ผู้ใช้ทั้งหมด</span>
+            </a>
+            <a href="{{ route('super-admin.system-logs') }}" class="sidebar-link {{ request()->routeIs('super-admin.system-logs*') ? 'active' : '' }}">
+                <span><x-heroicon-o-clock class="w-5 h-5 inline-block shrink-0" /></span><span>ประวัติการใช้งาน</span>
             </a>
 
-            <div class="sidebar-section">🆘 ภัยพิบัติ</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> ภัยพิบัติ</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('officer.sos.index') }}" class="sidebar-link {{ request()->routeIs('officer.sos.*') ? 'active' : '' }}">
-                <span>🆘</span><span>คิว SOS</span>
+                <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /></span><span>คิว SOS</span>
             </a>
             <a href="{{ route('officer.hazard.index') }}" class="sidebar-link {{ request()->routeIs('officer.hazard.*') ? 'active' : '' }}">
-                <span>⚠️</span><span>รายงานภัย</span>
+                <span><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span><span>รายงานภัย</span>
             </a>
             <a href="{{ route('officer.missing.index') }}" class="sidebar-link {{ request()->routeIs('officer.missing.*') ? 'active' : '' }}">
-                <span>🔍</span><span>คนหาย</span>
+                <span><x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /></span><span>คนหาย</span>
             </a>
 
-            <div class="sidebar-section">🏕️ ทรัพยากร</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /> ทรัพยากร</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('super-admin.shelter') }}" class="sidebar-link {{ request()->routeIs('super-admin.shelter') ? 'active' : '' }}">
-                <span>🏕️</span><span>ที่พักพิง</span>
+                <span><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /></span><span>ที่พักพิง</span>
             </a>
             <a href="{{ route('super-admin.resources') }}" class="sidebar-link {{ request()->routeIs('super-admin.resources') ? 'active' : '' }}">
-                <span>📦</span><span>ทรัพยากร</span>
+                <span><x-heroicon-o-archive-box class="w-5 h-5 inline-block shrink-0" /></span><span>ทรัพยากร</span>
             </a>
 
-            <div class="sidebar-section">📢 จัดการเนื้อหา</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-megaphone class="w-5 h-5 inline-block mr-1 -mt-1" /> จัดการเนื้อหา</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('admin.alerts.index') }}" class="sidebar-link {{ request()->routeIs('admin.alerts.*') ? 'active' : '' }}">
-                <span>🚨</span><span>การแจ้งเตือน</span>
+                <span><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></span><span>การแจ้งเตือน</span>
             </a>
             <a href="{{ route('admin.news.index') }}" class="sidebar-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
-                <span>📰</span><span>ข่าวสาร</span>
+                <span><x-heroicon-o-newspaper class="w-5 h-5 inline-block shrink-0" /></span><span>ข่าวสาร</span>
             </a>
             <a href="{{ route('admin.relief-points.index') }}" class="sidebar-link {{ request()->routeIs('admin.relief-points.*') ? 'active' : '' }}">
-                <span>🏥</span><span>จุดช่วยเหลือ</span>
+                <span><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></span><span>จุดช่วยเหลือ</span>
             </a>
 
-            <div class="sidebar-section">🧠 สุขภาพจิต</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> สุขภาพจิต</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('mental-officer.dashboard') }}" class="sidebar-link {{ request()->routeIs('mental-officer.dashboard') ? 'active' : '' }}">
-                <span>📊</span><span>ภาพรวมจิตใจ</span>
+                <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /></span><span>ภาพรวมจิตใจ</span>
             </a>
             <a href="{{ route('mental-officer.assessments') }}" class="sidebar-link {{ request()->routeIs('mental-officer.assessments*') ? 'active' : '' }}">
-                <span>📋</span><span>ผลการประเมิน</span>
+                <span><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /></span><span>ผลการประเมิน</span>
             </a>
             <a href="{{ route('mental-officer.appointments') }}" class="sidebar-link {{ request()->routeIs('mental-officer.appointments*') ? 'active' : '' }}">
-                <span>📅</span><span>นัดหมาย</span>
+                <span><x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /></span><span>นัดหมาย</span>
             </a>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-sparkles class="w-5 h-5 inline-block shrink-0" /> การฟื้นฟู MT3</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
+            <a href="{{ route('super-admin.mt3.home-recovery') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.home-recovery') ? 'active' : '' }}">
+                <span><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /></span><span>ฟื้นฟูบ้าน</span>
+            </a>
+            <a href="{{ route('super-admin.mt3.community-needs') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.community-needs') ? 'active' : '' }}">
+                <span><x-heroicon-o-megaphone class="w-5 h-5 inline-block shrink-0" /></span><span>ความต้องการชุมชน</span>
+            </a>
+            <a href="{{ route('mt3.recovery-tracking') }}" class="sidebar-link {{ request()->routeIs('mt3.recovery-tracking') ? 'active' : '' }}">
+                <span><x-heroicon-o-clipboard-document-check class="w-5 h-5 inline-block shrink-0" /></span><span>ติดตามการฟื้นฟู</span>
+            </a>
+            <a href="{{ route('super-admin.mt3.volunteer') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.volunteer') ? 'active' : '' }}">
+                <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /></span><span>อาสาสมัครฟื้นฟู</span>
+            </a>
+            <a href="{{ route('super-admin.mt3.donation') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.donation') ? 'active' : '' }}">
+                <span><x-heroicon-o-gift class="w-5 h-5 inline-block shrink-0" /></span><span>ศูนย์รับบริจาค</span>
+            </a>
+            <a href="{{ route('super-admin.mt3.ai-matching') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.ai-matching') ? 'active' : '' }}">
+                <span><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block shrink-0" /></span><span>AI Matching</span>
+            </a>
+            <a href="{{ route('super-admin.mt3.livelihood') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.livelihood') ? 'active' : '' }}">
+                <span><x-heroicon-o-briefcase class="w-5 h-5 inline-block shrink-0" /></span><span>ฟื้นฟูอาชีพ</span>
+            </a>
+            <a href="{{ route('super-admin.mt3.analytics') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.analytics') ? 'active' : '' }}">
+                <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /></span><span>Analytics MT3</span>
+            </a>
+            <a href="{{ route('super-admin.mt3.mental-recovery') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.mental-recovery') ? 'active' : '' }}">
+                <span><x-heroicon-o-heart class="w-5 h-5 inline-block shrink-0" /></span><span>ฟื้นฟูสุขภาพจิต</span>
+            </a>
+                </div>
+            </div>
             @endif
 
             {{-- ─── ADMIN ─── --}}
             @if($role === 'admin')
-            <div class="sidebar-section">📊 ภาพรวม</div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> ภาพรวม</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <span>🎛️</span><span>แดชบอร์ด</span>
+                <span><x-heroicon-o-adjustments-horizontal class="w-5 h-5 inline-block shrink-0" /></span><span>แดชบอร์ด</span>
             </a>
 
-            <div class="sidebar-section">🆘 ภัยพิบัติ</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> ภัยพิบัติ</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('officer.sos.index') }}" class="sidebar-link {{ request()->routeIs('officer.sos.*') ? 'active' : '' }}">
-                <span>🆘</span><span>คิว SOS</span>
+                <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /></span><span>คิว SOS</span>
             </a>
             <a href="{{ route('officer.hazard.index') }}" class="sidebar-link {{ request()->routeIs('officer.hazard.*') ? 'active' : '' }}">
-                <span>⚠️</span><span>รายงานภัย</span>
+                <span><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span><span>รายงานภัย</span>
             </a>
             <a href="{{ route('officer.missing.index') }}" class="sidebar-link {{ request()->routeIs('officer.missing.*') ? 'active' : '' }}">
-                <span>🔍</span><span>คนหาย</span>
+                <span><x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /></span><span>คนหาย</span>
             </a>
 
-            <div class="sidebar-section">📢 จัดการเนื้อหา</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-megaphone class="w-5 h-5 inline-block mr-1 -mt-1" /> จัดการเนื้อหา</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('admin.alerts.index') }}" class="sidebar-link {{ request()->routeIs('admin.alerts.*') ? 'active' : '' }}">
-                <span>🚨</span><span>การแจ้งเตือน</span>
+                <span><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></span><span>การแจ้งเตือน</span>
             </a>
             <a href="{{ route('admin.news.index') }}" class="sidebar-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
-                <span>📰</span><span>ข่าวสาร</span>
+                <span><x-heroicon-o-newspaper class="w-5 h-5 inline-block shrink-0" /></span><span>ข่าวสาร</span>
             </a>
             <a href="{{ route('admin.relief-points.index') }}" class="sidebar-link {{ request()->routeIs('admin.relief-points.*') ? 'active' : '' }}">
-                <span>🏥</span><span>จุดช่วยเหลือ</span>
+                <span><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></span><span>จุดช่วยเหลือ</span>
             </a>
             <a href="{{ route('admin.resources.index') }}" class="sidebar-link {{ request()->routeIs('admin.resources.*') ? 'active' : '' }}">
-                <span>📦</span><span>ทรัพยากร</span>
+                <span><x-heroicon-o-archive-box class="w-5 h-5 inline-block shrink-0" /></span><span>ทรัพยากร</span>
             </a>
 
-            <div class="sidebar-section">👥 จัดการผู้ใช้</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> จัดการผู้ใช้</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('admin.users') }}" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
-                <span>👥</span><span>ผู้ใช้ในระบบ</span>
+                <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /></span><span>ผู้ใช้ในระบบ</span>
             </a>
+                </div>
+            </div>
             @endif
 
             {{-- ─── OFFICER ─── --}}
             @if($role === 'officer')
-            <div class="sidebar-section">🆘 งานของฉัน</div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> งานของฉัน</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('officer.dashboard') }}" class="sidebar-link {{ request()->routeIs('officer.dashboard') ? 'active' : '' }}">
-                <span>🎛️</span><span>แดชบอร์ด</span>
+                <span><x-heroicon-o-adjustments-horizontal class="w-5 h-5 inline-block shrink-0" /></span><span>แดชบอร์ด</span>
             </a>
             <a href="{{ route('officer.sos.index') }}" class="sidebar-link {{ request()->routeIs('officer.sos.*') ? 'active' : '' }}">
-                <span>🆘</span><span>คิว SOS</span>
+                <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /></span><span>คิว SOS</span>
             </a>
             <a href="{{ route('officer.hazard.index') }}" class="sidebar-link {{ request()->routeIs('officer.hazard.*') ? 'active' : '' }}">
-                <span>⚠️</span><span>รายงานภัย</span>
+                <span><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span><span>รายงานภัย</span>
             </a>
             <a href="{{ route('officer.missing.index') }}" class="sidebar-link {{ request()->routeIs('officer.missing.*') ? 'active' : '' }}">
-                <span>🔍</span><span>คนหาย</span>
+                <span><x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /></span><span>คนหาย</span>
             </a>
 
-            <div class="sidebar-section">📍 ข้อมูลพื้นที่</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ข้อมูลพื้นที่</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('alerts.index') }}" class="sidebar-link {{ request()->routeIs('alerts.*') ? 'active' : '' }}">
-                <span>🚨</span><span>การแจ้งเตือน</span>
+                <span><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></span><span>การแจ้งเตือน</span>
             </a>
             <a href="{{ route('relief-points.index') }}" class="sidebar-link {{ request()->routeIs('relief-points.*') ? 'active' : '' }}">
-                <span>🏥</span><span>จุดช่วยเหลือ</span>
+                <span><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></span><span>จุดช่วยเหลือ</span>
             </a>
+                </div>
+            </div>
             @endif
 
             {{-- ─── MENTAL OFFICER ─── --}}
             @if($role === 'mental_officer')
-            <div class="sidebar-section">🧠 งานของฉัน</div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> งานของฉัน</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('mental-officer.dashboard') }}" class="sidebar-link {{ request()->routeIs('mental-officer.dashboard') ? 'active' : '' }}">
-                <span>📊</span><span>ภาพรวม</span>
+                <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /></span><span>ภาพรวม</span>
             </a>
             <a href="{{ route('mental-officer.assessments') }}" class="sidebar-link {{ request()->routeIs('mental-officer.assessments*') ? 'active' : '' }}">
-                <span>📋</span><span>ผลการประเมิน</span>
+                <span><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /></span><span>ผลการประเมิน</span>
             </a>
             <a href="{{ route('mental-officer.appointments') }}" class="sidebar-link {{ request()->routeIs('mental-officer.appointments*') ? 'active' : '' }}">
-                <span>📅</span><span>นัดหมาย</span>
+                <span><x-heroicon-o-calendar-days class="w-5 h-5 inline-block shrink-0" /></span><span>นัดหมาย</span>
             </a>
 
-            <div class="sidebar-section">📚 เครื่องมือ</div>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-book-open class="w-5 h-5 inline-block mr-1 -mt-1" /> เครื่องมือ</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('mental.articles') }}" class="sidebar-link {{ request()->routeIs('mental.articles') ? 'active' : '' }}">
-                <span>📖</span><span>บทความสุขภาพจิต</span>
+                <span><x-heroicon-o-book-open class="w-5 h-5 inline-block shrink-0" /></span><span>บทความสุขภาพจิต</span>
             </a>
+                </div>
+            </div>
             @endif
 
-            {{-- ─── SHARED ─── --}}
-            <div class="sidebar-section mt-4 border-t border-white/10 pt-3">ทั่วไป</div>
+            {{-- ─── VOLUNTEER ─── --}}
+            @if($role === 'volunteer')
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-heart class="w-5 h-5 inline-block shrink-0" /> งานของฉัน</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
+            <a href="{{ route('volunteer.dashboard') }}" class="sidebar-link {{ request()->routeIs('volunteer.dashboard') ? 'active' : '' }}">
+                <span><x-heroicon-o-adjustments-horizontal class="w-5 h-5 inline-block shrink-0" /></span><span>แดชบอร์ด</span>
+            </a>
+            <a href="{{ route('volunteer.tasks') }}" class="sidebar-link {{ request()->routeIs('volunteer.tasks*') ? 'active' : '' }}">
+                <span><x-heroicon-o-clipboard-document-check class="w-5 h-5 inline-block shrink-0" /></span><span>ภารกิจช่วยเหลือ</span>
+            </a>
+                </div>
+            </div>
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ข้อมูลพื้นที่</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
+            <a href="{{ route('alerts.index') }}" class="sidebar-link {{ request()->routeIs('alerts.*') ? 'active' : '' }}">
+                <span><x-heroicon-o-bell class="w-5 h-5 inline-block shrink-0" /></span><span>การแจ้งเตือน</span>
+            </a>
+            <a href="{{ route('relief-points.index') }}" class="sidebar-link {{ request()->routeIs('relief-points.*') ? 'active' : '' }}">
+                <span><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></span><span>จุดช่วยเหลือ</span>
+            </a>
+                </div>
+            </div>
+            @endif
+
+            {{-- ─── USER (General) ─── --}}
+            <div x-data="{ expanded: false }" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section mt-4 border-t border-white/10 pt-3 flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span>ทั่วไป</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
             <a href="{{ route('profile.edit') }}" class="sidebar-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
-                <span>👤</span><span>โปรไฟล์</span>
+                <span><x-heroicon-o-user class="w-5 h-5 inline-block shrink-0" /></span><span>โปรไฟล์</span>
             </a>
             <a href="{{ route('home') }}" class="sidebar-link">
-                <span>🌐</span><span>ไปหน้าเว็บหลัก</span>
+                <span><x-heroicon-o-globe-alt class="w-5 h-5 inline-block shrink-0" /></span><span>ไปหน้าเว็บหลัก</span>
             </a>
+                </div>
+            </div>
         </nav>
-
         {{-- Logout --}}
         <div class="px-2 py-3 border-t border-white/10">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="sidebar-link w-full text-left text-red-300 hover:text-white hover:!bg-red-600/40">
-                    <span>🚪</span><span>ออกจากระบบ</span>
+                    <span><x-heroicon-o-arrow-right-on-rectangle class="w-5 h-5 inline-block shrink-0" /></span><span>ออกจากระบบ</span>
                 </button>
             </form>
         </div>
@@ -319,7 +511,7 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
                 {{-- Alerts badge --}}
                 @if($criticalAlerts > 0)
                 <a href="{{ route('alerts.index') }}" class="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-full text-xs font-bold animate-pulse">
-                    ⚠️ {{ $criticalAlerts }} วิกฤต
+                    <x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /> {{ $criticalAlerts }} วิกฤต
                 </a>
                 @endif
 
@@ -327,7 +519,7 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
                 <form action="{{ route('family.safe') }}" method="POST" class="hidden sm:block">
                     @csrf
                     <button type="submit" class="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white text-xs font-semibold rounded-full hover:bg-green-600 transition-colors">
-                        ✅ ฉันปลอดภัย
+                        <x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ฉันปลอดภัย
                     </button>
                 </form>
 
@@ -340,20 +532,20 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
         </header>
 
         {{-- Overlay for mobile sidebar --}}
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden"
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-[9998] hidden lg:hidden"
              onclick="document.getElementById('admin-sidebar').classList.remove('open'); this.classList.add('hidden')"></div>
 
         {{-- Main --}}
         <main class="flex-1 overflow-y-auto p-4 sm:p-6">
             @if(session('success'))
             <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3" x-data x-init="setTimeout(()=>$el.remove(),5000)">
-                <span class="text-xl">✅</span>
+                <span class="text-xl"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></span>
                 <p class="text-green-700 text-sm font-medium">{{ session('success') }}</p>
             </div>
             @endif
             @if(session('error'))
             <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
-                <span class="text-xl">❌</span>
+                <span class="text-xl"><x-heroicon-o-x-circle class="w-5 h-5 inline-block shrink-0" /></span>
                 <p class="text-red-700 text-sm font-medium">{{ session('error') }}</p>
             </div>
             @endif
@@ -403,20 +595,20 @@ $roleLabel = $roleLabels[$role] ?? '👤 User';
                         if(swTemp) swTemp.textContent = Math.round(c.temperature_2m);
                         
                         const swWind = document.getElementById('sw-wind');
-                        if(swWind) swWind.textContent = `💨 ${Math.round(c.wind_speed_10m)} km/h`;
+                        if(swWind) swWind.textContent = `<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" /> ${Math.round(c.wind_speed_10m)} km/h`;
                         
                         const swHumidity = document.getElementById('sw-humidity');
-                        if(swHumidity) swHumidity.textContent = `💧 ${c.relative_humidity_2m}%`;
+                        if(swHumidity) swHumidity.textContent = `<x-heroicon-o-sparkles class="w-5 h-5 inline-block mr-1 -mt-1" /> ${c.relative_humidity_2m}%`;
                         
                         const wcodes = {
-                            0: {d:'ฟ้าโปร่ง', i:'☀️'}, 1: {d:'ส่วนใหญ่โปร่ง', i:'🌤️'}, 2: {d:'มีเมฆบางส่วน', i:'⛅'}, 3: {d:'มีเมฆมาก', i:'☁️'},
-                            45: {d:'หมอก', i:'🌫️'}, 48: {d:'หมอก', i:'🌫️'},
-                            51: {d:'ฝนละออง', i:'🌦️'}, 53: {d:'ฝนละออง', i:'🌦️'}, 55: {d:'ฝนละออง', i:'🌧️'},
-                            61: {d:'ฝนตกเบา', i:'🌦️'}, 63: {d:'ฝนตกปานกลาง', i:'🌧️'}, 65: {d:'ฝนตกหนัก', i:'🌧️'}, 
-                            80: {d:'ฝนเป็นพัก', i:'🌦️'}, 81: {d:'ฝนเป็นพัก', i:'🌧️'}, 82: {d:'ฝนเป็นพัก', i:'⛈️'},
-                            95: {d:'พายุฟ้าคะนอง', i:'⛈️'}, 96: {d:'พายุฟ้าคะนอง', i:'⛈️'}, 99: {d:'พายุฟ้าคะนอง', i:'⛈️'}
+                            0: {d:'ฟ้าโปร่ง', i:'<x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 1: {d:'ส่วนใหญ่โปร่ง', i:'<x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 2: {d:'มีเมฆบางส่วน', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />'}, 3: {d:'มีเมฆมาก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
+                            45: {d:'หมอก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 48: {d:'หมอก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
+                            51: {d:'ฝนละออง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 53: {d:'ฝนละออง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 55: {d:'ฝนละออง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
+                            61: {d:'ฝนตกเบา', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 63: {d:'ฝนตกปานกลาง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 65: {d:'ฝนตกหนัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 
+                            80: {d:'ฝนเป็นพัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 81: {d:'ฝนเป็นพัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 82: {d:'ฝนเป็นพัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
+                            95: {d:'พายุฟ้าคะนอง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 96: {d:'พายุฟ้าคะนอง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 99: {d:'พายุฟ้าคะนอง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}
                         };
-                        const info = wcodes[c.weather_code] || {d: 'ฝนตก/เมฆมาก', i: '🌦️'};
+                        const info = wcodes[c.weather_code] || {d: 'ฝนตก/เมฆมาก', i: '<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'};
                         const swIcon = document.getElementById('sw-icon');
                         if(swIcon) swIcon.textContent = info.i;
                         const swDesc = document.getElementById('sw-desc');

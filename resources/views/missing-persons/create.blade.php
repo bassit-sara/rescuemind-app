@@ -1,12 +1,14 @@
 @extends('layouts.app')
 @section('title', 'แจ้งคนหาย')
-@section('page-title', '🔍 แจ้งเบาะแสคนหาย')
+@section('page-title')
+    <x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /> แจ้งเบาะแสคนหาย
+@endsection
 @section('content')
 
 <div class="max-w-2xl mx-auto">
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="bg-gradient-to-r from-red-600 to-orange-600 p-6 text-white">
-            <div class="text-3xl mb-2">🔍</div>
+            <div class="text-3xl mb-2"><x-heroicon-o-magnifying-glass class="w-5 h-5 inline-block shrink-0" /></div>
             <h1 class="text-xl font-bold">ลงทะเบียนแจ้งคนหาย</h1>
             <p class="text-red-100 text-sm mt-1">กรอกข้อมูลผู้สูญหายเพื่อให้เจ้าหน้าที่และอาสาสมัครช่วยประสานงานค้นหา</p>
         </div>
@@ -79,7 +81,7 @@
             </div>
 
             <div class="p-3 bg-red-50 rounded-xl text-xs text-red-700 flex justify-between items-center">
-                <span>📍 ท่านสามารถดึงตำแหน่งปัจจุบันของคุณเพื่อใช้แทนจุดพบตัวล่าสุดได้</span>
+                <span><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ท่านสามารถดึงตำแหน่งปัจจุบันของคุณเพื่อใช้แทนจุดพบตัวล่าสุดได้</span>
                 <button type="button" onclick="getLocation()" class="underline font-bold hover:text-red-900">ดึงตำแหน่ง GPS</button>
             </div>
 
@@ -98,7 +100,7 @@
             </div>
 
             <button type="submit" class="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl transition-colors shadow-sm">
-                📢 แจ้งคนหายลงระบบ
+                <x-heroicon-o-megaphone class="w-5 h-5 inline-block mr-1 -mt-1" /> แจ้งคนหายลงระบบ
             </button>
         </form>
     </div>

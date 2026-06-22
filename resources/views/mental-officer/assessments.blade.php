@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'รายการประเมินสุขภาพจิต')
-@section('page-title', '🧠 รายการประเมินสุขภาพจิต')
+@section('page-title')
+    <x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> รายการประเมินสุขภาพจิต
+@endsection
 @section('content')
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto">

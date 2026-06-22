@@ -63,6 +63,8 @@
             animation-delay: 4s;
         }
     </style>
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="antialiased bg-gray-50 text-gray-900 min-h-screen flex selection:bg-red-500 selection:text-white" x-data="{ showPolicy: true }">
 
@@ -116,12 +118,12 @@
                 </div>
             </div>
 
-            <div class="mb-6 text-center lg:text-left">
-                <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mb-1 tracking-tight">สร้างบัญชีใหม่ ✨</h2>
+            <div class="mb-4 text-center lg:text-left">
+                <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mb-1 tracking-tight">สร้างบัญชีใหม่ <x-heroicon-o-sparkles class="w-5 h-5 inline-block shrink-0" /></h2>
                 <p class="text-gray-500 font-medium text-sm">ลงทะเบียนเพื่อเริ่มต้นใช้งาน RescueMind</p>
             </div>
 
-            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+            <form method="POST" action="{{ route('register') }}" class="space-y-3">
                 @csrf
 
                 <!-- Name -->
@@ -138,6 +140,14 @@
                            class="block w-full px-4 py-3 bg-white/80 border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all peer placeholder-transparent shadow-sm" placeholder=" " />
                     <label for="email" class="absolute left-4 top-3 text-gray-500 text-sm transition-all peer-focus:-translate-y-5 peer-focus:text-xs peer-focus:text-red-600 font-medium pointer-events-none origin-left">อีเมล (Email)</label>
                     <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs text-red-600 font-medium ml-1" />
+                </div>
+
+                <!-- Phone Number -->
+                <div class="relative input-floating">
+                    <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" required autocomplete="tel" 
+                           class="block w-full px-4 py-3 bg-white/80 border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all peer placeholder-transparent shadow-sm" placeholder=" " />
+                    <label for="phone" class="absolute left-4 top-3 text-gray-500 text-sm transition-all peer-focus:-translate-y-5 peer-focus:text-xs peer-focus:text-red-600 font-medium pointer-events-none origin-left">เบอร์โทรศัพท์ (Phone)</label>
+                    <x-input-error :messages="$errors->get('phone')" class="mt-1 text-xs text-red-600 font-medium ml-1" />
                 </div>
 
                 <!-- Password -->
@@ -172,6 +182,16 @@
                     </label>
                 </div>
 
+                <!-- Cloudflare Turnstile Widget -->
+                @if(config('services.turnstile.site_key'))
+                <div class="flex justify-center my-2">
+                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}"></div>
+                </div>
+                @error('cf-turnstile-response')
+                    <div class="text-center text-xs text-red-600 font-medium">{{ $message }}</div>
+                @enderror
+                @endif
+
                 <div class="pt-1">
                     <button type="submit" class="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-sm font-bold text-white bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transform transition-all hover:-translate-y-0.5 hover:shadow-red-500/30 active:scale-95">
                         ลงทะเบียน
@@ -181,7 +201,7 @@
             </form>
 
             <!-- Social Login -->
-            <div class="mt-5">
+            <div class="mt-4">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-200"></div>
@@ -191,8 +211,8 @@
                     </div>
                 </div>
 
-                <div class="mt-4 grid grid-cols-2 gap-3">
-                    <button class="flex items-center justify-center py-2 px-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all font-medium text-gray-700 text-xs">
+                <div class="mt-3 grid grid-cols-2 gap-3">
+                    <a href="{{ route('social.redirect', 'google') }}" class="flex items-center justify-center py-2 px-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all font-medium text-gray-700 text-xs text-decoration-none">
                         <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -200,17 +220,17 @@
                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                         </svg>
                         Google
-                    </button>
-                    <button class="flex items-center justify-center py-2 px-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all font-medium text-gray-700 text-xs">
+                    </a>
+                    <a href="{{ route('social.redirect', 'facebook') }}" class="flex items-center justify-center py-2 px-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all font-medium text-gray-700 text-xs text-decoration-none">
                         <svg class="w-4 h-4 mr-1 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                         </svg>
                         Facebook
-                    </button>
+                    </a>
                 </div>
             </div>
 
-            <div class="mt-4 text-center text-xs">
+            <div class="mt-3 text-center text-xs">
                 <p class="text-gray-500 font-medium">มีบัญชีผู้ใช้อยู่แล้ว? 
                     <a href="{{ route('login') }}" class="font-bold text-red-600 hover:text-red-500 hover:underline transition-all">เข้าสู่ระบบเลย</a>
                 </p>
@@ -243,7 +263,7 @@
                 <div class="bg-gradient-to-br from-blue-900 to-indigo-900 px-6 py-5 flex justify-between items-center relative overflow-hidden">
                     <div class="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl"></div>
                     <h3 class="text-xl leading-6 font-bold text-white relative z-10" id="modal-title">
-                        🛡️ นโยบายความเป็นส่วนตัว (สรุปย่อ)
+                        <x-heroicon-o-shield-check class="w-5 h-5 inline-block shrink-0" /> นโยบายความเป็นส่วนตัว (สรุปย่อ)
                     </h3>
                     <button @click="showPolicy = false" class="text-blue-200 hover:text-white transition-colors relative z-10 focus:outline-none">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

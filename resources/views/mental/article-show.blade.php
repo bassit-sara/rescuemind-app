@@ -1,6 +1,8 @@
-@extends('layouts.app')
-@section('title', $article['title'])
-@section('page-title', '📖 อ่านบทความ')
+@extends(auth()->check() && auth()->user()->hasAnyRole(['admin', 'super_admin', 'mental_officer', 'volunteer']) ? 'layouts.admin' : 'layouts.app')
+@section('title', $article->title)
+@section('page-title')
+    <x-heroicon-o-book-open class="w-5 h-5 inline-block shrink-0" /> อ่านบทความ
+@endsection
 @section('content')
 
 <div class="max-w-4xl mx-auto space-y-6">
@@ -29,21 +31,27 @@
             <div class="relative z-10 space-y-4">
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="text-xs font-semibold px-3 py-1 bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-full">
-                        {{ $article['category'] === 'mental' ? '🧠 สุขภาพจิต' : ($article['category'] === 'physical' ? '🩺 สุขภาพกาย' : '🛡️ การป้องกัน') }}
+                        @if($article->category === 'mental')
+                            <x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> สุขภาพจิต
+                        @elseif($article->category === 'physical')
+                            <x-heroicon-o-heart class="w-5 h-5 inline-block mr-1 -mt-1" /> สุขภาพกาย
+                        @else
+                            <x-heroicon-o-shield-check class="w-5 h-5 inline-block shrink-0" /> การป้องกัน
+                        @endif
                     </span>
                     <span class="text-xs text-purple-200 font-semibold flex items-center gap-1">
-                        ⏱️ เวลาอ่าน: {{ $article['read_time'] }}
+                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ เวลาอ่าน: {{ $article->read_time }}
                     </span>
                 </div>
                 
                 <h1 class="text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight tracking-tight">
-                    {{ $article['title'] }}
+                    {{ $article->title }}
                 </h1>
                 
                 <div class="pt-4 border-t border-white/10 flex items-center gap-3">
-                    <span class="text-3xl">{{ $article['icon'] }}</span>
+                    <span class="text-3xl">{{ $article->icon }}</span>
                     <div>
-                        <p class="text-sm font-semibold text-white">{{ $article['author'] }}</p>
+                        <p class="text-sm font-semibold text-white">{{ $article->author }}</p>
                         <p class="text-xs text-gray-400">บทความคำแนะนำฉบับฟื้นฟูสุขภาพภัยพิบัติ</p>
                     </div>
                 </div>
@@ -52,14 +60,14 @@
 
         {{-- Main Article Text Body --}}
         <div class="p-8 md:p-12">
-            @if(isset($article['video_url']))
+            @if(!empty($article->video_url))
             <div class="mb-8 rounded-2xl overflow-hidden aspect-video shadow-md border border-gray-150 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-                <iframe class="w-full h-full" src="{{ $article['video_url'] }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe class="w-full h-full" src="{{ $article->video_url }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
             @endif
 
             <div class="text-gray-750 dark:text-gray-300 text-base leading-relaxed space-y-6">
-                {!! $article['content'] !!}
+                {!! $article->content !!}
             </div>
 
             {{-- Article Disclaimer footer --}}

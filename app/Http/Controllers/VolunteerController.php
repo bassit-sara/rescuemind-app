@@ -18,7 +18,14 @@ class VolunteerController extends Controller
         $myTasks = SosRequest::where('volunteer_id', auth()->id())
             ->whereIn('status', ['assigned', 'in_progress'])
             ->get();
-        return view('volunteer.dashboard', compact('volunteer', 'availableTasks', 'myTasks'));
+            
+        $stats = [
+            'accepted' => $myTasks->count(),
+            'completed' => SosRequest::where('volunteer_id', auth()->id())->whereIn('status', ['resolved', 'safe'])->count(),
+            'available' => $availableTasks->count(),
+        ];
+
+        return view('volunteer.dashboard', compact('volunteer', 'availableTasks', 'myTasks', 'stats'));
     }
 
     public function tasks()
@@ -44,5 +51,11 @@ class VolunteerController extends Controller
         $request->validate(['status' => 'required|in:in_progress,resolved,safe', 'notes' => 'nullable|string']);
         $sosRequest->update(['status' => $request->status, 'notes' => $request->notes]);
         return back()->with('success', 'รายงานสถานการณ์สำเร็จ');
+    }
+
+    public function navigate(SosRequest $sosRequest)
+    {
+        $hazards = \App\Models\HazardReport::where('status', '!=', 'resolved')->get();
+        return view('volunteer.navigate', compact('sosRequest', 'hazards'));
     }
 }

@@ -1,7 +1,9 @@
-@extends(auth()->user()?->hasAnyRole(['super_admin', 'admin', 'officer', 'mental_officer']) ? 'layouts.admin' : 'layouts.app')
+@extends(auth()->user()?->hasAnyRole(['super_admin', 'admin', 'officer', 'mental_officer', 'volunteer']) ? 'layouts.admin' : 'layouts.app')
 
 @section('title', 'โปรไฟล์ของฉัน')
-@section('page-title', 'ตั้งค่าบัญชีผู้ใช้')
+@section('page-title')
+    ตั้งค่าบัญชีผู้ใช้
+@endsection
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
@@ -62,7 +64,7 @@
                 <div class="flex items-center justify-between p-4 border border-gray-200 bg-gray-50 rounded-2xl">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-2xl font-bold shadow-sm">
-                            📱
+                            <x-heroicon-o-device-phone-mobile class="w-5 h-5 inline-block shrink-0" />
                         </div>
                         <div>
                             <h3 class="font-bold text-gray-900">SMS Alerts</h3>

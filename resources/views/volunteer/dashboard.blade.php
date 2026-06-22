@@ -1,6 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Volunteer Dashboard')
-@section('page-title', '🙋 Volunteer Dashboard')
+@section('page-title')
+    <x-heroicon-o-hand-raised class="w-5 h-5 inline-block mr-1 -mt-1" /> Volunteer Dashboard
+@endsection
 @section('content')
 
 {{-- Stats --}}
@@ -28,7 +30,7 @@
     {{-- Available Tasks --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 class="font-bold text-gray-800">📋 งานที่ต้องการอาสา</h2>
+            <h2 class="font-bold text-gray-800"><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /> งานที่ต้องการอาสา</h2>
             <a href="{{ route('volunteer.tasks') }}" class="text-sm text-blue-600 hover:underline">ดูทั้งหมด →</a>
         </div>
         <div class="divide-y divide-gray-50">
@@ -45,7 +47,7 @@
                         </div>
                         <div class="font-medium text-gray-800">{{ $sos->province }} • {{ $sos->num_people }} คน</div>
                         @if($sos->address)
-                        <div class="text-xs text-gray-500 mt-0.5 truncate">📍 {{ $sos->address }}</div>
+                        <div class="text-xs text-gray-500 mt-0.5 truncate"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> {{ $sos->address }}</div>
                         @endif
                     </div>
                     <form action="{{ route('volunteer.tasks.accept', $sos) }}" method="POST" class="ml-3">
@@ -56,7 +58,7 @@
             </div>
             @empty
             <div class="px-5 py-10 text-center text-gray-400">
-                <div class="text-3xl mb-2">✅</div>
+                <div class="text-3xl mb-2"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></div>
                 <div class="text-sm">ไม่มีงานรอ</div>
             </div>
             @endforelse
@@ -66,7 +68,7 @@
     {{-- My Active Tasks --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div class="px-5 py-4 border-b border-gray-100">
-            <h2 class="font-bold text-gray-800">🎯 งานของฉัน</h2>
+            <h2 class="font-bold text-gray-800"><x-heroicon-o-map-pin class="w-5 h-5 inline-block mr-1 -mt-1" /> งานของฉัน</h2>
         </div>
         <div class="divide-y divide-gray-50">
             @forelse($myTasks as $sos)
@@ -77,8 +79,8 @@
                         <div class="text-xs text-gray-500">{{ $sos->status_label }} • {{ $sos->updated_at->diffForHumans() }}</div>
                     </div>
                     @if($sos->latitude)
-                    <a href="https://www.google.com/maps?q={{ $sos->latitude }},{{ $sos->longitude }}" target="_blank"
-                       class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700">🗺️</a>
+                    <a href="{{ route('volunteer.tasks.navigate', $sos) }}"
+                       class="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700"><x-heroicon-o-map class="w-5 h-5 inline-block mr-1 -mt-1" />️ นำทางด้วย AI</a>
                     @endif
                 </div>
                 <form action="{{ route('volunteer.tasks.report', $sos) }}" method="POST" class="flex gap-2">

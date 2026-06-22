@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'จัดการจุดช่วยเหลือ')
-@section('page-title', '🏠 จัดการจุดช่วยเหลือ')
+@section('page-title')
+    <x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" /> จัดการจุดช่วยเหลือ
+@endsection
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
@@ -12,7 +14,7 @@
         </div>
         <a href="{{ route('admin.relief-points.create') }}"
            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg text-sm font-medium">
-            ➕ เพิ่มจุดช่วยเหลือ
+            <x-heroicon-o-plus class="w-5 h-5 inline-block mr-1 -mt-1" /> เพิ่มจุดช่วยเหลือ
         </a>
     </div>
 
@@ -26,17 +28,17 @@
     @endphp
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-            <div class="text-2xl mb-1">🏕️</div>
+            <div class="text-2xl mb-1"><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /></div>
             <div class="text-2xl font-bold text-blue-600">{{ $shelters->count() }}</div>
             <div class="text-xs text-gray-500">ศูนย์พักพิง</div>
         </div>
         <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-            <div class="text-2xl mb-1">🏥</div>
+            <div class="text-2xl mb-1"><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></div>
             <div class="text-2xl font-bold text-red-600">{{ $hospitals->count() }}</div>
             <div class="text-xs text-gray-500">โรงพยาบาล</div>
         </div>
         <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-            <div class="text-2xl mb-1">🍱</div>
+            <div class="text-2xl mb-1"><x-heroicon-o-cube class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
             <div class="text-2xl font-bold text-orange-500">{{ $foods->count() }}</div>
             <div class="text-xs text-gray-500">ศูนย์อาหาร</div>
         </div>
@@ -68,7 +70,7 @@
                         <td class="px-4 py-3">
                             <div class="font-medium text-gray-800">{{ $point->name }}</div>
                             @if($point->phone)
-                            <div class="text-xs text-gray-400">📞 {{ $point->phone }}</div>
+                            <div class="text-xs text-gray-400"><x-heroicon-o-phone class="w-5 h-5 inline-block mr-1 -mt-1" /> {{ $point->phone }}</div>
                             @endif
                         </td>
                         <td class="px-4 py-3">
@@ -107,13 +109,13 @@
                             <div class="flex items-center justify-center gap-1">
                                 <a href="{{ route('admin.relief-points.edit', $point) }}"
                                    class="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors" title="แก้ไข">
-                                    ✏️
+                                    <x-heroicon-o-pencil class="w-5 h-5 inline-block mr-1 -mt-1" />️
                                 </a>
                                 <form action="{{ route('admin.relief-points.destroy', $point) }}" method="POST"
                                       onsubmit="return confirm('ต้องการปิดจุดช่วยเหลือนี้?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors" title="ปิดการใช้งาน">
-                                        🗑️
+                                        <x-heroicon-o-trash class="w-5 h-5 inline-block mr-1 -mt-1" />️
                                     </button>
                                 </form>
                             </div>
@@ -122,7 +124,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="px-4 py-12 text-center text-gray-400">
-                            <div class="text-3xl mb-2">🏠</div>
+                            <div class="text-3xl mb-2"><x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
                             <p>ยังไม่มีจุดช่วยเหลือ</p>
                             <a href="{{ route('admin.relief-points.create') }}" class="text-blue-600 hover:underline text-sm">เพิ่มจุดช่วยเหลือ →</a>
                         </td>

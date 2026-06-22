@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class SosRequest extends Model
 {
     protected $fillable = [
-        'user_id', 'latitude', 'longitude', 'address', 'province',
+        'user_id', 'guest_name', 'guest_phone', 'latitude', 'longitude', 'address', 'province',
         'num_people', 'water_level', 'has_elderly', 'has_children',
-        'has_bedridden', 'has_pregnant', 'description',
+        'has_bedridden', 'has_pregnant', 'other_vulnerable', 'description',
         'status', 'priority', 'officer_id', 'volunteer_id',
         'notes', 'assigned_at', 'resolved_at', 'urgent_needs'
     ];

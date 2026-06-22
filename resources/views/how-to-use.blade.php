@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'สอนการใช้งานระบบ')
-@section('page-title', 'สอนการใช้งานระบบ')
+@section('page-title')
+    สอนการใช้งานระบบ
+@endsection
 
 @section('content')
 <div class="max-w-4xl mx-auto bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
@@ -13,7 +15,7 @@
     <div class="space-y-6">
         <div class="p-6 border-l-4 border-blue-500 rounded-xl bg-blue-50/50 shadow-sm transition hover:shadow-md">
             <div class="flex items-start gap-4">
-                <div class="text-4xl">🌊</div>
+                <div class="text-4xl"><x-heroicon-o-globe-asia-australia class="w-5 h-5 inline-block mr-1 -mt-1" /></div>
                 <div>
                     <h3 class="text-xl font-bold text-blue-700 mb-2">MT1 ก่อนเกิดภัย (Early Warning & Preparedness)</h3>
                     <p class="text-gray-700 mb-3 text-sm leading-relaxed">
@@ -33,7 +35,7 @@
 
         <div class="p-6 border-l-4 border-red-500 rounded-xl bg-red-50/50 shadow-sm transition hover:shadow-md">
             <div class="flex items-start gap-4">
-                <div class="text-4xl">🆘</div>
+                <div class="text-4xl"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /></div>
                 <div>
                     <h3 class="text-xl font-bold text-red-700 mb-2">MT2 ระหว่างเกิดภัย (Emergency Response)</h3>
                     <p class="text-gray-700 mb-3 text-sm leading-relaxed">
@@ -53,7 +55,7 @@
 
         <div class="p-6 border-l-4 border-purple-500 rounded-xl bg-purple-50/50 shadow-sm transition hover:shadow-md">
             <div class="flex items-start gap-4">
-                <div class="text-4xl">🧠</div>
+                <div class="text-4xl"><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /></div>
                 <div>
                     <h3 class="text-xl font-bold text-purple-700 mb-2">MT3 หลังเกิดภัย (Recovery & Mental Health)</h3>
                     <p class="text-gray-700 mb-3 text-sm leading-relaxed">

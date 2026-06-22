@@ -63,7 +63,7 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 3000)"
                     class="text-sm font-medium text-green-600 flex items-center gap-1"
-                ><span class="text-lg">✅</span> บันทึกเรียบร้อยแล้ว</p>
+                ><span class="text-lg"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></span> บันทึกเรียบร้อยแล้ว</p>
             @endif
         </div>
     </form>

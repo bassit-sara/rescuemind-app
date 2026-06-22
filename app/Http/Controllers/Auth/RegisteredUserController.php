@@ -33,14 +33,48 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'cf-turnstile-response' => ['required', new \App\Rules\TurnstileRule()],
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+        ]);
+
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        return redirect(route('dashboard', absolute: false));
+    }
+
+    public function createOfficer(): View
+    {
+        return view('auth.register-officer');
+    }
+
+    public function storeOfficer(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'in:officer,mental_officer'],
+            'province' => ['required', 'string', 'max:100'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'province' => 'จังหวัด' . str_replace('จังหวัด', '', $request->province),
         ]);
+
+        $user->assignRole($request->role);
 
         event(new Registered($user));
 

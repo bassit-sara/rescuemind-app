@@ -1,11 +1,13 @@
 @extends('layouts.app')
 @section('title', 'กด SOS — ขอความช่วยเหลือฉุกเฉิน')
-@section('page-title', '🆘 ขอความช่วยเหลือฉุกเฉิน')
+@section('page-title')
+    <x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> ขอความช่วยเหลือฉุกเฉิน
+@endsection
 
 @section('content')
 <div class="max-w-2xl mx-auto" x-data="sosForm()" x-init="initMap()">
     <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-center gap-3 shadow-sm">
-        <span class="text-3xl animate-bounce">⚠️</span>
+        <span class="text-3xl animate-bounce"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span>
         <div>
             <div class="font-bold text-red-800">สถานการณ์ฉุกเฉิน</div>
             <div class="text-sm text-red-600">กรอกข้อมูลให้ครบถ้วนเพื่อให้เจ้าหน้าที่เข้าช่วยเหลือได้รวดเร็วที่สุด</div>
@@ -13,9 +15,29 @@
     </div>
 
     <div class="space-y-6">
+        @guest
+        {{-- Guest Contact Section --}}
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-orange-100 relative overflow-hidden">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><x-heroicon-o-user class="w-5 h-5 inline-block shrink-0" /> ข้อมูลผู้แจ้งเหตุ (Guest)</h2>
+            <div class="bg-orange-50 text-orange-700 text-xs p-3 rounded-lg mb-4">
+                คุณยังไม่ได้เข้าสู่ระบบ กรุณาระบุชื่อและเบอร์โทรศัพท์เพื่อให้เจ้าหน้าที่สามารถติดต่อกลับได้ หรือ <a href="{{ route('login') }}" class="font-bold underline">เข้าสู่ระบบ</a> เพื่อความรวดเร็ว
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
+                    <input type="text" x-model="guest_name" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-red-500" placeholder="ระบุชื่อของคุณ" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์ติดต่อ <span class="text-red-500">*</span></label>
+                    <input type="tel" x-model="guest_phone" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-red-500" placeholder="08X-XXX-XXXX" required>
+                </div>
+            </div>
+        </div>
+        @endguest
+
         {{-- Location Section --}}
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
-            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">📍 พิกัดตำแหน่งแบบสด (Live GPS)</h2>
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> พิกัดตำแหน่งแบบสด (Live GPS)</h2>
             
             <div class="mb-4 relative">
                 <div id="sos-map" class="w-full h-[300px] rounded-xl border border-gray-300 z-10 shadow-inner" wire:ignore></div>
@@ -26,7 +48,7 @@
             </div>
 
             <button type="button" @click="getLocation()" class="w-full py-3 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 font-bold rounded-xl transition-colors flex items-center justify-center gap-2 mb-4">
-                📡 ค้นหาตำแหน่ง GPS ปัจจุบันอีกครั้ง
+                <x-heroicon-o-signal class="w-5 h-5 inline-block mr-1 -mt-1" /> ค้นหาตำแหน่ง GPS ปัจจุบันอีกครั้ง
             </button>
 
             <div class="grid grid-cols-2 gap-4 mb-4">
@@ -53,7 +75,7 @@
 
         {{-- Details Section --}}
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">🌊 สถานการณ์ผู้ประสบภัย</h2>
+            <h2 class="text-lg font-bold text-gray-800 mb-4"><x-heroicon-o-globe-asia-australia class="w-5 h-5 inline-block mr-1 -mt-1" /> สถานการณ์ผู้ประสบภัย</h2>
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">จำนวนผู้ประสบภัย</label>
@@ -76,35 +98,50 @@
                 <div class="grid grid-cols-2 gap-3">
                     <label class="flex items-center gap-3 p-3 bg-orange-50 border border-orange-200 rounded-xl cursor-pointer hover:bg-orange-100 transition-colors" :class="has_elderly ? 'ring-2 ring-orange-500' : ''">
                         <input type="checkbox" x-model="has_elderly" class="hidden">
-                        <span class="text-sm font-medium text-orange-800">👴 ผู้สูงอายุ</span>
+                        <span class="text-sm font-medium text-orange-800"><x-heroicon-o-user class="w-5 h-5 inline-block mr-1 -mt-1" /> ผู้สูงอายุ</span>
                         <span x-show="has_elderly" class="ml-auto text-orange-600">✓</span>
                     </label>
                     <label class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl cursor-pointer hover:bg-blue-100 transition-colors" :class="has_children ? 'ring-2 ring-blue-500' : ''">
                         <input type="checkbox" x-model="has_children" class="hidden">
-                        <span class="text-sm font-medium text-blue-800">👶 เด็กเล็ก</span>
+                        <span class="text-sm font-medium text-blue-800"><x-heroicon-o-face-smile class="w-5 h-5 inline-block mr-1 -mt-1" /> เด็กเล็ก</span>
                         <span x-show="has_children" class="ml-auto text-blue-600">✓</span>
                     </label>
                     <label class="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-xl cursor-pointer hover:bg-red-100 transition-colors" :class="has_bedridden ? 'ring-2 ring-red-500' : ''">
                         <input type="checkbox" x-model="has_bedridden" class="hidden">
-                        <span class="text-sm font-medium text-red-800">🛏️ ติดเตียง</span>
+                        <span class="text-sm font-medium text-red-800"><x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" />️ ติดเตียง</span>
                         <span x-show="has_bedridden" class="ml-auto text-red-600">✓</span>
                     </label>
                     <label class="flex items-center gap-3 p-3 bg-pink-50 border border-pink-200 rounded-xl cursor-pointer hover:bg-pink-100 transition-colors" :class="has_pregnant ? 'ring-2 ring-pink-500' : ''">
                         <input type="checkbox" x-model="has_pregnant" class="hidden">
-                        <span class="text-sm font-medium text-pink-800">🤰 คนท้อง</span>
+                        <span class="text-sm font-medium text-pink-800"><x-heroicon-o-user-plus class="w-5 h-5 inline-block mr-1 -mt-1" /> คนท้อง</span>
                         <span x-show="has_pregnant" class="ml-auto text-pink-600">✓</span>
                     </label>
+                    <label class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors" :class="has_none ? 'ring-2 ring-gray-500' : ''">
+                        <input type="checkbox" x-model="has_none" class="hidden" @change="if(has_none) { has_elderly=false; has_children=false; has_bedridden=false; has_pregnant=false; has_other=false; }">
+                        <span class="text-sm font-medium text-gray-800"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> ไม่มี</span>
+                        <span x-show="has_none" class="ml-auto text-gray-600">✓</span>
+                    </label>
+                    <div class="col-span-1">
+                        <label class="flex items-center gap-3 p-3 bg-purple-50 border border-purple-200 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors" :class="has_other ? 'ring-2 ring-purple-500' : ''">
+                            <input type="checkbox" x-model="has_other" class="hidden" @change="if(has_other) has_none=false;">
+                            <span class="text-sm font-medium text-purple-800"><x-heroicon-o-sparkles class="w-5 h-5 inline-block shrink-0" /> อื่นๆ</span>
+                            <span x-show="has_other" class="ml-auto text-purple-600">✓</span>
+                        </label>
+                        <div x-show="has_other" class="mt-2" x-transition>
+                            <input type="text" x-model="other_vulnerable" class="w-full px-3 py-2 border border-purple-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 bg-white" placeholder="โปรดระบุ...">
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">📦 ความต้องการเร่งด่วน (ถ้ามี)</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2"><x-heroicon-o-archive-box class="w-5 h-5 inline-block shrink-0" /> ความต้องการเร่งด่วน (ถ้ามี)</label>
                 <div class="flex flex-wrap gap-2">
                     <template x-for="item in availableNeeds" :key="item.value">
                         <label class="inline-flex items-center px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors" 
                                :class="urgent_needs.includes(item.value) ? 'bg-indigo-100 border-indigo-300 text-indigo-800 font-bold' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'">
                             <input type="checkbox" :value="item.value" x-model="urgent_needs" class="hidden">
-                            <span x-text="item.label"></span>
+                            <span x-html="item.label" class="flex items-center gap-1"></span>
                         </label>
                     </template>
                 </div>
@@ -119,12 +156,18 @@
         {{-- Swipe to Submit --}}
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
             <p class="text-center text-sm font-bold text-red-600 mb-3">เลื่อนขวาเพื่อส่งคำขอความช่วยเหลือฉุกเฉิน</p>
-            <div id="swipe-track" class="relative h-16 bg-red-100 rounded-full overflow-hidden border border-red-200 shadow-inner">
+            <div id="swipe-track" x-ref="swipeTrack" class="relative h-16 bg-red-100 rounded-full overflow-hidden border border-red-200 shadow-inner">
                 <div class="absolute inset-0 flex items-center justify-center text-red-400 font-bold tracking-widest opacity-60">SWIPE TO SOS >>></div>
-                <div id="swipe-slider" 
+                <div id="swipe-slider" x-ref="swipeSlider"
+                     @mousedown="startDrag"
+                     @touchstart.passive="startDrag"
+                     @mousemove.window="onDrag"
+                     @touchmove.window.passive="onDrag"
+                     @mouseup.window="endDrag"
+                     @touchend.window="endDrag"
                      class="absolute top-1 bottom-1 left-1 w-14 bg-red-600 rounded-full shadow-md flex items-center justify-center cursor-grab active:cursor-grabbing text-white"
                      :style="`transform: translateX(${swipeLeft}px); transition: ${isDragging ? 'none' : 'transform 0.3s'}`">
-                    <span class="text-xl">🆘</span>
+                    <span class="text-xl"><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /></span>
                 </div>
             </div>
         </div>
@@ -137,7 +180,7 @@
             <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
                 <div class="sm:flex sm:items-start">
                     <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                        <span class="text-xl">⚠️</span>
+                        <span class="text-xl"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span>
                     </div>
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                         <h3 class="text-lg font-bold text-gray-900">ยืนยันการขอความช่วยเหลือ</h3>
@@ -165,7 +208,7 @@
             <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75 backdrop-blur-sm"></div>
             <div class="relative w-full max-w-sm p-6 bg-white rounded-2xl shadow-xl text-center">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-                    <span class="text-3xl">✅</span>
+                    <span class="text-3xl"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></span>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">ส่งคำขอสำเร็จ!</h3>
                 <p class="text-sm text-gray-500 mb-6" x-text="successMessage"></p>
@@ -182,7 +225,7 @@
             <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75 backdrop-blur-sm" @click="showErrorModal = false"></div>
             <div class="relative w-full max-w-sm p-6 bg-white rounded-2xl shadow-xl text-center">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-                    <span class="text-3xl">❌</span>
+                    <span class="text-3xl"><x-heroicon-o-x-circle class="w-5 h-5 inline-block shrink-0" /></span>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">เกิดข้อผิดพลาด</h3>
                 <p class="text-sm text-gray-500 mb-6" x-text="errorMessage"></p>
@@ -198,17 +241,19 @@
 <script>
 function sosForm() {
     return {
-        lat: '', lng: '', address: '', province: '{{ auth()->user()->province }}',
-        num_people: 1, water_level: '', has_elderly: false, has_children: false, has_bedridden: false, has_pregnant: false, description: '',
+        is_guest: {{ auth()->check() ? 'false' : 'true' }},
+        guest_name: '', guest_phone: '',
+        lat: '', lng: '', address: '', province: @json(auth()->check() ? auth()->user()->province : ''),
+        num_people: 1, water_level: '', has_elderly: false, has_children: false, has_bedridden: false, has_pregnant: false, has_none: false, has_other: false, other_vulnerable: '', description: '',
         
         urgent_needs: [],
         availableNeeds: [
-            {value: 'food', label: '🍱 อาหาร'},
-            {value: 'water', label: '💧 น้ำดื่ม'},
-            {value: 'medicine', label: '💊 ยารักษาโรค'},
-            {value: 'boat', label: '🚤 เรืออพยพ'},
-            {value: 'electricity', label: '🔋 ไฟฟ้า/พาวเวอร์แบงก์'},
-            {value: 'clothing', label: '👕 เสื้อผ้า/ผ้าห่ม'}
+            {value: 'food', label: `<x-heroicon-o-cube class="w-5 h-5 inline-block mr-1 -mt-1" /> อาหาร`},
+            {value: 'water', label: `<x-heroicon-o-sparkles class="w-5 h-5 inline-block mr-1 -mt-1" /> น้ำดื่ม`},
+            {value: 'medicine', label: `<x-heroicon-o-beaker class="w-5 h-5 inline-block mr-1 -mt-1" /> ยารักษาโรค`},
+            {value: 'boat', label: `<x-heroicon-o-paper-airplane class="w-5 h-5 inline-block mr-1 -mt-1" /> เรืออพยพ`},
+            {value: 'electricity', label: `<x-heroicon-o-battery-100 class="w-5 h-5 inline-block mr-1 -mt-1" /> ไฟฟ้า/พาวเวอร์แบงก์`},
+            {value: 'clothing', label: `<x-heroicon-o-shopping-bag class="w-5 h-5 inline-block mr-1 -mt-1" /> เสื้อผ้า/ผ้าห่ม`}
         ],
 
         locating: false, locationSuccess: false, locationError: false,
@@ -232,7 +277,6 @@ function sosForm() {
             setTimeout(() => { this.map.invalidateSize(); }, 300);
             
             this.startTracking();
-            this.initSwipe();
         },
         
         updateMarker(lat, lng, isAuto = false) {
@@ -328,34 +372,44 @@ function sosForm() {
             }
         },
         
-        initSwipe() {
-            const slider = document.getElementById('swipe-slider');
-            const track = document.getElementById('swipe-track');
+        startDrag(e) {
+            this.isDragging = true;
+            let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            this.startX = clientX - this.swipeLeft;
+        },
+        
+        onDrag(e) {
+            if(!this.isDragging) return;
+            let clientX = e.type.includes('mouse') ? e.clientX : (e.touches ? e.touches[0].clientX : 0);
+            if (!clientX && e.changedTouches) clientX = e.changedTouches[0].clientX;
             
-            const onMove = (clientX) => {
-                if(!this.isDragging) return;
-                let x = clientX - this.startX;
-                let max = track.clientWidth - slider.clientWidth;
-                if(x < 0) x = 0;
-                if(x > max) x = max;
-                this.swipeLeft = x;
-                if(x >= max - 5) {
-                    this.isDragging = false;
-                    this.swipeLeft = 0;
-                    this.validateAndConfirm();
-                }
-            };
+            let x = clientX - this.startX;
+            let track = this.$refs.swipeTrack;
+            let slider = this.$refs.swipeSlider;
+            let max = track.clientWidth - slider.clientWidth;
             
-            slider.addEventListener('touchstart', (e) => { this.isDragging = true; this.startX = e.touches[0].clientX - this.swipeLeft; }, {passive: false});
-            slider.addEventListener('touchmove', (e) => { onMove(e.touches[0].clientX); e.preventDefault(); }, {passive: false});
-            slider.addEventListener('touchend', () => { this.isDragging = false; if(this.swipeLeft > 0) this.swipeLeft = 0; });
+            if(x < 0) x = 0;
+            if(x > max) x = max;
+            this.swipeLeft = x;
             
-            slider.addEventListener('mousedown', (e) => { this.isDragging = true; this.startX = e.clientX - this.swipeLeft; });
-            window.addEventListener('mousemove', (e) => { onMove(e.clientX); });
-            window.addEventListener('mouseup', () => { this.isDragging = false; if(this.swipeLeft > 0) this.swipeLeft = 0; });
+            if(x >= max - 5) {
+                this.isDragging = false;
+                this.swipeLeft = 0;
+                this.validateAndConfirm();
+            }
+        },
+        
+        endDrag() {
+            this.isDragging = false;
+            if(this.swipeLeft > 0) this.swipeLeft = 0;
         },
         
         validateAndConfirm() {
+            if(this.is_guest && (!this.guest_name || !this.guest_phone)) {
+                this.errorMessage = "กรุณาระบุชื่อและเบอร์โทรศัพท์ติดต่อกลับ";
+                this.showErrorModal = true;
+                return;
+            }
             if(!this.lat || !this.lng) {
                 this.errorMessage = "กรุณาระบุพิกัดตำแหน่งบนแผนที่";
                 this.showErrorModal = true;
@@ -373,6 +427,8 @@ function sosForm() {
             this.isSubmitting = true;
             const payload = {
                 _token: '{{ csrf_token() }}',
+                guest_name: this.guest_name,
+                guest_phone: this.guest_phone,
                 latitude: this.lat,
                 longitude: this.lng,
                 address: this.address,
@@ -383,6 +439,7 @@ function sosForm() {
                 has_children: this.has_children ? 1 : 0,
                 has_bedridden: this.has_bedridden ? 1 : 0,
                 has_pregnant: this.has_pregnant ? 1 : 0,
+                other_vulnerable: this.has_other ? this.other_vulnerable : null,
                 description: this.description,
                 urgent_needs: this.urgent_needs
             };

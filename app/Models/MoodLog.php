@@ -22,11 +22,11 @@ class MoodLog extends Model
     public function getMoodLabelAttribute(): string
     {
         return match($this->mood) {
-            1 => 'แย่มาก 😢',
-            2 => 'แย่ 😞',
-            3 => 'ปกติ 😐',
-            4 => 'ดี 😊',
-            5 => 'ดีมาก 😄',
+            1 => 'แย่มาก',
+            2 => 'แย่',
+            3 => 'ปกติ',
+            4 => 'ดี',
+            5 => 'ดีมาก',
             default => '-',
         };
     }

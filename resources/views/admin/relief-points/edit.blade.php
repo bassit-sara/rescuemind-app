@@ -1,16 +1,18 @@
 @extends('layouts.admin')
 @section('title', 'แก้ไขจุดช่วยเหลือ')
-@section('page-title', '🏕️ แก้ไขจุดช่วยเหลือ')
+@section('page-title')
+    <x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /> แก้ไขจุดช่วยเหลือ
+@endsection
 @section('content')
 <div class="max-w-2xl mx-auto">
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-green-600 to-green-800 p-6 text-white">
-            <div class="text-3xl mb-2">🏕️</div>
-            <h1 class="text-xl font-bold">แก้ไขจุดช่วยเหลือ: {{ $reliefPoint->name }}</h1>
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
+            <div class="text-3xl mb-2"><x-heroicon-o-pencil-square class="w-5 h-5 inline-block shrink-0" /></div>
+            <h1 class="text-xl font-bold">แก้ไขข้อมูลจุดช่วยเหลือ</h1>
         </div>
         <form action="{{ route('admin.relief-points.update', $reliefPoint) }}" method="POST" class="p-6 space-y-4">
             @csrf
-            @method('PATCH')
+            @method('PUT')
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อจุดช่วยเหลือ <span class="text-red-500">*</span></label>
@@ -20,16 +22,19 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">ประเภท <span class="text-red-500">*</span></label>
                     <select name="type" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm">
-                        <option value="shelter" {{ old('type', $reliefPoint->type)=='shelter'?'selected':'' }}>🏠 ที่พักพิง (Shelter)</option>
-                        <option value="hospital" {{ old('type', $reliefPoint->type)=='hospital'?'selected':'' }}>🏥 จุดพยาบาล / โรงพยาบาล</option>
-                        <option value="food" {{ old('type', $reliefPoint->type)=='food'?'selected':'' }}>🍱 แจกอาหารและน้ำ</option>
-                        <option value="parking" {{ old('type', $reliefPoint->type)=='parking'?'selected':'' }}>🚗 จุดจอดรถหนีน้ำ</option>
+                        <option value="shelter" {{ $reliefPoint->type == 'shelter' ? 'selected' : '' }}><x-heroicon-o-home class="w-5 h-5 inline-block mr-1 -mt-1" /> ที่พักพิง (Shelter)</option>
+                        <option value="hospital" {{ $reliefPoint->type == 'hospital' ? 'selected' : '' }}><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block mr-1 -mt-1" /> จุดพยาบาล / โรงพยาบาล</option>
+                        <option value="food" {{ $reliefPoint->type == 'food' ? 'selected' : '' }}><x-heroicon-o-cube class="w-5 h-5 inline-block mr-1 -mt-1" /> แจกอาหารและน้ำ</option>
+                        <option value="parking" {{ $reliefPoint->type == 'parking' ? 'selected' : '' }}><x-heroicon-o-truck class="w-5 h-5 inline-block mr-1 -mt-1" /> จุดจอดรถหนีน้ำ</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">จังหวัด</label>
                     @php
-                        $provinces = ['กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา','ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก','นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน','บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา','พะเยา','พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','ภูเก็ต','มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยโสธร','ยะลา','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี','ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ','สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี','สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี','อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'];
+                        $provinces = ['ยะลา', 'ปัตตานี', 'นราธิวาส', 'สงขลา', 'สตูล'];
+                        if(!in_array($reliefPoint->province, $provinces) && $reliefPoint->province) {
+                            $provinces[] = $reliefPoint->province;
+                        }
                     @endphp
                     <select name="province" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm">
                         <option value="">-- ระบุจังหวัด --</option>
@@ -59,24 +64,28 @@
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">ความจุผู้ใช้ปัจจุบัน (คน)</label>
-                    <input type="number" name="current_occupancy" value="{{ old('current_occupancy', $reliefPoint->current_occupancy) }}" min="0"
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm">
-                </div>
-                <div class="col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">โทรศัพท์ติดต่อ</label>
                     <input type="tel" name="phone" value="{{ old('phone', $reliefPoint->phone) }}"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm">
                 </div>
+                <div class="col-span-2 flex items-center justify-between border border-gray-200 p-3 rounded-xl">
+                    <label class="text-sm font-medium text-gray-700">สถานะการเปิดให้บริการ</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" name="is_active" value="1" class="sr-only peer" {{ $reliefPoint->is_active ? 'checked' : '' }}>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ml-3 text-sm font-medium text-gray-900 peer-checked:text-blue-600">เปิดใช้งาน</span>
+                    </label>
+                </div>
                 <div class="col-span-2">
                     <button type="button" onclick="getGPS()" class="w-full py-2.5 bg-green-50 text-green-700 font-medium rounded-xl text-sm border border-green-200 hover:bg-green-100">
-                        📍 ดึงตำแหน่ง GPS ปัจจุบัน
+                        <x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ดึงตำแหน่ง GPS ปัจจุบัน
                     </button>
                 </div>
             </div>
             <div class="flex gap-3 pt-2">
-                <button type="submit" class="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors">✅ บันทึกการเปลี่ยนแปลง</button>
-                <a href="{{ route('admin.dashboard') }}" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium">ยกเลิก</a>
+                <button type="submit" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /> บันทึกการเปลี่ยนแปลง</button>
+                <a href="{{ url()->previous() }}" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium">ยกเลิก</a>
             </div>
         </form>
     </div>
