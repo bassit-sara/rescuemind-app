@@ -90,4 +90,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Volunteer::class);
     }
+
+    public function shelterBookings()
+    {
+        return $this->hasMany(ShelterBooking::class);
+    }
 }

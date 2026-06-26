@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 var popupContent = `
                     <div class="font-sans">
-                        <div class="font-bold text-red-600 mb-1"><x-heroicon-o-bell class="w-5 h-5 inline-block mr-1 -mt-1" /> ขอความช่วยเหลือฉุกเฉิน</div>
+                        <div class="font-bold text-red-600 mb-1">🚨 ขอความช่วยเหลือฉุกเฉิน</div>
                         <div class="text-sm"><b>ผู้แจ้ง:</b> ${user}</div>
                         <div class="text-sm"><b>เบอร์โทร:</b> ${phone}</div>
                         <div class="text-sm mb-2"><b>สถานะ:</b> ${sos.status === 'pending' ? 'รอดำเนินการ' : 'รับเรื่องแล้ว'}</div>
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             setTimeout(() => oscillator.stop(), 500);
                         } catch(e) {}
                         
-                        alert('<x-heroicon-o-bell class="w-5 h-5 inline-block mr-1 -mt-1" /> แจ้งเตือน: มีการขอความช่วยเหลือ (SOS) เคสใหม่เข้ามาในระบบ!');
+                        alert('แจ้งเตือน: มีการขอความช่วยเหลือ (SOS) เคสใหม่เข้ามาในระบบ!');
                     }
                     
                     previousSosCount = newCount;
@@ -299,6 +299,27 @@ document.addEventListener('DOMContentLoaded', function() {
             timerDisplay.textContent = `อัปเดตข้อมูลใน ${countdown} วินาที`;
         }
     }, 1000);
+
+    // 3. Real-time volunteer tracking
+    var volunteerMarkers = {};
+    if (typeof window.Echo !== 'undefined') {
+        window.Echo.channel('tracking.volunteers.all')
+            .listen('.VolunteerLocationUpdated', (e) => {
+                if (volunteerMarkers[e.volunteerId]) {
+                    volunteerMarkers[e.volunteerId].setLatLng([e.latitude, e.longitude]);
+                } else {
+                    const volunteerIcon = L.divIcon({
+                        className: 'volunteer-icon',
+                        html: `<div style="font-size: 24px;"><svg class="w-8 h-8 text-blue-600 animate-pulse drop-shadow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v8l9-11h-7z"></path></svg></div>`,
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16]
+                    });
+                    volunteerMarkers[e.volunteerId] = L.marker([e.latitude, e.longitude], {icon: volunteerIcon})
+                        .addTo(map)
+                        .bindPopup(`<b>รถกู้ภัย (อาสาสมัคร ID: ${e.volunteerId})</b><br>กำลังปฏิบัติงาน SOS #${e.sosId}`);
+                }
+            });
+    }
 });
 </script>
 @endsection

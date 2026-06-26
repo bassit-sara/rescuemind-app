@@ -94,9 +94,19 @@ class SuperAdminDashboardController extends Controller
         return view('super-admin.analytics', compact('dailySos', 'mentalBySeverity', 'sosRequests', 'riskAreas'));
     }
 
-    public function users()
+    public function users(Request $request)
     {
-        $users = User::with('roles')->latest()->paginate(20);
+        $users = User::with('roles')
+            ->when($request->search, function($q, $search) {
+                $q->where(function($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->role, function($q, $role) {
+                $q->whereHas('roles', fn($query) => $query->where('name', $role));
+            })
+            ->latest()->paginate(20)->withQueryString();
         $roles = Role::all();
         return view('super-admin.users', compact('users', 'roles'));
     }
@@ -110,6 +120,15 @@ class SuperAdminDashboardController extends Controller
         $user->syncRoles([$request->role]);
         $user->update(['province' => $request->province ? 'จังหวัด' . str_replace('จังหวัด', '', $request->province) : null]);
         return back()->with('success', "อัปเดตข้อมูลของ {$user->name} สำเร็จ");
+    }
+
+    public function destroyUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'ไม่สามารถลบบัญชีของตัวเองได้');
+        }
+        $user->delete();
+        return back()->with('success', "ลบผู้ใช้ {$user->name} สำเร็จ");
     }
 
     public function systemLogs()

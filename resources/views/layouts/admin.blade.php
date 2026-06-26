@@ -119,9 +119,15 @@ $roleLabel = $roleLabels[$role] ?? 'User';
         {{-- User Info --}}
         <div class="px-4 py-3 border-b border-white/10">
             <div class="flex items-center gap-3">
+                @if($user->avatar)
+                <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                </div>
+                @else
                 <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
+                @endif
                 <div class="min-w-0">
                     <div class="text-white text-sm font-semibold truncate">{{ $user->name }}</div>
                     <div class="text-white/50 text-xs truncate">{{ $user->province ?? 'ไม่ระบุจังหวัด' }}</div>
@@ -154,7 +160,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
             {{-- ─── SUPER ADMIN ─── --}}
             @if($role === 'super_admin')
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> ภาพรวมระบบ</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -169,7 +175,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> จัดการผู้ใช้</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -184,7 +190,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> ภัยพิบัติ</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -202,7 +208,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /> ทรัพยากร</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -217,7 +223,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-megaphone class="w-5 h-5 inline-block mr-1 -mt-1" /> จัดการเนื้อหา</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -232,10 +238,13 @@ $roleLabel = $roleLabels[$role] ?? 'User';
             <a href="{{ route('admin.relief-points.index') }}" class="sidebar-link {{ request()->routeIs('admin.relief-points.*') ? 'active' : '' }}">
                 <span><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></span><span>จุดช่วยเหลือ</span>
             </a>
+            <a href="{{ route('admin.bookings.index') }}" class="sidebar-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">
+                <span><x-heroicon-o-key class="w-5 h-5 inline-block shrink-0" /></span><span>คำขอจองที่พักพิง</span>
+            </a>
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> สุขภาพจิต</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -252,7 +261,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
             </a>
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-sparkles class="w-5 h-5 inline-block shrink-0" /> การฟื้นฟู MT3</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -264,34 +273,66 @@ $roleLabel = $roleLabels[$role] ?? 'User';
             <a href="{{ route('super-admin.mt3.community-needs') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.community-needs') ? 'active' : '' }}">
                 <span><x-heroicon-o-megaphone class="w-5 h-5 inline-block shrink-0" /></span><span>ความต้องการชุมชน</span>
             </a>
-            <a href="{{ route('mt3.recovery-tracking') }}" class="sidebar-link {{ request()->routeIs('mt3.recovery-tracking') ? 'active' : '' }}">
-                <span><x-heroicon-o-clipboard-document-check class="w-5 h-5 inline-block shrink-0" /></span><span>ติดตามการฟื้นฟู</span>
-            </a>
             <a href="{{ route('super-admin.mt3.volunteer') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.volunteer') ? 'active' : '' }}">
                 <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /></span><span>อาสาสมัครฟื้นฟู</span>
             </a>
             <a href="{{ route('super-admin.mt3.donation') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.donation') ? 'active' : '' }}">
                 <span><x-heroicon-o-gift class="w-5 h-5 inline-block shrink-0" /></span><span>ศูนย์รับบริจาค</span>
             </a>
-            <a href="{{ route('super-admin.mt3.ai-matching') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.ai-matching') ? 'active' : '' }}">
-                <span><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block shrink-0" /></span><span>AI Matching</span>
-            </a>
+
             <a href="{{ route('super-admin.mt3.livelihood') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.livelihood') ? 'active' : '' }}">
                 <span><x-heroicon-o-briefcase class="w-5 h-5 inline-block shrink-0" /></span><span>ฟื้นฟูอาชีพ</span>
             </a>
             <a href="{{ route('super-admin.mt3.analytics') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.analytics') ? 'active' : '' }}">
                 <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /></span><span>Analytics MT3</span>
             </a>
-            <a href="{{ route('super-admin.mt3.mental-recovery') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.mental-recovery') ? 'active' : '' }}">
-                <span><x-heroicon-o-heart class="w-5 h-5 inline-block shrink-0" /></span><span>ฟื้นฟูสุขภาพจิต</span>
-            </a>
+            <div class="pt-2 mt-2 border-t border-white/10">
+                <div class="px-4 py-1 text-xs font-semibold text-white/40 uppercase tracking-wider">ฟื้นฟูสุขภาพจิต</div>
+                <a href="{{ route('super-admin.mt3.mental-forms') }}" class="sidebar-link {{ request()->routeIs('super-admin.mt3.mental-forms') ? 'active' : '' }}">
+                    <span class="pl-4"><x-heroicon-o-document-plus class="w-4 h-4 inline-block shrink-0" /></span><span class="text-sm font-bold text-emerald-400">สร้างแบบประเมิน</span>
+                </a>
+                <a href="{{ route('super-admin.mt3.mental-recovery', ['tab' => 'assessments']) }}" class="sidebar-link {{ request()->query('tab') === 'assessments' || (!request()->has('tab') && request()->routeIs('super-admin.mt3.mental-recovery')) ? 'active' : '' }}">
+                    <span class="pl-4"><x-heroicon-o-clipboard-document-list class="w-4 h-4 inline-block shrink-0" /></span><span class="text-sm">แบบประเมิน</span>
+                </a>
+                <a href="{{ route('super-admin.mt3.mental-recovery', ['tab' => 'mood']) }}" class="sidebar-link {{ request()->query('tab') === 'mood' ? 'active' : '' }}">
+                    <span class="pl-4"><x-heroicon-o-face-smile class="w-4 h-4 inline-block shrink-0" /></span><span class="text-sm">บันทึกอารมณ์</span>
+                </a>
+                <a href="{{ route('super-admin.mt3.mental-recovery', ['tab' => 'journal']) }}" class="sidebar-link {{ request()->query('tab') === 'journal' ? 'active' : '' }}">
+                    <span class="pl-4"><x-heroicon-o-book-open class="w-4 h-4 inline-block shrink-0" /></span><span class="text-sm">ไดอารี่</span>
+                </a>
+                <a href="{{ route('super-admin.mt3.mental-recovery', ['tab' => 'appointments']) }}" class="sidebar-link {{ request()->query('tab') === 'appointments' ? 'active' : '' }}">
+                    <span class="pl-4"><x-heroicon-o-calendar-days class="w-4 h-4 inline-block shrink-0" /></span><span class="text-sm">นัดหมาย</span>
+                </a>
+                <a href="{{ route('super-admin.mt3.mental-recovery', ['tab' => 'articles']) }}" class="sidebar-link {{ request()->query('tab') === 'articles' ? 'active' : '' }}">
+                    <span class="pl-4"><x-heroicon-o-newspaper class="w-4 h-4 inline-block shrink-0" /></span><span class="text-sm">บทความน่ารู้</span>
+                </a>
+                <a href="{{ route('super-admin.mt3.mental-recovery', ['tab' => 'ai_companion']) }}" class="sidebar-link {{ request()->query('tab') === 'ai_companion' ? 'active' : '' }}">
+                    <span class="pl-4"><x-heroicon-o-cpu-chip class="w-4 h-4 inline-block shrink-0" /></span><span class="text-sm">AI Companion</span>
+                </a>
+            </div>
+                </div>
+            </div>
+            
+            {{-- System Settings --}}
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
+                <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
+                    <span><x-heroicon-o-cog-6-tooth class="w-5 h-5 inline-block shrink-0" /> ทั่วไป</span>
+                    <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div x-show="expanded" style="display: none;" class="space-y-0.5 mt-1">
+                    <a href="{{ route('super-admin.system-logs') }}" class="sidebar-link {{ request()->routeIs('super-admin.system-logs') ? 'active' : '' }}">
+                        <span><x-heroicon-o-document-text class="w-5 h-5 inline-block shrink-0" /></span><span>System Logs</span>
+                    </a>
+                    <a href="{{ route('super-admin.settings') }}" class="sidebar-link {{ request()->routeIs('super-admin.settings') ? 'active' : '' }}">
+                        <span><x-heroicon-o-adjustments-horizontal class="w-5 h-5 inline-block shrink-0" /></span><span>ตั้งค่าระบบ (Settings)</span>
+                    </a>
                 </div>
             </div>
             @endif
 
             {{-- ─── ADMIN ─── --}}
             @if($role === 'admin')
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-chart-bar class="w-5 h-5 inline-block shrink-0" /> ภาพรวม</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -303,7 +344,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> ภัยพิบัติ</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -321,7 +362,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-megaphone class="w-5 h-5 inline-block mr-1 -mt-1" /> จัดการเนื้อหา</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -336,13 +377,16 @@ $roleLabel = $roleLabels[$role] ?? 'User';
             <a href="{{ route('admin.relief-points.index') }}" class="sidebar-link {{ request()->routeIs('admin.relief-points.*') ? 'active' : '' }}">
                 <span><x-heroicon-o-building-office-2 class="w-5 h-5 inline-block shrink-0" /></span><span>จุดช่วยเหลือ</span>
             </a>
+            <a href="{{ route('admin.bookings.index') }}" class="sidebar-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">
+                <span><x-heroicon-o-key class="w-5 h-5 inline-block shrink-0" /></span><span>คำขอจองที่พักพิง</span>
+            </a>
             <a href="{{ route('admin.resources.index') }}" class="sidebar-link {{ request()->routeIs('admin.resources.*') ? 'active' : '' }}">
                 <span><x-heroicon-o-archive-box class="w-5 h-5 inline-block shrink-0" /></span><span>ทรัพยากร</span>
             </a>
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> จัดการผู้ใช้</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -357,7 +401,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
             {{-- ─── OFFICER ─── --}}
             @if($role === 'officer')
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-lifebuoy class="w-5 h-5 inline-block shrink-0" /> งานของฉัน</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -378,7 +422,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ข้อมูลพื้นที่</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -396,7 +440,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
             {{-- ─── MENTAL OFFICER ─── --}}
             @if($role === 'mental_officer')
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-s-sparkles class="w-5 h-5 inline-block shrink-0" /> งานของฉัน</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -414,7 +458,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-book-open class="w-5 h-5 inline-block mr-1 -mt-1" /> เครื่องมือ</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -429,7 +473,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
 
             {{-- ─── VOLUNTEER ─── --}}
             @if($role === 'volunteer')
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-heart class="w-5 h-5 inline-block shrink-0" /> งานของฉัน</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -443,7 +487,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
             </a>
                 </div>
             </div>
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span><x-heroicon-o-map-pin class="w-5 h-5 inline-block shrink-0" /> ข้อมูลพื้นที่</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -460,7 +504,7 @@ $roleLabel = $roleLabels[$role] ?? 'User';
             @endif
 
             {{-- ─── USER (General) ─── --}}
-            <div x-data="{ expanded: false }" class="mb-1">
+            <div x-data="{ expanded: false }" x-init="if ($el.querySelector('.sidebar-link.active')) expanded = true" class="mb-1">
                 <div @click="expanded = !expanded" class="sidebar-section mt-4 border-t border-white/10 pt-3 flex justify-between items-center cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
                     <span>ทั่วไป</span>
                     <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -524,9 +568,15 @@ $roleLabel = $roleLabels[$role] ?? 'User';
                 </form>
 
                 {{-- Profile avatar --}}
+                @if($user->avatar)
+                <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-200">
+                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                </div>
+                @else
                 <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
+                @endif
                 <span class="hidden sm:block text-sm text-gray-700 font-medium max-w-[120px] truncate">{{ $user->name }}</span>
             </div>
         </header>
@@ -595,22 +645,22 @@ $roleLabel = $roleLabels[$role] ?? 'User';
                         if(swTemp) swTemp.textContent = Math.round(c.temperature_2m);
                         
                         const swWind = document.getElementById('sw-wind');
-                        if(swWind) swWind.textContent = `<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" /> ${Math.round(c.wind_speed_10m)} km/h`;
+                        if(swWind) swWind.innerHTML = `💨 ${Math.round(c.wind_speed_10m)} km/h`;
                         
                         const swHumidity = document.getElementById('sw-humidity');
-                        if(swHumidity) swHumidity.textContent = `<x-heroicon-o-sparkles class="w-5 h-5 inline-block mr-1 -mt-1" /> ${c.relative_humidity_2m}%`;
+                        if(swHumidity) swHumidity.innerHTML = `💧 ${c.relative_humidity_2m}%`;
                         
                         const wcodes = {
-                            0: {d:'ฟ้าโปร่ง', i:'<x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 1: {d:'ส่วนใหญ่โปร่ง', i:'<x-heroicon-o-sun class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 2: {d:'มีเมฆบางส่วน', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />'}, 3: {d:'มีเมฆมาก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
-                            45: {d:'หมอก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 48: {d:'หมอก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
-                            51: {d:'ฝนละออง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 53: {d:'ฝนละออง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 55: {d:'ฝนละออง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
-                            61: {d:'ฝนตกเบา', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 63: {d:'ฝนตกปานกลาง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 65: {d:'ฝนตกหนัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 
-                            80: {d:'ฝนเป็นพัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 81: {d:'ฝนเป็นพัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 82: {d:'ฝนเป็นพัก', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'},
-                            95: {d:'พายุฟ้าคะนอง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 96: {d:'พายุฟ้าคะนอง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}, 99: {d:'พายุฟ้าคะนอง', i:'<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'}
+                            0: {d:'ฟ้าโปร่ง', i:'☀️'}, 1: {d:'ส่วนใหญ่โปร่ง', i:'🌤️'}, 2: {d:'มีเมฆบางส่วน', i:'⛅'}, 3: {d:'มีเมฆมาก', i:'☁️'},
+                            45: {d:'หมอก', i:'🌫️'}, 48: {d:'หมอก', i:'🌫️'},
+                            51: {d:'ฝนละออง', i:'🌧️'}, 53: {d:'ฝนละออง', i:'🌧️'}, 55: {d:'ฝนละออง', i:'🌧️'},
+                            61: {d:'ฝนตกเบา', i:'🌦️'}, 63: {d:'ฝนตกปานกลาง', i:'🌧️'}, 65: {d:'ฝนตกหนัก', i:'⛈️'}, 
+                            80: {d:'ฝนเป็นพัก', i:'🌦️'}, 81: {d:'ฝนเป็นพัก', i:'🌧️'}, 82: {d:'ฝนเป็นพัก', i:'⛈️'},
+                            95: {d:'พายุฟ้าคะนอง', i:'🌩️'}, 96: {d:'พายุฟ้าคะนอง', i:'🌩️'}, 99: {d:'พายุฟ้าคะนอง', i:'🌩️'}
                         };
-                        const info = wcodes[c.weather_code] || {d: 'ฝนตก/เมฆมาก', i: '<x-heroicon-o-cloud class="w-5 h-5 inline-block mr-1 -mt-1" />️'};
+                        const info = wcodes[c.weather_code] || {d: 'ฝนตก/เมฆมาก', i: `☁️`};
                         const swIcon = document.getElementById('sw-icon');
-                        if(swIcon) swIcon.textContent = info.i;
+                        if(swIcon) swIcon.innerHTML = info.i;
                         const swDesc = document.getElementById('sw-desc');
                         if(swDesc) swDesc.textContent = info.d;
                     })

@@ -22,11 +22,7 @@
             <x-input-error class="mt-2 text-xs text-red-600 font-medium ml-1" :messages="$errors->get('name')" />
         </div>
 
-        <div>
-            <label for="avatar" class="block text-sm font-medium text-gray-700 mb-1 ml-1">รูปโปรไฟล์ (ไม่บังคับ)</label>
-            <input id="avatar" name="avatar" type="file" accept="image/*" class="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-red-50 file:text-red-600 hover:file:bg-red-100" />
-            <x-input-error class="mt-2 text-xs text-red-600 font-medium ml-1" :messages="$errors->get('avatar')" />
-        </div>
+
 
         <div class="relative input-floating">
             <input id="email" name="email" type="email" class="block w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all peer placeholder-transparent shadow-sm" value="{{ old('email', $user->email) }}" required autocomplete="username" placeholder="อีเมล" />

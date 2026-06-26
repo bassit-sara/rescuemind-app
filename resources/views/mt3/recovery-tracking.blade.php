@@ -28,42 +28,50 @@
                         สถานะการดำเนินการล่าสุด
                     </h3>
                     
-                    <div class="relative border-l-2 border-teal-200 ml-4 space-y-8">
+                    @php
+                        $currentStatus = optional($latestRecovery)->status ?? 'pending';
+                        $step = 1;
+                        if($currentStatus === 'matching') $step = 2;
+                        if($currentStatus === 'in_progress') $step = 3;
+                        if($currentStatus === 'completed') $step = 4;
+                    @endphp
+
+                    <div class="relative border-l-2 {{ $step >= 4 ? 'border-teal-200' : 'border-teal-200' }} ml-4 space-y-8">
                         <!-- Step 4 -->
                         <div class="flex items-start">
-                            <div class="shrink-0 w-5 h-5 bg-gray-200 border-4 border-white rounded-full" style="margin-left: -11px; margin-top: 4px;"></div>
+                            <div class="shrink-0 w-5 h-5 {{ $step > 4 ? 'bg-green-500' : ($step == 4 ? 'bg-teal-500 shadow-[0_0_0_3px_rgba(20,184,166,0.2)] animate-pulse' : 'bg-gray-200') }} border-4 border-white rounded-full" style="margin-left: -11px; margin-top: 4px;"></div>
                             <div class="ml-6">
-                                <div class="text-sm font-bold text-gray-400 mb-1">ยังไม่เริ่มดำเนินการ</div>
-                                <h4 class="text-lg font-bold text-gray-700">การฟื้นฟูเสร็จสมบูรณ์</h4>
-                                <p class="text-gray-600 text-[15px] font-medium mt-2">เจ้าของบ้านยืนยันการรับความช่วยเหลือเรียบร้อย</p>
+                                <div class="text-sm font-bold {{ $step > 4 ? 'text-green-600' : ($step == 4 ? 'text-teal-600' : 'text-gray-400') }} mb-1">{{ $step > 4 ? 'เสร็จสิ้น' : ($step == 4 ? 'ดำเนินการแล้ว' : 'ยังไม่เริ่มดำเนินการ') }}</div>
+                                <h4 class="text-lg {{ $step >= 4 ? 'font-black text-gray-900' : 'font-bold text-gray-700' }}">การฟื้นฟูเสร็จสมบูรณ์</h4>
+                                <p class="{{ $step >= 4 ? 'text-gray-600' : 'text-gray-500' }} text-[15px] font-medium mt-2">เจ้าของบ้านยืนยันการรับความช่วยเหลือเรียบร้อย</p>
                             </div>
                         </div>
                         
                         <!-- Step 3 -->
                         <div class="flex items-start">
-                            <div class="shrink-0 w-5 h-5 bg-gray-200 border-4 border-white rounded-full" style="margin-left: -11px; margin-top: 4px;"></div>
+                            <div class="shrink-0 w-5 h-5 {{ $step > 3 ? 'bg-green-500' : ($step == 3 ? 'bg-teal-500 shadow-[0_0_0_3px_rgba(20,184,166,0.2)] animate-pulse' : 'bg-gray-200') }} border-4 border-white rounded-full" style="margin-left: -11px; margin-top: 4px;"></div>
                             <div class="ml-6">
-                                <div class="text-sm font-bold text-gray-400 mb-1">ยังไม่เริ่มดำเนินการ</div>
-                                <h4 class="text-lg font-bold text-gray-700">ทีมอาสาสมัครกำลังลงพื้นที่</h4>
-                                <p class="text-gray-500 text-sm mt-2">รอการลงพื้นที่จากทีมอาสาสมัคร</p>
+                                <div class="text-sm font-bold {{ $step > 3 ? 'text-green-600' : ($step == 3 ? 'text-teal-600' : 'text-gray-400') }} mb-1">{{ $step > 3 ? 'เสร็จสิ้น' : ($step == 3 ? 'กำลังดำเนินการลงพื้นที่...' : 'ยังไม่เริ่มดำเนินการ') }}</div>
+                                <h4 class="text-lg {{ $step >= 3 ? 'font-black text-gray-900' : 'font-bold text-gray-700' }}">ทีมอาสาสมัครกำลังลงพื้นที่</h4>
+                                <p class="{{ $step >= 3 ? 'text-gray-600' : 'text-gray-500' }} text-sm mt-2">รอการลงพื้นที่จากทีมอาสาสมัคร</p>
                             </div>
                         </div>
                         
                         <!-- Step 2 -->
                         <div class="flex items-start">
-                            <div class="shrink-0 w-5 h-5 bg-teal-500 border-4 border-white rounded-full shadow-[0_0_0_3px_rgba(59,130,246,0.2)] animate-pulse" style="margin-left: -11px; margin-top: 4px;"></div>
+                            <div class="shrink-0 w-5 h-5 {{ $step > 2 ? 'bg-green-500' : ($step == 2 ? 'bg-teal-500 shadow-[0_0_0_3px_rgba(20,184,166,0.2)] animate-pulse' : 'bg-gray-200') }} border-4 border-white rounded-full" style="margin-left: -11px; margin-top: 4px;"></div>
                             <div class="ml-6">
-                                <div class="text-sm font-bold text-teal-600 mb-1">กำลังดำเนินการจับคู่...</div>
-                                <h4 class="text-lg font-black text-gray-900">จับคู่ทีมอาสาสมัคร</h4>
-                                <p class="text-gray-600 text-sm mt-2">ระบบกำลังค้นหาและจับคู่ทีมอาสาสมัครที่เหมาะสมกับปัญหาของคุณ</p>
+                                <div class="text-sm font-bold {{ $step > 2 ? 'text-green-600' : ($step == 2 ? 'text-teal-600' : 'text-gray-400') }} mb-1">{{ $step > 2 ? 'เสร็จสิ้น' : ($step == 2 ? 'กำลังดำเนินการจับคู่...' : 'ยังไม่เริ่มดำเนินการ') }}</div>
+                                <h4 class="text-lg {{ $step >= 2 ? 'font-black text-gray-900' : 'font-bold text-gray-700' }}">จับคู่ทีมอาสาสมัคร</h4>
+                                <p class="{{ $step >= 2 ? 'text-gray-600' : 'text-gray-500' }} text-sm mt-2">ระบบกำลังค้นหาและจับคู่ทีมอาสาสมัครที่เหมาะสมกับปัญหาของคุณ</p>
                             </div>
                         </div>
 
                         <!-- Step 1 -->
                         <div class="flex items-start">
-                            <div class="shrink-0 w-5 h-5 bg-green-500 border-4 border-white rounded-full" style="margin-left: -11px; margin-top: 4px;"></div>
+                            <div class="shrink-0 w-5 h-5 {{ $step > 1 ? 'bg-green-500' : 'bg-teal-500 shadow-[0_0_0_3px_rgba(20,184,166,0.2)] animate-pulse' }} border-4 border-white rounded-full" style="margin-left: -11px; margin-top: 4px;"></div>
                             <div class="ml-6">
-                                <div class="text-sm font-bold text-green-600 mb-1">เสร็จสิ้น ({{ $latestRecovery ? $latestRecovery->created_at->diffForHumans() : 'เพิ่งผ่านมา' }})</div>
+                                <div class="text-sm font-bold {{ $step > 1 ? 'text-green-600' : 'text-teal-600' }} mb-1">{{ $step > 1 ? 'เสร็จสิ้น ('.$latestRecovery->created_at->diffForHumans().')' : 'เริ่มต้นแล้ว' }}</div>
                                 <h4 class="text-lg font-black text-gray-900">รับคำขอความช่วยเหลือ</h4>
                                 <p class="text-gray-600 text-sm mt-2">ระบบได้รับคำขอ หมายเลข #REQ-{{ str_pad(optional($latestRecovery)->id ?? 8472, 4, '0', STR_PAD_LEFT) }} เรียบร้อยแล้ว</p>
                             </div>

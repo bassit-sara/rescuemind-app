@@ -2,7 +2,7 @@
 @section('title', 'จัดการข้อมูลฟื้นฟูสุขภาพจิต (Mental Recovery)')
 
 @section('content')
-    <div class="py-8 bg-gray-50 min-h-screen" x-data="{ activeTab: 'assessments' }">
+    <div class="py-8 bg-gray-50 min-h-screen" x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'assessments' }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Header -->
@@ -18,69 +18,79 @@
                 </div>
             </div>
 
-            <!-- Tabs Navigation -->
-            <div
-                class="mb-6 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                <button @click="activeTab = 'assessments'"
-                    :class="{ 'bg-emerald-50 text-emerald-700 font-bold': activeTab === 'assessments', 'text-gray-500 hover:bg-gray-50': activeTab !== 'assessments' }"
-                    class="px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors flex items-center gap-2">
-                    <x-heroicon-o-clipboard-document-list class="w-5 h-5" /> แบบประเมิน (Assessments)
-                </button>
-                <button @click="activeTab = 'mood'"
-                    :class="{ 'bg-emerald-50 text-emerald-700 font-bold': activeTab === 'mood', 'text-gray-500 hover:bg-gray-50': activeTab !== 'mood' }"
-                    class="px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors flex items-center gap-2">
-                    <x-heroicon-o-face-smile class="w-5 h-5" /> บันทึกอารมณ์ (Mood Tracker)
-                </button>
-                <button @click="activeTab = 'journal'"
-                    :class="{ 'bg-emerald-50 text-emerald-700 font-bold': activeTab === 'journal', 'text-gray-500 hover:bg-gray-50': activeTab !== 'journal' }"
-                    class="px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors flex items-center gap-2">
-                    <x-heroicon-o-book-open class="w-5 h-5" /> ไดอารี่ (Journal Diary)
-                </button>
-                <button @click="activeTab = 'appointments'"
-                    :class="{ 'bg-emerald-50 text-emerald-700 font-bold': activeTab === 'appointments', 'text-gray-500 hover:bg-gray-50': activeTab !== 'appointments' }"
-                    class="px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors flex items-center gap-2">
-                    <x-heroicon-o-calendar-days class="w-5 h-5" /> นัดหมายปรึกษา (Appointments)
-                </button>
-                <button @click="activeTab = 'articles'"
-                    :class="{ 'bg-emerald-50 text-emerald-700 font-bold': activeTab === 'articles', 'text-gray-500 hover:bg-gray-50': activeTab !== 'articles' }"
-                    class="px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors flex items-center gap-2">
-                    <x-heroicon-o-newspaper class="w-5 h-5" /> บทความน่ารู้ (Articles)
-                </button>
-                <button @click="activeTab = 'ai_companion'"
-                    :class="{ 'bg-emerald-50 text-emerald-700 font-bold': activeTab === 'ai_companion', 'text-gray-500 hover:bg-gray-50': activeTab !== 'ai_companion' }"
-                    class="px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors flex items-center gap-2">
-                    <x-heroicon-o-cpu-chip class="w-5 h-5" /> AI Companion
-                </button>
-            </div>
 
             <!-- Tab Content: Assessments -->
             <div x-show="activeTab === 'assessments'" x-transition.opacity.duration.300ms style="display: none;">
                 <div x-data="{ 
                     showModal: false, 
                     modalMode: 'add', 
-                    currentItem: { id: null, user_name: '', score: '', severity: 'ปกติ', date: '' },
+                    currentItem: { id: null, topic: 'mental', user_name: '', score: '', severity: 'ปกติ', date: '' },
                     items: [
                         @foreach($assessments as $item)
-                            { id: '#AS-{{ str_pad($item->id, 3, "0", STR_PAD_LEFT) }}', db_id: {{ $item->id }}, user_name: '{{ $item->user->name ?? "ผู้ใช้งานทั่วไป" }}', score: '{{ strtoupper($item->type) }}: {{ $item->score }} คะแนน', severity: '{{ $item->severity_label ?? $item->severity ?? "ปกติ" }}', date: '{{ $item->created_at->format("Y-m-d") }}' },
+                            { id: '#AS-{{ str_pad($item->id, 3, "0", STR_PAD_LEFT) }}', db_id: {{ $item->id }}, topic: '{{ $item->answers['topic'] ?? (in_array($item->type, ['physical', 'disease_risk', 'injury_severity', 'nutrition_status']) ? 'physical' : 'mental') }}', user_name: '{{ $item->answers['manual_entry_name'] ?? $item->user->name ?? "ผู้ใช้งานทั่วไป" }}', score: '{{ $item->answers['manual_score'] ?? (strtoupper($item->type) . ": " . $item->score . " คะแนน") }}', severity: '{{ $item->severity_label ?? $item->severity ?? "ปกติ" }}', date: '{{ $item->answers['manual_date'] ?? $item->created_at->format("Y-m-d") }}' },
                         @endforeach
                     ],
                     init() {},
                     saveItem() {
+                        const payload = {
+                            topic: this.currentItem.topic,
+                            user_name: this.currentItem.user_name,
+                            score: this.currentItem.score,
+                            severity: this.currentItem.severity,
+                            date: this.currentItem.date
+                        };
+
                         if(this.modalMode === 'add') {
-                            this.currentItem.id = '#AS-' + String(this.items.length + 1).padStart(3, '0');
-                            this.items.push({...this.currentItem});
+                            fetch(`/super-admin/mt3/mental-recovery/assessments`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                },
+                                body: JSON.stringify(payload)
+                            }).then(res => res.json()).then(data => {
+                                if (data.success) {
+                                    this.currentItem.db_id = data.id;
+                                    this.currentItem.id = '#AS-' + String(data.id).padStart(3, '0');
+                                    this.items.unshift({...this.currentItem});
+                                    this.showModal = false;
+                                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'เพิ่มข้อมูลสำเร็จ!', confirmButtonColor: '#10b981' });
+                                }
+                            });
                         } else {
-                            const index = this.items.findIndex(i => i.id === this.currentItem.id);
-                            if(index > -1) this.items[index] = {...this.currentItem};
+                            fetch(`/super-admin/mt3/mental-recovery/assessments/${this.currentItem.db_id}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                },
+                                body: JSON.stringify(payload)
+                            }).then(res => res.json()).then(data => {
+                                if (data.success) {
+                                    const index = this.items.findIndex(i => i.id === this.currentItem.id);
+                                    if(index > -1) this.items[index] = {...this.currentItem};
+                                    this.showModal = false;
+                                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#10b981' });
+                                }
+                            });
                         }
-                        this.showModal = false;
-                        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: this.modalMode === 'add' ? 'เพิ่มข้อมูลสำเร็จ!' : 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#10b981' });
                     },
                     deleteItem(id) {
                         Swal.fire({ title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ลบเลย', cancelButtonText: 'ยกเลิก' }).then((result) => {
                             if (result.isConfirmed) {
-                                this.items = this.items.filter(i => i.id !== id);
-                                Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
+                                const item = this.items.find(i => i.id === id);
+                                if (!item) return;
+                                fetch(`/super-admin/mt3/mental-recovery/assessments/${item.db_id}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                    }
+                                }).then(res => res.json()).then(data => {
+                                    if (data.success) {
+                                        this.items = this.items.filter(i => i.id !== id);
+                                        Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
+                                    }
+                                });
                             }
                         });
                     },
@@ -118,6 +128,7 @@
                             <thead>
                                 <tr class="bg-gray-50 border-b border-gray-100">
                                     <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">หัวข้อ</th>
                                     <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">
                                         ชื่อผู้ประเมิน</th>
                                     <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">คะแนน
@@ -135,6 +146,17 @@
                                 <template x-for="item in items" :key="item.id">
                                     <tr class="hover:bg-gray-50 transition-colors">
                                         <td class="px-6 py-4 text-sm text-gray-500" x-text="item.id"></td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold" 
+                                                :class="item.topic === 'mental' ? 'bg-purple-50 text-purple-700' : 'bg-emerald-50 text-emerald-700'">
+                                                <template x-if="item.topic === 'mental'">
+                                                    <span class="flex items-center gap-1"><x-heroicon-s-sparkles class="w-3.5 h-3.5 inline-block shrink-0" /> สุขภาพจิต</span>
+                                                </template>
+                                                <template x-if="item.topic === 'physical'">
+                                                    <span class="flex items-center gap-1"><x-heroicon-o-heart class="w-3.5 h-3.5 inline-block shrink-0" /> สุขภาพกาย</span>
+                                                </template>
+                                            </span>
+                                        </td>
                                         <td class="px-6 py-4 font-bold text-gray-800" x-text="item.user_name"></td>
                                         <td class="px-6 py-4 text-sm text-gray-600" x-text="item.score"></td>
                                         <td class="px-6 py-4">
@@ -181,6 +203,22 @@
                                         class="w-5 h-5" /></button>
                             </div>
                             <form @submit.prevent="saveItem()" class="p-6 space-y-4">
+                                <!-- Assessment Topic Toggle -->
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">หัวข้อการประเมิน</label>
+                                    <div class="bg-gray-100 p-1.5 rounded-2xl flex gap-2 w-full shadow-inner">
+                                        <button type="button" @click="currentItem.topic = 'mental'" 
+                                                :class="currentItem.topic === 'mental' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'" 
+                                                class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl font-bold transition-all duration-300 text-sm">
+                                            <x-heroicon-s-sparkles class="w-4 h-4 inline-block shrink-0" /> สุขภาพจิต
+                                        </button>
+                                        <button type="button" @click="currentItem.topic = 'physical'" 
+                                                :class="currentItem.topic === 'physical' ? 'bg-white text-emerald-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'" 
+                                                class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl font-bold transition-all duration-300 text-sm">
+                                            <x-heroicon-o-heart class="w-4 h-4 inline-block mr-1 -mt-1" /> สุขภาพกาย
+                                        </button>
+                                    </div>
+                                </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">ชื่อผู้ประเมิน</label>
                                     <input type="text" x-model="currentItem.user_name"
@@ -402,192 +440,60 @@
 
             <!-- Tab Content: Articles -->
             <div x-show="activeTab === 'articles'" x-transition.opacity.duration.300ms style="display: none;">
-                <div x-data="{ 
-                    showModal: false, 
-                    modalMode: 'add', 
-                    currentItem: { id: null, title: '', author: '', read_time: '', video_url: '', status: 'เผยแพร่' },
-                    items: [
-                        { id: '#AR-001', title: 'วิธีจัดการกับความเครียดและตื่นตระหนก', author: 'นพ. วรุตม์', read_time: '5 นาที', video_url: 'https://www.youtube.com/embed/5Dqj92A5b_8', status: 'เผยแพร่' },
-                        { id: '#AR-002', title: 'ศิลปะบำบัดสำหรับเยียวยาจิตใจเด็ก', author: 'นักจิตวิทยา พรหมมินทร์', read_time: '8 นาที', video_url: '', status: 'ร่าง' }
-                    ],
-                    init() {
-                        const stored = localStorage.getItem('mt3_mental_articles');
-                        if (stored) this.items = JSON.parse(stored);
-                        this.$watch('items', val => localStorage.setItem('mt3_mental_articles', JSON.stringify(val)));
-                    },
-                    saveItem() {
-                        if(this.modalMode === 'add') {
-                            this.currentItem.id = '#AR-' + String(this.items.length + 1).padStart(3, '0');
-                            this.items.push({...this.currentItem});
-                        } else {
-                            const index = this.items.findIndex(i => i.id === this.currentItem.id);
-                            if(index > -1) this.items[index] = {...this.currentItem};
-                        }
-                        this.showModal = false;
-                        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'บันทึกข้อมูลสำเร็จ!', confirmButtonColor: '#10b981' });
-                    },
-                    deleteItem(id) {
-                        Swal.fire({ title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ลบเลย', cancelButtonText: 'ยกเลิก' }).then((result) => {
-                            if (result.isConfirmed) {
-                                this.items = this.items.filter(i => i.id !== id);
-                                Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
-                            }
-                        });
-                    },
-                    viewItem(item) {
-                        Swal.fire({
-                            title: 'รายละเอียดบทความ',
-                            html: `
-                                <div class='text-left space-y-2 mt-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100'>
-                                    <p><span class='font-bold'>ID:</span> ${item.id}</p>
-                                    <p><span class='font-bold'>หัวข้อบทความ:</span> ${item.title}</p>
-                                    <p><span class='font-bold'>ผู้เขียน:</span> ${item.author}</p>
-                                    <p><span class='font-bold'>เวลาอ่านโดยประมาณ:</span> ${item.read_time}</p>
-                                    <p><span class='font-bold'>ลิงก์วิดีโอ:</span> ${item.video_url ? '<a href=&quot;'+item.video_url+'&quot; target=&quot;_blank&quot; class=&quot;text-blue-600 underline&quot;>'+item.video_url+'</a>' : '-'}</p>
-                                    <p><span class='font-bold'>สถานะ:</span> ${item.status}</p>
-                                </div>
-                            `,
-                            showCancelButton: true, showDenyButton: true, confirmButtonColor: '#6b7280', cancelButtonColor: '#3b82f6', denyButtonColor: '#ef4444', confirmButtonText: 'ปิด', cancelButtonText: 'แก้ไข', denyButtonText: 'ลบ'
-                        }).then((result) => {
-                            if (result.isDenied) this.deleteItem(item.id);
-                            else if (result.dismiss === Swal.DismissReason.cancel) {
-                                this.modalMode = 'edit'; this.currentItem = JSON.parse(JSON.stringify(item)); this.showModal = true;
-                            }
-                        });
-                    }
-                }" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h2 class="font-bold text-gray-800">จัดการบทความน่ารู้</h2>
-                        <button
-                            @click="showModal = true; modalMode = 'add'; currentItem = { id: null, title: '', author: '', read_time: '', video_url: '', status: 'เผยแพร่' }"
+                        <h2 class="font-bold text-gray-800">จัดการคลังความรู้ บทความและคำแนะนำ</h2>
+                        <a href="{{ route('mental-officer.articles.create') }}"
                             class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-700 flex items-center gap-2 transition-colors">
                             <x-heroicon-o-plus class="w-4 h-4" /> เพิ่มบทความใหม่
-                        </button>
+                        </a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50 border-b border-gray-100">
                                     <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
-                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        หัวข้อบทความ</th>
-                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">ผู้เขียน
-                                    </th>
-                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">เวลาอ่าน
-                                    </th>
-                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">วิดีโอ
-                                    </th>
-                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">สถานะ
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">
-                                        จัดการ</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-80">หัวข้อบทความ</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">ผู้เขียน</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">เวลาอ่าน</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                <template x-for="item in items" :key="item.id">
+                                @forelse($mentalArticles as $item)
                                     <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-6 py-4 text-sm text-gray-500" x-text="item.id"></td>
-                                        <td class="px-6 py-4 font-bold text-gray-800" x-text="item.title"></td>
-                                        <td class="px-6 py-4 text-sm text-gray-600" x-text="item.author"></td>
-                                        <td class="px-6 py-4 text-sm text-gray-600" x-text="item.read_time"></td>
-                                        <td class="px-6 py-4">
-                                            <template x-if="item.video_url">
-                                                <a :href="item.video_url" target="_blank"
-                                                    class="text-blue-500 hover:text-blue-700" title="มีวิดีโออ้างอิง">
-                                                    <x-heroicon-o-play-circle class="w-6 h-6" />
-                                                </a>
-                                            </template>
-                                            <template x-if="!item.video_url">
-                                                <span class="text-gray-300">-</span>
-                                            </template>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span class="px-2 py-1 rounded-lg text-xs font-bold" :class="{
-                                                      'bg-gray-100 text-gray-700': item.status === 'ร่าง',
-                                                      'bg-emerald-100 text-emerald-700': item.status === 'เผยแพร่'
-                                                  }" x-text="item.status"></span>
-                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">#AR-{{ str_pad($item->id, 3, "0", STR_PAD_LEFT) }}</td>
+                                        <td class="px-6 py-4 font-bold text-gray-800 max-w-xs"><span class="block truncate" title="{{ $item->title }}">{{ $item->title }}</span></td>
+                                        <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">{{ $item->author }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">{{ $item->read_time }}</td>
                                         <td class="px-6 py-4 text-right space-x-2 flex justify-end">
-                                            <button @click="viewItem(item)"
+                                            <a href="{{ route('mental.articles.show', $item->id) }}" target="_blank"
                                                 class="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors inline-flex items-center gap-1">
-                                                <x-heroicon-o-eye class="w-3 h-3" /> ดูข้อมูล
-                                            </button>
-                                            <button
-                                                @click="showModal = true; modalMode = 'edit'; currentItem = JSON.parse(JSON.stringify(item))"
+                                                <x-heroicon-o-eye class="w-3 h-3" /> ดูเนื้อหา
+                                            </a>
+                                            <a href="{{ route('mental-officer.articles.edit', $item->id) }}"
                                                 class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-1">
                                                 <x-heroicon-o-pencil-square class="w-3 h-3" /> แก้ไข
-                                            </button>
-                                            <button @click="deleteItem(item.id)"
-                                                class="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors inline-flex items-center gap-1">
-                                                <x-heroicon-o-trash class="w-3 h-3" /> ลบ
-                                            </button>
+                                            </a>
+                                            <form action="{{ route('mental-officer.articles.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('ยืนยันการลบบทความนี้?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors inline-flex items-center gap-1">
+                                                    <x-heroicon-o-trash class="w-3 h-3" /> ลบ
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
-                                </template>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                            <p class="text-sm">ยังไม่มีบทความในระบบ</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- Modal for Articles -->
-                    <div x-show="showModal" style="display: none;"
-                        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-                        x-transition>
-                        <div @click.away="showModal = false"
-                            class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden relative"
-                            x-transition.scale.origin.bottom>
-                            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                                <h3 class="text-lg font-bold text-gray-900"
-                                    x-text="modalMode === 'add' ? 'เพิ่มบทความ' : 'แก้ไขบทความ'"></h3>
-                                <button @click="showModal = false"
-                                    class="text-gray-400 hover:text-gray-600 transition-colors"><x-heroicon-o-x-mark
-                                        class="w-5 h-5" /></button>
-                            </div>
-                            <form @submit.prevent="saveItem()" class="p-6 space-y-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">หัวข้อบทความ</label>
-                                    <input type="text" x-model="currentItem.title"
-                                        class="w-full rounded-xl border-gray-200 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                                        required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">ผู้เขียน</label>
-                                    <input type="text" x-model="currentItem.author"
-                                        class="w-full rounded-xl border-gray-200 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                                        required>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-bold text-gray-700 mb-1">เวลาอ่านโดยประมาณ</label>
-                                        <input type="text" x-model="currentItem.read_time"
-                                            class="w-full rounded-xl border-gray-200 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                                            placeholder="เช่น 5 นาที" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-bold text-gray-700 mb-1">สถานะ</label>
-                                        <select x-model="currentItem.status"
-                                            class="w-full rounded-xl border-gray-200 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                                            required>
-                                            <option value="ร่าง">ร่าง (Draft)</option>
-                                            <option value="เผยแพร่">เผยแพร่ (Published)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">ลิงก์วิดีโอ (YouTube URL)
-                                        <span class="text-gray-400 font-normal">- ไม่บังคับ</span></label>
-                                    <input type="url" x-model="currentItem.video_url"
-                                        class="w-full rounded-xl border-gray-200 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                                        placeholder="https://www.youtube.com/...">
-                                </div>
-                                <div class="mt-6 flex gap-3 justify-end">
-                                    <button type="button" @click="showModal = false"
-                                        class="px-4 py-2 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">ยกเลิก</button>
-                                    <button type="submit"
-                                        class="px-4 py-2 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm transition-colors">บันทึกข้อมูล</button>
-                                </div>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>

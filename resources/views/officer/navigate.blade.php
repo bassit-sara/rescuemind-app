@@ -106,11 +106,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hazard Markers
     const hazards = @json($hazards);
     hazards.forEach(hazard => {
-        let emoji = '<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />️';
-        if(hazard.type === 'flood') emoji = '<x-heroicon-o-globe-asia-australia class="w-5 h-5 inline-block mr-1 -mt-1" />';
-        else if(hazard.type === 'fire') emoji = '<x-heroicon-o-fire class="w-5 h-5 inline-block mr-1 -mt-1" />';
-        else if(hazard.type === 'road_blocked') emoji = '<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />';
-        else if(hazard.type === 'landslide') emoji = '<x-heroicon-o-globe-alt class="w-5 h-5 inline-block mr-1 -mt-1" />️';
+        let emoji = `<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />️`;
+        if(hazard.type === 'flood') emoji = `<x-heroicon-o-globe-asia-australia class="w-5 h-5 inline-block mr-1 -mt-1" />`;
+        else if(hazard.type === 'fire') emoji = `<x-heroicon-o-fire class="w-5 h-5 inline-block mr-1 -mt-1" />`;
+        else if(hazard.type === 'road_blocked') emoji = `<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />`;
+        else if(hazard.type === 'landslide') emoji = `<x-heroicon-o-globe-alt class="w-5 h-5 inline-block mr-1 -mt-1" />️`;
         
         const hazardIcon = L.divIcon({
             className: 'hazard-icon',

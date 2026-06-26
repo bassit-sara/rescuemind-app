@@ -39,4 +39,9 @@ class ReliefPoint extends Model
             default    => $this->type,
         };
     }
+
+    public function shelterBookings()
+    {
+        return $this->hasMany(ShelterBooking::class);
+    }
 }

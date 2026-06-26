@@ -28,12 +28,7 @@
             @endif
         </div>
 
-        @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 shadow-sm">
-                <x-heroicon-s-check-circle class="w-6 h-6 text-green-500 shrink-0" />
-                <p class="font-medium">{{ session('success') }}</p>
-            </div>
-        @endif
+
 
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-3xl border border-gray-100">
             <div class="p-5 sm:p-8">
@@ -207,8 +202,8 @@
                     </div>
                     <h3 class="text-lg font-black text-gray-900 mb-2">ส่งข้อมูลสำเร็จ!</h3>
                     <p class="text-[15px] text-gray-600 font-medium mb-6" x-text="successMessage"></p>
-                    <a href="{{ route('mt3.donation') }}" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-teal-600 text-base font-bold text-white hover:bg-teal-700 focus:outline-none">
-                        ดูรายการรับบริจาคปัจจุบัน
+                    <a href="{{ route('mt3.needs-tracking') }}" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-teal-600 text-base font-bold text-white hover:bg-teal-700 focus:outline-none">
+                        ติดตามสถานะการขอทรัพยากร
                     </a>
                 </div>
             </div>

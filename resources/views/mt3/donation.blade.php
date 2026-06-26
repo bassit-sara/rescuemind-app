@@ -29,13 +29,6 @@
             @endif
         </div>
 
-        @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 shadow-sm">
-                <x-heroicon-s-check-circle class="w-6 h-6 text-green-500 shrink-0" />
-                <p class="font-medium">{{ session('success') }}</p>
-            </div>
-        @endif
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <!-- Donate Money -->
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-center hover:shadow-lg transition-shadow">
@@ -99,7 +92,7 @@
         <!-- Item Donation Form -->
         <div id="item-form" class="bg-white overflow-hidden shadow-xl sm:rounded-3xl border border-gray-100 mt-8">
             <div class="p-8">
-                <form action="{{ route('mt3.submit-form') }}" method="POST">
+                <form action="{{ route('mt3.donation.store') }}" method="POST">
                     @csrf
                     <h3 class="text-lg font-black text-gray-800 mb-6 flex items-center gap-2 border-b pb-4">
                         <x-heroicon-o-document-text class="w-6 h-6 text-emerald-500" />
@@ -110,22 +103,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้บริจาค / นามแฝง</label>
-                                <input type="text" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required value="{{ auth()->user()->name ?? '' }}">
+                                <input type="text" name="donor" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required value="{{ auth()->user()->name ?? '' }}">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์ (ใส่เฉพาะกรณีต้องการให้ติดต่อกลับ)</label>
-                                <input type="text" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow">
+                                <input type="text" name="phone" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">รายการสิ่งของที่จัดส่ง</label>
-                            <textarea rows="3" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required placeholder="เช่น น้ำดื่ม 20 แพ็ค, ข้าวสาร 10 กระสอบ"></textarea>
+                            <textarea rows="3" name="items" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required placeholder="เช่น น้ำดื่ม 20 แพ็ค, ข้าวสาร 10 กระสอบ"></textarea>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">เลขพัสดุ Tracking Number (ถ้ามี)</label>
-                            <input type="text" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" placeholder="เช่น TH123456789">
+                            <input type="text" name="tracking_no" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" placeholder="เช่น TH123456789">
                         </div>
                     </div>
 

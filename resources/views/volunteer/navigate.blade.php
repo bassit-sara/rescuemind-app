@@ -106,11 +106,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hazard Markers
     const hazards = @json($hazards);
     hazards.forEach(hazard => {
-        let emoji = '<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />️';
-        if(hazard.type === 'flood') emoji = '<x-heroicon-o-globe-asia-australia class="w-5 h-5 inline-block mr-1 -mt-1" />';
-        else if(hazard.type === 'fire') emoji = '<x-heroicon-o-fire class="w-5 h-5 inline-block mr-1 -mt-1" />';
-        else if(hazard.type === 'road_blocked') emoji = '<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />';
-        else if(hazard.type === 'landslide') emoji = '<x-heroicon-o-globe-alt class="w-5 h-5 inline-block mr-1 -mt-1" />️';
+        let emoji = `<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />️`;
+        if(hazard.type === 'flood') emoji = `<x-heroicon-o-globe-asia-australia class="w-5 h-5 inline-block mr-1 -mt-1" />`;
+        else if(hazard.type === 'fire') emoji = `<x-heroicon-o-fire class="w-5 h-5 inline-block mr-1 -mt-1" />`;
+        else if(hazard.type === 'road_blocked') emoji = `<x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block mr-1 -mt-1" />`;
+        else if(hazard.type === 'landslide') emoji = `<x-heroicon-o-globe-alt class="w-5 h-5 inline-block mr-1 -mt-1" />️`;
         
         const hazardIcon = L.divIcon({
             className: 'hazard-icon',
@@ -133,46 +133,66 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Get Officer Location and Route
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        let officerMarker = null;
+
+        navigator.geolocation.watchPosition(function(position) {
             const officerLat = position.coords.latitude;
             const officerLng = position.coords.longitude;
             
-            // Draw Officer Marker
-            const officerIcon = L.divIcon({
-                className: 'officer-icon',
-                html: `<div style="font-size: 24px;"><x-heroicon-o-paper-airplane class="w-5 h-5 inline-block mr-1 -mt-1" /></div>`,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-            L.marker([officerLat, officerLng], {icon: officerIcon})
-                .addTo(map)
-                .bindPopup('<b>ตำแหน่งของคุณ</b>');
-                
-            // Add Routing
-            L.Routing.control({
-                waypoints: [
-                    L.latLng(officerLat, officerLng),
-                    L.latLng(targetLat, targetLng)
-                ],
-                routeWhileDragging: false,
-                addWaypoints: false,
-                show: true,
-                lineOptions: {
-                    styles: [{color: '#3b82f6', opacity: 0.8, weight: 6}]
+            // Send location to backend
+            fetch('{{ route('tracking.location') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                createMarker: function() { return null; }, // Hide default markers from routing
-                language: 'en' // Leaflet routing machine doesn't have native TH support without plugins, en is fine.
-            }).addTo(map);
+                body: JSON.stringify({
+                    latitude: officerLat,
+                    longitude: officerLng,
+                    sos_id: {{ $sosRequest->id }}
+                })
+            }).catch(e => console.error('Tracking Error:', e));
 
-            // Hide AI Overlay immediately
-            document.getElementById('ai-loading').classList.add('hidden-overlay');
+            // Update or Draw Officer Marker
+            if (!officerMarker) {
+                const officerIcon = L.divIcon({
+                    className: 'officer-icon',
+                    html: `<div style="font-size: 24px; text-shadow: 0 0 5px rgba(255,255,255,0.8);"><svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v8l9-11h-7z"></path></svg></div>`,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
+                });
+                officerMarker = L.marker([officerLat, officerLng], {icon: officerIcon})
+                    .addTo(map)
+                    .bindPopup('<b>ตำแหน่งของคุณ</b>');
+                    
+                // Add Routing on first load
+                L.Routing.control({
+                    waypoints: [
+                        L.latLng(officerLat, officerLng),
+                        L.latLng(targetLat, targetLng)
+                    ],
+                    routeWhileDragging: false,
+                    addWaypoints: false,
+                    show: true,
+                    lineOptions: {
+                        styles: [{color: '#3b82f6', opacity: 0.8, weight: 6}]
+                    },
+                    createMarker: function() { return null; }, // Hide default markers from routing
+                    language: 'en'
+                }).addTo(map);
+
+                // Hide AI Overlay immediately
+                document.getElementById('ai-loading').classList.add('hidden-overlay');
+            } else {
+                officerMarker.setLatLng([officerLat, officerLng]);
+            }
 
         }, function(error) {
-            alert('ไม่สามารถดึงตำแหน่งปัจจุบันได้ กรุณาเปิด GPS');
+            console.error(error);
             document.getElementById('ai-loading').classList.add('hidden-overlay');
-        });
+        }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 });
     } else {
-        alert('เบราว์เซอร์ของคุณไม่รองรับ Geolocation');
+        alert('เบราว์เซอร์ไม่รองรับ Geolocation');
         document.getElementById('ai-loading').classList.add('hidden-overlay');
     }
 });

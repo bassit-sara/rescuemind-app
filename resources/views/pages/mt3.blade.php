@@ -35,7 +35,7 @@
         <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
             <x-heroicon-s-home-modern class="w-8 h-8 text-emerald-500" /> ฟื้นฟูที่อยู่อาศัยและชุมชน (Home Recovery)
         </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {{-- Home Recovery Request --}}
             <a href="{{ route('mt3.home-recovery') }}" class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 text-left flex flex-col transform hover:-translate-y-1 relative overflow-hidden">
                 <div class="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center text-2xl font-bold mb-4 group-hover:scale-110 transition-transform">
@@ -45,6 +45,15 @@
                 <div class="text-[15px] text-gray-700 leading-relaxed font-medium">แจ้งขอรับความช่วยเหลือในการทำความสะอาด ล้างโคลน ซ่อมแซมระบบไฟฟ้าและประปาเบื้องต้น</div>
             </a>
             
+            {{-- Household Recovery Tracking --}}
+            <a href="{{ route('mt3.recovery-tracking') }}" class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-teal-200 transition-all duration-300 text-left flex flex-col transform hover:-translate-y-1 relative overflow-hidden">
+                <div class="w-14 h-14 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-2xl font-bold mb-4 group-hover:scale-110 transition-transform">
+                    <x-heroicon-o-clipboard-document-check class="w-7 h-7" />
+                </div>
+                <div class="font-black text-gray-900 text-lg mb-2 group-hover:text-teal-600 transition-colors">ติดตามการฟื้นฟูบ้าน</div>
+                <div class="text-[15px] text-gray-700 leading-relaxed font-medium">เช็คสถานะคำขอความช่วยเหลือฟื้นฟูบ้านและติดตามการทำงานของทีมอาสาสมัคร</div>
+            </a>
+
             {{-- Community Needs Assessment --}}
             <a href="{{ route('mt3.community-needs') }}" class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-teal-200 transition-all duration-300 text-left flex flex-col transform hover:-translate-y-1 relative overflow-hidden">
                 <div class="w-14 h-14 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-2xl font-bold mb-4 group-hover:scale-110 transition-transform">
@@ -54,13 +63,13 @@
                 <div class="text-[15px] text-gray-700 leading-relaxed font-medium">แจ้งและรวบรวมความต้องการของชุมชนส่วนรวม เช่น อาหาร น้ำดื่ม ยารักษาโรค เพื่อประสานงานจัดหา</div>
             </a>
             
-            {{-- Household Recovery Tracking --}}
-            <a href="{{ route('mt3.recovery-tracking') }}" class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-teal-200 transition-all duration-300 text-left flex flex-col transform hover:-translate-y-1 relative overflow-hidden">
+            {{-- Community Needs Tracking --}}
+            <a href="{{ route('mt3.needs-tracking') }}" class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-teal-200 transition-all duration-300 text-left flex flex-col transform hover:-translate-y-1 relative overflow-hidden">
                 <div class="w-14 h-14 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-2xl font-bold mb-4 group-hover:scale-110 transition-transform">
-                    <x-heroicon-o-clipboard-document-check class="w-7 h-7" />
+                    <x-heroicon-o-document-magnifying-glass class="w-7 h-7" />
                 </div>
-                <div class="font-black text-gray-900 text-lg mb-2 group-hover:text-teal-600 transition-colors">ติดตามการฟื้นฟู</div>
-                <div class="text-[15px] text-gray-700 leading-relaxed font-medium">เช็คสถานะคำขอความช่วยเหลือ ติดตามความคืบหน้าการทำงานของทีมอาสาสมัครฟื้นฟูบ้านคุณ</div>
+                <div class="font-black text-gray-900 text-lg mb-2 group-hover:text-teal-600 transition-colors">ติดตามคำขอชุมชน</div>
+                <div class="text-[15px] text-gray-700 leading-relaxed font-medium">เช็คสถานะคำขอประเมินชุมชน ติดตามการจัดสรรทรัพยากรและการจัดส่งสิ่งของบรรเทาทุกข์</div>
             </a>
         </div>
     </div>
@@ -89,14 +98,7 @@
                 <div class="text-[15px] text-gray-700 leading-relaxed font-medium">ระบบรับบริจาคเงินและสิ่งของช่วยเหลืออย่างโปร่งใส พร้อมตรวจสอบเส้นทางการจัดส่งทรัพยากร</div>
             </a>
             
-            {{-- AI Donation Matching --}}
-            <a href="{{ route('mt3.ai-matching') }}" class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-teal-200 transition-all duration-300 text-left flex flex-col transform hover:-translate-y-1 relative overflow-hidden">
-                <div class="w-14 h-14 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-2xl font-bold mb-4 group-hover:scale-110 transition-transform">
-                    <x-heroicon-o-cpu-chip class="w-7 h-7" />
-                </div>
-                <div class="font-black text-gray-900 text-lg mb-2 group-hover:text-teal-600 transition-colors">AI Donation Matching</div>
-                <div class="text-[15px] text-gray-700 leading-relaxed font-medium">ระบบอัจฉริยะวิเคราะห์เพื่อจับคู่ผู้บริจาคกับพื้นที่ที่กำลังขาดแคลน ช่วยลดปัญหาของล้นคลัง</div>
-            </a>
+
         </div>
     </div>
 
@@ -114,15 +116,7 @@
                 <div class="font-black text-gray-900 text-lg mb-2 group-hover:text-emerald-600 transition-colors">แจ้งความเสียหายและฟื้นฟูอาชีพ</div>
                 <div class="text-[15px] text-gray-700 leading-relaxed font-medium">ระบบแจ้งความเสียหายทางการเกษตร ปศุสัตว์ หรือธุรกิจรายย่อย เพื่อขอรับเงินชดเชย หรือทุนฝึกอาชีพใหม่</div>
             </a>
-            
-            {{-- Recovery Analytics --}}
-            <a href="{{ route('mt3.analytics') }}" class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-gray-300 transition-all duration-300 text-left flex flex-col transform hover:-translate-y-1 relative overflow-hidden">
-                <div class="w-14 h-14 bg-gray-100 text-gray-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-4 group-hover:scale-110 transition-transform">
-                    <x-heroicon-o-chart-bar class="w-7 h-7" />
-                </div>
-                <div class="font-bold text-gray-800 text-lg mb-2 group-hover:text-gray-900 transition-colors">Recovery Dashboard & Analytics</div>
-                <div class="text-[15px] text-gray-700 leading-relaxed font-medium">ติดตามภาพรวมการฟื้นฟูพื้นที่ (สำหรับเจ้าหน้าที่) ดูอัตราการฟื้นฟูสำเร็จ และวิเคราะห์ความต้องการในอนาคต</div>
-            </a>
+
         </div>
     </div>
 

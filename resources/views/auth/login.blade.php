@@ -177,8 +177,14 @@
 
             <!-- Session Status -->
             <x-auth-session-status
-                class="mb-6 bg-green-50 text-green-700 p-3 rounded-xl text-sm font-medium border border-green-100"
+                class="mb-4"
                 :status="session('status')" />
+
+            @if(session('error'))
+                <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-4 rounded-xl border border-red-100">
+                    {{ session('error') }}
+                </div>
+            @endif
 
             <form id="loginForm" method="POST" action="{{ route('login') }}" class="space-y-6"
                 onsubmit="event.preventDefault(); confirmLogin();">

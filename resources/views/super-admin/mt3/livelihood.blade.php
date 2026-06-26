@@ -5,72 +5,26 @@
 @endsection
 @section('content')
 
-<div x-data="{ 
-    showModal: false, 
-    modalMode: 'add', 
-    currentItem: { id: null, name: '', needs: '', status: 'รอตรวจสอบ' },
-    items: [
-        { id: '#LL-001', name: 'ลุงบุญมี รักนา (เกษตรกร (ทำนา))', needs: 'ขอรับเมล็ดพันธุ์ข้าว, เงินเยียวยา', status: 'รอตรวจสอบ' },
-        { id: '#LL-002', name: 'ป้าสมพร ขายข้าวแกง (แม่ค้า (ธุรกิจรายย่อย))', needs: 'ขอทุนซื้ออุปกรณ์ทำกินใหม่, อบรมอาชีพเสริม', status: 'อนุมัติแล้ว' }
-    ],
-    init() {
-        const stored = localStorage.getItem('mt3_livelihood');
-        if (stored) {
-            this.items = JSON.parse(stored);
-        }
-        this.$watch('items', value => {
-            localStorage.setItem('mt3_livelihood', JSON.stringify(value));
-        });
-    },
-    saveItem() {
-        if(this.modalMode === 'add') {
-            this.currentItem.id = '#LL-' + String(this.items.length + 1).padStart(3, '0');
-            this.items.push({...this.currentItem});
-        } else {
-            const index = this.items.findIndex(i => i.id === this.currentItem.id);
-            if(index > -1) this.items[index] = {...this.currentItem};
-        }
-        this.showModal = false;
-        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: this.modalMode === 'add' ? 'เพิ่มข้อมูลสำเร็จ!' : 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#4f46e5' });
-    },
-    deleteItem(id) {
-        Swal.fire({ title: 'ยืนยันการลบข้อมูล?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก' }).then((result) => {
-            if (result.isConfirmed) {
-                this.items = this.items.filter(i => i.id !== id);
-                Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
-            }
-        });
-    },
-    viewItem(item) {
-        Swal.fire({
-            title: 'รายละเอียดการขอฟื้นฟูอาชีพ',
-            html: `
-                <div class='text-left space-y-2 mt-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100'>
-                    <p><span class='font-bold text-gray-900'>ID:</span> ${item.id}</p>
-                    <p><span class='font-bold text-gray-900'>ผู้แจ้ง / อาชีพเดิม:</span> ${item.name}</p>
-                    <p><span class='font-bold text-gray-900'>ความประสงค์:</span> ${item.needs}</p>
-                    <p><span class='font-bold text-gray-900'>สถานะ:</span> <span class='px-2 py-1 rounded bg-gray-200 text-xs font-bold'>${item.status}</span></p>
-                </div>
-            `,
-            showCancelButton: true,
-            showDenyButton: true,
-            confirmButtonColor: '#6b7280',
-            cancelButtonColor: '#3b82f6',
-            denyButtonColor: '#ef4444',
-            confirmButtonText: 'ปิดหน้าต่าง',
-            cancelButtonText: 'แก้ไข',
-            denyButtonText: 'ลบ'
-        }).then((result) => {
-            if (result.isDenied) {
-                this.deleteItem(item.id);
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                this.modalMode = 'edit';
-                this.currentItem = JSON.parse(JSON.stringify(item));
-                this.showModal = true;
-            }
-        });
-    }
-}" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+@php
+    $mappedLivelihoods = $livelihoods->map(function($livelihood) {
+        $businessLabel = match($livelihood->business_type) {
+            'agriculture' => 'เกษตรกรรม (พืชผล)',
+            'livestock' => 'ปศุสัตว์ / ประมง',
+            'business' => 'ร้านค้า / ธุรกิจรายย่อย',
+            'other' => $livelihood->business_type_other,
+            default => $livelihood->business_type,
+        };
+        $name = ($livelihood->user ? $livelihood->user->name : 'ไม่ระบุตัวตน') . ' (' . $businessLabel . ')';
+        return [
+            'id' => '#LL-' . str_pad($livelihood->id, 3, '0', STR_PAD_LEFT),
+            'name' => $name,
+            'needs' => implode(', ', $livelihood->needs ?? []),
+            'status' => $livelihood->status,
+        ];
+    });
+@endphp
+
+<div x-data="livelihoodData()" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
         <h2 class="font-bold text-gray-800">รายการแจ้งความเสียหาย/ขอฟื้นฟูอาชีพ</h2>
         <div class="flex gap-2">
@@ -179,3 +133,91 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('livelihoodData', () => ({
+        showModal: false, 
+        modalMode: 'add', 
+        currentItem: { id: null, name: '', needs: '', status: 'รอตรวจสอบ' },
+        items: @json($mappedLivelihoods),
+        init() {
+            // Data populated from database
+        },
+        saveItem() {
+            if(this.modalMode === 'add') {
+                this.currentItem.id = '#LL-' + String(this.items.length + 1).padStart(3, '0');
+                this.items.push({...this.currentItem});
+                this.showModal = false;
+                Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'เพิ่มข้อมูลสำเร็จ!', confirmButtonColor: '#4f46e5' });
+            } else {
+                const dbId = parseInt(this.currentItem.id.replace('#LL-', ''));
+                fetch(`/super-admin/mt3/livelihood/${dbId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ status: this.currentItem.status })
+                }).then(res => res.json()).then(data => {
+                    if(data.success) {
+                        const index = this.items.findIndex(i => i.id === this.currentItem.id);
+                        if(index > -1) this.items[index] = {...this.currentItem};
+                        this.showModal = false;
+                        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#4f46e5' });
+                    }
+                });
+            }
+        },
+        deleteItem(id) {
+            Swal.fire({ title: 'ยืนยันการลบข้อมูล?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก' }).then((result) => {
+                if (result.isConfirmed) {
+                    const dbId = parseInt(id.replace('#LL-', ''));
+                    fetch(`/super-admin/mt3/livelihood/${dbId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    }).then(res => res.json()).then(data => {
+                        if(data.success) {
+                            this.items = this.items.filter(i => i.id !== id);
+                            Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+                        }
+                    });
+                }
+            });
+        },
+        viewItem(item) {
+            Swal.fire({
+                title: 'รายละเอียดการขอฟื้นฟูอาชีพ',
+                html: `
+                    <div class='text-left space-y-2 mt-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100'>
+                        <p><span class='font-bold text-gray-900'>ID:</span> ${item.id}</p>
+                        <p><span class='font-bold text-gray-900'>ผู้แจ้ง / อาชีพเดิม:</span> ${item.name}</p>
+                        <p><span class='font-bold text-gray-900'>ความประสงค์:</span> ${item.needs}</p>
+                        <p><span class='font-bold text-gray-900'>สถานะ:</span> <span class='px-2 py-1 rounded bg-gray-200 text-xs font-bold'>${item.status}</span></p>
+                    </div>
+                `,
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonColor: '#6b7280',
+                cancelButtonColor: '#3b82f6',
+                denyButtonColor: '#ef4444',
+                confirmButtonText: 'ปิดหน้าต่าง',
+                cancelButtonText: 'แก้ไข',
+                denyButtonText: 'ลบ'
+            }).then((result) => {
+                if (result.isDenied) {
+                    this.deleteItem(item.id);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    this.modalMode = 'edit';
+                    this.currentItem = JSON.parse(JSON.stringify(item));
+                    this.showModal = true;
+                }
+            });
+        }
+    }));
+});
+</script>
+@endpush

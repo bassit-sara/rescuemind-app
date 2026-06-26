@@ -48,24 +48,32 @@
                     </td>
                     <td class="px-5 py-4 text-xs text-gray-500">{{ $user->created_at->format('d/m/Y') }}</td>
                     <td class="px-5 py-4">
-                        <form action="{{ request()->routeIs('admin.*') ? route('admin.users.role', $user) : route('super-admin.users.role', $user) }}" method="POST" class="flex gap-2">
-                            @csrf @method('PATCH')
-                            <select name="role" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
-                                @foreach($roles as $role)
-                                <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
-                                @endforeach
-                            </select>
-                            @php
-                                $provincesList = ['กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา','ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก','นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน','บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา','พะเยา','พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','ภูเก็ต','มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยโสธร','ยะลา','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี','ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ','สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี','สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี','อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'];
-                            @endphp
-                            <select name="province" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-28">
-                                <option value="">ไม่มีจังหวัด</option>
-                                @foreach($provincesList as $p)
-                                <option value="{{ $p }}" {{ str_replace('จังหวัด', '', $user->province) == $p ? 'selected' : '' }}>{{ $p }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700">บันทึก</button>
-                        </form>
+                        <div class="flex items-center gap-2">
+                            <form action="{{ request()->routeIs('admin.*') ? route('admin.users.role', $user) : route('super-admin.users.role', $user) }}" method="POST" class="flex gap-2">
+                                @csrf @method('PATCH')
+                                <select name="role" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
+                                    @foreach($roles as $role)
+                                    <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+                                @php
+                                    $provincesList = ['กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา','ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก','นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน','บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา','พะเยา','พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','ภูเก็ต','มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยโสธร','ยะลา','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี','ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ','สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี','สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี','อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'];
+                                @endphp
+                                <select name="province" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-28">
+                                    <option value="">ไม่มีจังหวัด</option>
+                                    @foreach($provincesList as $p)
+                                    <option value="{{ $p }}" {{ str_replace('จังหวัด', '', $user->province) == $p ? 'selected' : '' }}>{{ $p }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700">บันทึก</button>
+                            </form>
+                            @if(auth()->id() !== $user->id)
+                            <form action="{{ request()->routeIs('admin.*') ? route('admin.users.destroy', $user) : route('super-admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะลบผู้ใช้นี้ ({{ $user->name }}) ? การดำเนินการนี้ไม่สามารถยกเลิกได้');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="px-3 py-1.5 bg-red-100 text-red-600 text-xs rounded-lg hover:bg-red-200 font-medium">ลบ</button>
+                            </form>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty

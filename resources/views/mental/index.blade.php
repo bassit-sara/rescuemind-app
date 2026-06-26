@@ -70,101 +70,44 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {{-- PHQ9 --}}
-            <a href="{{ route('mental.assess.create', 'phq9') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-face-frown class="w-5 h-5 inline-block mr-1 -mt-1" />
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~5 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">ประเมินภาวะซึมเศร้า (PHQ-9)</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">9 คำถามมาตรฐานระดับสากล เพื่อสำรวจและประเมินภาวะความซึมเศร้าเบื้องต้น</p>
-                </div>
-            </a>
-
-            {{-- GAD7 --}}
-            <a href="{{ route('mental.assess.create', 'gad7') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-face-frown class="w-5 h-5 inline-block mr-1 -mt-1" />
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~3 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">ประเมินความกังวล (GAD-7)</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">7 คำถามตรวจวัดระดับความวิตกกังวล ความกระวนกระวายใจ และการควบคุมอารมณ์</p>
-                </div>
-            </a>
-
-            {{-- PTSD --}}
-            <a href="{{ route('mental.assess.create', 'ptsd') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-face-frown class="w-5 h-5 inline-block mr-1 -mt-1" />
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~5 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">ประเมินความเครียด (PTSD)</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">8 คำถามคัดกรองภาวะความเครียดและผลกระทบทางจิตใจรุนแรงหลังเหตุการณ์สะเทือนใจ</p>
-                </div>
-            </a>
-
-            {{-- Disaster Stress --}}
-            <a href="{{ route('mental.assess.create', 'disaster_stress') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-orange-200 dark:hover:border-orange-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-arrow-path class="w-5 h-5 inline-block mr-1 -mt-1" />️
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~4 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">ประเมินความเครียดจากภัยพิบัติ</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">6 คำถามเจาะลึกผลกระทบด้านความกลัวและความวิตกกังวลที่เกิดขึ้นจากภัยพิบัติโดยตรง</p>
-                </div>
-            </a>
-
-            {{-- Burnout --}}
-            <a href="{{ route('mental.assess.create', 'burnout') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-pink-200 dark:hover:border-pink-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-pink-50 dark:bg-pink-950/50 text-pink-600 dark:text-pink-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-battery-0 class="w-5 h-5 inline-block mr-1 -mt-1" />
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~3 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">ประเมินภาวะหมดไฟ (Burnout)</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">5 คำถามประเมินระดับความเหนื่อยล้าทางอารมณ์และสภาวะหมดพลังในการก้าวข้ามปัญหา</p>
-                </div>
-            </a>
-
-            {{-- Sleep Quality --}}
-            <a href="{{ route('mental.assess.create', 'sleep_quality') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-moon class="w-5 h-5 inline-block mr-1 -mt-1" />
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~3 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">ประเมินคุณภาพการนอนหลับ</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">5 คำถามสำรวจสภาวะการนอนไม่หลับ ปัญหาการนอนหลับยากสะสมหลังเผชิญวิกฤตภัยพิบัติ</p>
-                </div>
-            </a>
+            @if(isset($customForms) && $customForms->count() > 0)
+                @foreach($customForms as $form)
+                    @if(($form->category ?? 'mental') === 'mental')
+                        @php
+                            $colorClass = match($form->color_theme) {
+                                'pink' => 'pink',
+                                'orange' => 'orange',
+                                'emerald' => 'emerald',
+                                'blue' => 'blue',
+                                'purple' => 'purple',
+                                'red' => 'red',
+                                'teal' => 'teal',
+                                'rose' => 'rose',
+                                'amber' => 'amber',
+                                default => 'indigo',
+                            };
+                        @endphp
+                        <a href="{{ route('mental.assess.create', $form->slug) }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-{{ $colorClass }}-200 dark:hover:border-{{ $colorClass }}-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
+                            <div class="flex items-start justify-between mb-6">
+                                <div class="w-12 h-12 bg-{{ $colorClass }}-50 dark:bg-{{ $colorClass }}-950/50 text-{{ $colorClass }}-600 dark:text-{{ $colorClass }}-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                    @if(str_starts_with($form->icon, 'o-') || str_starts_with($form->icon, 's-'))
+                                        @svg('heroicon-' . $form->icon, 'w-5 h-5 inline-block mr-1 -mt-1')
+                                    @else
+                                        <x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block mr-1 -mt-1" />
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
+                                    <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ {{ $form->time_estimate ?? '~3 นาที' }}
+                                </div>
+                            </div>
+                            <div class="mt-auto">
+                                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-{{ $colorClass }}-600 dark:group-hover:text-{{ $colorClass }}-400 transition-colors">{{ $form->title }}</h3>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ $form->description }}</p>
+                            </div>
+                        </a>
+                    @endif
+                @endforeach
+            @endif
         </div>
     </div>
 
@@ -214,37 +157,44 @@
                 </div>
             </a>
 
-            {{-- Injury Severity --}}
-            <a href="{{ route('mental.assess.create', 'injury_severity') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-face-frown class="w-5 h-5 inline-block mr-1 -mt-1" />
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~3 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">ประเมินระดับความรุนแรงของแผล</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">5 คำถามประเมินอาการบาดเจ็บ บาดแผลติดเชื้อ และประเมินความต้องการการปฐมพยาบาล</p>
-                </div>
-            </a>
-
-            {{-- Nutrition Status --}}
-            <a href="{{ route('mental.assess.create', 'nutrition_status') }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-amber-200 dark:hover:border-amber-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="w-12 h-12 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                        <x-heroicon-o-cube class="w-5 h-5 inline-block mr-1 -mt-1" />
-                    </div>
-                    <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
-                        <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ ~3 นาที
-                    </div>
-                </div>
-                <div class="mt-auto">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">ประเมินความมั่นคงด้านอาหาร</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">5 คำถามสำรวจการเข้าถึงอาหารโภชนาการ และน้ำดื่มที่สะอาดระหว่างช่วงฟื้นฟูภัยพิบัติ</p>
-                </div>
-            </a>
+            @if(isset($customForms) && $customForms->count() > 0)
+                @foreach($customForms as $form)
+                    @if(($form->category ?? 'mental') === 'physical')
+                        @php
+                            $colorClass = match($form->color_theme) {
+                                'pink' => 'pink',
+                                'orange' => 'orange',
+                                'emerald' => 'emerald',
+                                'blue' => 'blue',
+                                'purple' => 'purple',
+                                'red' => 'red',
+                                'teal' => 'teal',
+                                'rose' => 'rose',
+                                'amber' => 'amber',
+                                default => 'indigo',
+                            };
+                        @endphp
+                        <a href="{{ route('mental.assess.create', $form->slug) }}" class="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-xl hover:border-{{ $colorClass }}-200 dark:hover:border-{{ $colorClass }}-900/60 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1">
+                            <div class="flex items-start justify-between mb-6">
+                                <div class="w-12 h-12 bg-{{ $colorClass }}-50 dark:bg-{{ $colorClass }}-950/50 text-{{ $colorClass }}-600 dark:text-{{ $colorClass }}-400 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                    @if(str_starts_with($form->icon, 'o-') || str_starts_with($form->icon, 's-'))
+                                        @svg('heroicon-' . $form->icon, 'w-5 h-5 inline-block mr-1 -mt-1')
+                                    @else
+                                        <x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block mr-1 -mt-1" />
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-1 px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-semibold rounded-full">
+                                    <x-heroicon-o-clock class="w-5 h-5 inline-block mr-1 -mt-1" />️ {{ $form->time_estimate ?? '~3 นาที' }}
+                                </div>
+                            </div>
+                            <div class="mt-auto">
+                                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-{{ $colorClass }}-600 dark:group-hover:text-{{ $colorClass }}-400 transition-colors">{{ $form->title }}</h3>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ $form->description }}</p>
+                            </div>
+                        </a>
+                    @endif
+                @endforeach
+            @endif
         </div>
     </div>
 

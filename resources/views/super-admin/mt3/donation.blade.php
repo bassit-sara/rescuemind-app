@@ -5,73 +5,21 @@
 @endsection
 @section('content')
 
-<div x-data="{ 
-    showModal: false, 
-    modalMode: 'add', 
-    currentItem: { id: null, donor: '', contact: '', items: '', location: '' },
-    items: [
-        { id: '#DN-001', donor: 'บจก. ใจดีแพคเกจจิ้ง', contact: 'ติดต่อ: คุณมานี 081-xxx-xxxx', items: 'กล่องกระดาษบรรจุของ 10,000 ใบ, เทปกาว 500 ม้วน', location: 'ศูนย์ประสานงาน กทม.' },
-        { id: '#DN-002', donor: 'ผู้ไม่ประสงค์ออกนาม', contact: '-', items: 'น้ำดื่ม 50 แพ็ค, ข้าวสาร 100 กก.', location: 'ศูนย์อพยพวัดป่า' }
-    ],
-    init() {
-        const stored = localStorage.getItem('mt3_donation');
-        if (stored) {
-            this.items = JSON.parse(stored);
-        }
-        this.$watch('items', value => {
-            localStorage.setItem('mt3_donation', JSON.stringify(value));
-        });
-    },
-    saveItem() {
-        if(this.modalMode === 'add') {
-            this.currentItem.id = '#DN-' + String(this.items.length + 1).padStart(3, '0');
-            this.items.push({...this.currentItem});
-        } else {
-            const index = this.items.findIndex(i => i.id === this.currentItem.id);
-            if(index > -1) this.items[index] = {...this.currentItem};
-        }
-        this.showModal = false;
-        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: this.modalMode === 'add' ? 'เพิ่มข้อมูลสำเร็จ!' : 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#4f46e5' });
-    },
-    deleteItem(id) {
-        Swal.fire({ title: 'ยืนยันการลบข้อมูล?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก' }).then((result) => {
-            if (result.isConfirmed) {
-                this.items = this.items.filter(i => i.id !== id);
-                Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
-            }
-        });
-    },
-    viewItem(item) {
-        Swal.fire({
-            title: 'รายละเอียดการบริจาค',
-            html: `
-                <div class='text-left space-y-2 mt-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100'>
-                    <p><span class='font-bold text-gray-900'>ID:</span> ${item.id}</p>
-                    <p><span class='font-bold text-gray-900'>ผู้บริจาค/องค์กร:</span> ${item.donor}</p>
-                    <p><span class='font-bold text-gray-900'>ผู้ติดต่อ:</span> ${item.contact}</p>
-                    <p><span class='font-bold text-gray-900'>สิ่งของที่บริจาค:</span> ${item.items}</p>
-                    <p><span class='font-bold text-gray-900'>จุดรับบริจาค:</span> ${item.location}</p>
-                </div>
-            `,
-            showCancelButton: true,
-            showDenyButton: true,
-            confirmButtonColor: '#6b7280',
-            cancelButtonColor: '#3b82f6',
-            denyButtonColor: '#ef4444',
-            confirmButtonText: 'ปิดหน้าต่าง',
-            cancelButtonText: 'แก้ไข',
-            denyButtonText: 'ลบ'
-        }).then((result) => {
-            if (result.isDenied) {
-                this.deleteItem(item.id);
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                this.modalMode = 'edit';
-                this.currentItem = JSON.parse(JSON.stringify(item));
-                this.showModal = true;
-            }
-        });
-    }
-}" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+@php
+    $mappedDonations = $donations->map(function($donation) {
+        return [
+            'id' => '#DN-' . str_pad($donation->id, 3, '0', STR_PAD_LEFT),
+            'donor' => $donation->donor,
+            'contact' => $donation->phone,
+            'items' => $donation->items,
+            'location' => $donation->location,
+            'tracking_no' => $donation->tracking_no,
+        ];
+    });
+@endphp
+
+<div x-data="donationData()" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
         <h2 class="font-bold text-gray-800">รายการสิ่งของบริจาค</h2>
         <div class="flex gap-2">
@@ -169,3 +117,68 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('donationData', () => ({
+        showModal: false, 
+        modalMode: 'add', 
+        currentItem: { id: null, donor: '', contact: '', items: '', location: '' },
+        items: @json($mappedDonations),
+        init() {
+            // Data populated from database
+        },
+        saveItem() {
+            if(this.modalMode === 'add') {
+                this.currentItem.id = '#DN-' + String(this.items.length + 1).padStart(3, '0');
+                this.items.push({...this.currentItem});
+            } else {
+                const index = this.items.findIndex(i => i.id === this.currentItem.id);
+                if(index > -1) this.items[index] = {...this.currentItem};
+            }
+            this.showModal = false;
+            Swal.fire({ icon: 'success', title: 'สำเร็จ', text: this.modalMode === 'add' ? 'เพิ่มข้อมูลสำเร็จ!' : 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#4f46e5' });
+        },
+        deleteItem(id) {
+            Swal.fire({ title: 'ยืนยันการลบข้อมูล?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก' }).then((result) => {
+                if (result.isConfirmed) {
+                    this.items = this.items.filter(i => i.id !== id);
+                    Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+                }
+            });
+        },
+        viewItem(item) {
+            Swal.fire({
+                title: 'รายละเอียดการบริจาค',
+                html: `
+                    <div class='text-left space-y-2 mt-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100'>
+                        <p><span class='font-bold text-gray-900'>ID:</span> ${item.id}</p>
+                        <p><span class='font-bold text-gray-900'>ผู้บริจาค/องค์กร:</span> ${item.donor}</p>
+                        <p><span class='font-bold text-gray-900'>ผู้ติดต่อ:</span> ${item.contact}</p>
+                        <p><span class='font-bold text-gray-900'>สิ่งของที่บริจาค:</span> ${item.items}</p>
+                        <p><span class='font-bold text-gray-900'>จุดรับบริจาค:</span> ${item.location}</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonColor: '#6b7280',
+                cancelButtonColor: '#3b82f6',
+                denyButtonColor: '#ef4444',
+                confirmButtonText: 'ปิดหน้าต่าง',
+                cancelButtonText: 'แก้ไข',
+                denyButtonText: 'ลบ'
+            }).then((result) => {
+                if (result.isDenied) {
+                    this.deleteItem(item.id);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    this.modalMode = 'edit';
+                    this.currentItem = JSON.parse(JSON.stringify(item));
+                    this.showModal = true;
+                }
+            });
+        }
+    }));
+});
+</script>
+@endpush

@@ -10,13 +10,21 @@ class NewsController extends Controller
 {
     /* ─── Public / User ──────────────────────────────────────── */
 
-    public function index()
+    public function index(Request $request)
     {
+        $category = $request->query('cat');
+        
         $pinned = News::where('is_published', true)->where('is_pinned', true)
+                      ->when($category && $category !== 'all', function($q) use ($category) {
+                          $q->where('category', $category);
+                      })
                       ->with('author')->latest()->get();
 
         $news = News::where('is_published', true)->where('is_pinned', false)
-                    ->with('author')->latest()->paginate(12);
+                    ->when($category && $category !== 'all', function($q) use ($category) {
+                        $q->where('category', $category);
+                    })
+                    ->with('author')->latest()->paginate(12)->withQueryString();
 
         return view('news.index', compact('pinned', 'news'));
     }

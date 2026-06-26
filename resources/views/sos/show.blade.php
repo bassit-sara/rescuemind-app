@@ -152,7 +152,35 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     L.marker([{{ $sosRequest->latitude }}, {{ $sosRequest->longitude }}])
         .addTo(map)
-        .bindPopup(`<b><x-heroicon-o-bell class="w-5 h-5 inline-block mr-1 -mt-1" /> จุด SOS #{{ $sosRequest->id }}</b>`).openPopup();
+        .bindPopup(`<b><x-heroicon-o-bell class="w-5 h-5 inline-block mr-1 -mt-1" /> จุดเกิดเหตุ SOS #{{ $sosRequest->id }}</b>`).openPopup();
+
+    let volunteerMarker = null;
+
+    if (typeof window.Echo !== 'undefined') {
+        window.Echo.channel('tracking.sos.{{ $sosRequest->id }}')
+            .listen('.VolunteerLocationUpdated', (e) => {
+                if (!volunteerMarker) {
+                    const officerIcon = L.divIcon({
+                        className: 'officer-icon',
+                        html: `<div style="font-size: 24px; text-shadow: 0 0 5px rgba(255,255,255,0.8);"><svg class="w-8 h-8 text-blue-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v8l9-11h-7z"></path></svg></div>`,
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16]
+                    });
+                    volunteerMarker = L.marker([e.latitude, e.longitude], {icon: officerIcon})
+                        .addTo(map)
+                        .bindPopup('<b>รถกู้ภัย / อาสาสมัครกำลังเดินทางมา</b>');
+                        
+                    // Adjust map view to fit both SOS and volunteer
+                    const bounds = L.latLngBounds([
+                        [{{ $sosRequest->latitude }}, {{ $sosRequest->longitude }}],
+                        [e.latitude, e.longitude]
+                    ]);
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                } else {
+                    volunteerMarker.setLatLng([e.latitude, e.longitude]);
+                }
+            });
+    }
 </script>
 @endif
 @endpush

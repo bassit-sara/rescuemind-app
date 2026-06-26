@@ -209,53 +209,34 @@ class MentalAssessmentController extends Controller
 
     private function getQuestions(string $type): array
     {
-        return match($type) {
-            'phq9' => $this->phq9Questions,
-            'gad7' => $this->gad7Questions,
-            'ptsd' => $this->ptsdQuestions,
-            'physical' => $this->physicalQuestions,
-            'disaster_stress' => $this->disasterStressQuestions,
-            'disease_risk' => $this->diseaseRiskQuestions,
-            'burnout' => $this->burnoutQuestions,
-            'sleep_quality' => $this->sleepQualityQuestions,
-            'injury_severity' => $this->injurySeverityQuestions,
-            'nutrition_status' => $this->nutritionStatusQuestions,
-        };
+        $custom = \App\Models\CustomAssessment::where('slug', $type)->first();
+        if ($custom) return $custom->questions;
+
+        return [];
     }
 
     public function create(string $type)
     {
-        abort_unless(in_array($type, ['phq9', 'gad7', 'ptsd', 'physical', 'disaster_stress', 'disease_risk', 'burnout', 'sleep_quality', 'injury_severity', 'nutrition_status']), 404);
+        $custom = \App\Models\CustomAssessment::where('slug', $type)->where('is_active', true)->firstOrFail();
+        $title = $custom->title;
+
         $questions = $this->getQuestions($type);
-        $titles = [
-            'phq9' => 'แบบประเมินภาวะซึมเศร้า (PHQ-9)',
-            'gad7' => 'แบบประเมินความวิตกกังวล (GAD-7)',
-            'ptsd' => 'แบบประเมินความเครียดหลังเหตุการณ์ (PTSD)',
-            'physical' => 'แบบประเมินสุขภาพกายหลังภัยพิบัติ',
-            'disaster_stress' => 'แบบประเมินความเครียดจากภัยพิบัติ',
-            'disease_risk' => 'แบบประเมินความเสี่ยงโรคติดต่อหลังภัยพิบัติ',
-            'burnout' => 'แบบประเมินภาวะหมดไฟ (Burnout)',
-            'sleep_quality' => 'แบบประเมินคุณภาพการนอนหลับ (Insomnia)',
-            'injury_severity' => 'แบบประเมินความรุนแรงของการบาดเจ็บ',
-            'nutrition_status' => 'แบบประเมินภาวะขาดแคลนอาหารและน้ำ',
-        ];
-        $title = $titles[$type];
         return view('mental.assess', compact('type', 'questions', 'title'));
     }
 
     public function store(Request $request)
     {
         $type = $request->type;
-        abort_unless(in_array($type, ['phq9', 'gad7', 'ptsd', 'physical', 'disaster_stress', 'disease_risk', 'burnout', 'sleep_quality', 'injury_severity', 'nutrition_status']), 422);
+        $custom = \App\Models\CustomAssessment::where('slug', $type)->where('is_active', true)->firstOrFail();
 
         $request->validate([
-            'type'      => 'required|in:phq9,gad7,ptsd,physical,disaster_stress,disease_risk,burnout,sleep_quality,injury_severity,nutrition_status',
+            'type'      => 'required',
             'answers'   => 'required|array',
             'answers.*' => 'required|integer|min:0|max:3',
         ]);
 
         $score = array_sum($request->answers);
-        $severity = $this->calculateSeverity($type, $score);
+        $severity = $this->calculateSeverity($type, $score, $request->answers);
 
         $assessment = MentalAssessment::create([
             'user_id'  => auth()->id(),
@@ -265,7 +246,7 @@ class MentalAssessmentController extends Controller
             'severity' => $severity,
         ]);
 
-        return redirect()->route('mental.assess.show', $assessment)->with('success', 'ทำแบบประเมินสำเร็จ');
+        return redirect()->route('mental.assess.show', $assessment);
     }
 
     public function show(MentalAssessment $mentalAssessment)
@@ -289,7 +270,7 @@ class MentalAssessmentController extends Controller
         return view('mental-officer.assessment-show', compact('mentalAssessment'));
     }
 
-    private function calculateSeverity(string $type, int $score): string
+    private function calculateSeverity(string $type, int $score, array $answers = []): string
     {
         return match($type) {
             'phq9' => match(true) {
@@ -352,7 +333,17 @@ class MentalAssessmentController extends Controller
                 $score <= 28 => 'moderate',
                 default      => 'severe',
             },
-            default => 'minimal',
+            default => (function() use ($score, $answers) {
+                $maxScore = count($answers) * 3;
+                if ($maxScore == 0) return 'minimal';
+                $percent = ($score / $maxScore) * 100;
+                return match(true) {
+                    $percent <= 25 => 'minimal',
+                    $percent <= 50 => 'mild',
+                    $percent <= 75 => 'moderate',
+                    default => 'severe',
+                };
+            })(),
         };
     }
 }

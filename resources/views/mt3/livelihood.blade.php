@@ -19,25 +19,21 @@
                     <p class="text-gray-600 text-[15px] font-medium mt-1">ระบบแจ้งความเสียหายทางการเกษตร ปศุสัตว์ หรือธุรกิจรายย่อย เพื่อขอรับเงินชดเชย หรือทุนฝึกอาชีพใหม่</p>
                 </div>
             </div>
-            @if(auth()->check() && auth()->user()->hasRole('super_admin'))
             <div class="flex items-center gap-2 shrink-0">
-                <button class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-200 flex items-center gap-2 transition-colors">
+                <a href="{{ route('mt3.livelihood-tracking') }}" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-200 flex items-center gap-2 transition-colors">
+                    <x-heroicon-o-clipboard-document-check class="w-4 h-4" /> ติดตามสถานะ
+                </a>
+                @if(auth()->check() && auth()->user()->hasRole('super_admin'))
+                <a href="{{ route('super-admin.mt3.livelihood') }}" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-200 flex items-center gap-2 transition-colors">
                     <x-heroicon-o-pencil-square class="w-4 h-4" /> จัดการข้อมูลผู้เสียหาย
-                </button>
+                </a>
+                @endif
             </div>
-            @endif
         </div>
-
-        @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 shadow-sm">
-                <x-heroicon-s-check-circle class="w-6 h-6 text-green-500 shrink-0" />
-                <p class="font-medium">{{ session('success') }}</p>
-            </div>
-        @endif
 
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-3xl border border-gray-100">
             <div class="p-8">
-                <form action="{{ route('mt3.submit-form') }}" method="POST">
+                <form action="{{ route('mt3.livelihood.store') }}" method="POST">
                     @csrf
                     
                     <div class="space-y-6">
@@ -73,15 +69,15 @@
                             <div class="grid grid-cols-1 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">สถานที่ประกอบการ (ที่อยู่แปลงเกษตร / ร้านค้า)</label>
-                                    <input type="text" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required>
+                                    <input type="text" name="location" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">รายละเอียดความเสียหาย (เช่น ข้าวนาปรังเสียหาย 10 ไร่, อุปกรณ์ในร้านพังทั้งหมด)</label>
-                                    <textarea rows="3" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required></textarea>
+                                    <textarea rows="3" name="damage_details" class="w-full border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow" required></textarea>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">มูลค่าความเสียหายประเมินเบื้องต้น (บาท)</label>
-                                    <input type="number" class="w-full md:w-1/2 border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow">
+                                    <input type="number" name="damage_value" class="w-full md:w-1/2 border-gray-300 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 transition-shadow">
                                 </div>
                             </div>
                         </div>
@@ -91,15 +87,15 @@
                             <h3 class="text-lg font-black text-gray-800 mb-4 border-b pb-2 mt-8">3. ความประสงค์ในการฟื้นฟู</h3>
                             <div class="space-y-3">
                                 <label class="flex items-center">
-                                    <input type="checkbox" class="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500">
+                                    <input type="checkbox" name="needs[]" value="ขอรับเงินชดเชยเยียวยาตามมาตรการรัฐ" class="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500">
                                     <span class="ml-3 text-gray-700">ขอรับเงินชดเชยเยียวยาตามมาตรการรัฐ</span>
                                 </label>
                                 <label class="flex items-center">
-                                    <input type="checkbox" class="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500">
+                                    <input type="checkbox" name="needs[]" value="ขอรับเมล็ดพันธุ์ / พันธุ์สัตว์ / อุปกรณ์ทำกินใหม่" class="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500">
                                     <span class="ml-3 text-gray-700">ขอรับเมล็ดพันธุ์ / พันธุ์สัตว์ / อุปกรณ์ทำกินใหม่</span>
                                 </label>
                                 <label class="flex items-center">
-                                    <input type="checkbox" class="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500">
+                                    <input type="checkbox" name="needs[]" value="ต้องการเข้าฝึกอบรมเปลี่ยนสายอาชีพ (Reskill)" class="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500">
                                     <span class="ml-3 text-gray-700">ต้องการเข้าฝึกอบรมเปลี่ยนสายอาชีพ (Reskill)</span>
                                 </label>
                             </div>

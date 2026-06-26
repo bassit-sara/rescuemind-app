@@ -63,14 +63,20 @@
     $showBottomNav = true;
 @endphp
 
-{{-- Critical alert banner --}}
-@php $criticalAlerts = \App\Models\Alert::where('is_active',true)->where('level',3)->count(); @endphp
-@if($criticalAlerts > 0)
-<div class="bg-red-600 text-white text-center py-2 px-4 text-sm font-medium z-50 relative">
-    <span class="animate-pulse"><x-heroicon-o-exclamation-triangle class="w-5 h-5 inline-block shrink-0" /></span>
-    มีการแจ้งเตือนระดับ "อพยพทันที" {{ $criticalAlerts }} จังหวัด
-    <a href="{{ route('alerts.index') }}" class="underline ml-2 font-bold">ดูรายละเอียด →</a>
-</div>
+{{-- Active Alert Banner --}}
+@php $highestAlert = \App\Models\Alert::where('is_active', true)->orderBy('level', 'desc')->first(); @endphp
+@if($highestAlert)
+    @php
+        $bannerClass = 'bg-yellow-500 text-yellow-900'; $alertText = 'เฝ้าระวัง'; $alertIcon = 'x-heroicon-o-information-circle';
+        if ($highestAlert->level == 3) { $bannerClass = 'bg-red-600 text-white'; $alertText = 'อพยพทันที'; $alertIcon = 'x-heroicon-o-exclamation-triangle'; }
+        elseif ($highestAlert->level == 2) { $bannerClass = 'bg-orange-500 text-white'; $alertText = 'เตรียมพร้อม'; $alertIcon = 'x-heroicon-o-exclamation-circle'; }
+        $alertCount = \App\Models\Alert::where('is_active', true)->where('level', $highestAlert->level)->count();
+    @endphp
+    <div class="{{ $bannerClass }} text-center py-1.5 px-3 text-[11px] font-medium z-50 relative flex items-center justify-center gap-1 shadow-sm">
+        <span class="animate-pulse flex items-center">@svg($alertIcon, 'w-3.5 h-3.5')</span>
+        <span>แจ้งเตือนภัยระดับ "{{ $alertText }}" ({{ $alertCount }} จังหวัด)</span>
+        <a href="{{ route('alerts.index') }}" class="underline ml-1 font-bold">ดูรายละเอียด</a>
+    </div>
 @endif
 
 <div class="flex h-full min-h-screen">
@@ -154,7 +160,7 @@
                             <p class="px-4 pt-1 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">อาสาสมัครและการบริจาค</p>
                             <a href="{{ route('mt3.volunteer') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600"><x-heroicon-o-users class="w-5 h-5 inline-block shrink-0" /> ระบบอาสาสมัครฟื้นฟู</a>
                             <a href="{{ route('mt3.donation') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600"><x-heroicon-o-gift class="w-5 h-5 inline-block shrink-0" /> ศูนย์รับบริจาค</a>
-                            <a href="{{ route('mt3.ai-matching') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block shrink-0" /> AI Donation Matching</a>
+
                             <hr class="my-1 border-gray-100">
 
                             {{-- Section 3 --}}
@@ -195,7 +201,11 @@
 
                     @auth
                     {{-- Notification Bell --}}
-                    <div class="relative" x-data="{ open: false, hasUnread: true }" x-init="hasUnread = (localStorage.getItem('mood_notification_read') !== 'true')" @click.outside="open=false">
+                    @php
+                        $notifications = auth()->user()->notifications()->take(10)->get() ?? collect();
+                        $hasUnread = auth()->user()->unreadNotifications()->count() > 0;
+                    @endphp
+                    <div class="relative" x-data="{ open: false, hasUnread: {{ $hasUnread ? 'true' : 'false' }} }" @click.outside="open=false">
                         <button @click="open=!open" class="relative p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
                             <x-heroicon-o-bell class="w-6 h-6" />
                             <span x-show="hasUnread" x-cloak class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
@@ -206,20 +216,27 @@
                         <div x-show="open" x-transition class="absolute right-0 top-full mt-1 w-72 sm:w-80 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 overflow-hidden" style="display: none;">
                             <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                                 <h3 class="font-bold text-gray-800">การแจ้งเตือน</h3>
-                                <button type="button" @click="hasUnread = false; localStorage.setItem('mood_notification_read', 'true')" class="text-xs text-blue-600 hover:text-blue-700 font-medium">อ่านทั้งหมด</button>
                             </div>
                             <div class="max-h-80 overflow-y-auto">
-                                <a href="{{ route('mental.mood.index') }}" @click="hasUnread = false; localStorage.setItem('mood_notification_read', 'true')" class="flex items-start gap-3 p-4 hover:bg-blue-50/50 transition-colors border-b border-gray-50 relative group" :class="hasUnread ? 'bg-blue-50/30' : ''">
-                                    <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                        <x-heroicon-o-face-smile class="w-6 h-6 inline-block" />
+                                @forelse($notifications as $notification)
+                                <a href="javascript:void(0)" 
+                                   onclick="if(this.classList.contains('bg-blue-50/30')) { fetch('{{ route('notifications.read', $notification->id) }}', {method: 'POST', headers: {'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json'}}); let dot = this.querySelector('.red-dot'); if(dot) dot.remove(); this.classList.remove('bg-blue-50/30'); }" 
+                                   class="flex items-start gap-3 p-4 hover:bg-blue-50/50 transition-colors border-b border-gray-50 relative group {{ is_null($notification->read_at) ? 'bg-blue-50/30' : '' }}">
+                                    <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                        <x-heroicon-o-bell class="w-6 h-6 inline-block" />
                                     </div>
                                     <div class="flex-1">
-                                        <h4 class="text-sm font-bold text-gray-800 group-hover:text-purple-700 transition-colors">ถึงเวลาบันทึกอารมณ์แล้ว!</h4>
-                                        <p class="text-[13px] text-gray-500 mt-0.5 leading-snug">แวะมาอัปเดตความรู้สึกของคุณในวันนี้ที่ Mood Tracker เพื่อสุขภาพใจที่ดี 💙</p>
-                                        <span class="text-[10px] font-medium text-gray-400 mt-1.5 block">เมื่อสักครู่</span>
+                                        <h4 class="text-sm font-bold text-gray-800 group-hover:text-emerald-700 transition-colors">{{ $notification->data['title'] ?? 'การแจ้งเตือนใหม่' }}</h4>
+                                        <p class="text-[13px] text-gray-500 mt-0.5 leading-snug">{{ $notification->data['message'] ?? '' }}</p>
+                                        <span class="text-[10px] font-medium text-gray-400 mt-1.5 block">{{ $notification->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <span x-show="hasUnread" class="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                                    @if(is_null($notification->read_at))
+                                    <span class="red-dot w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                                    @endif
                                 </a>
+                                @empty
+                                <div class="p-4 text-center text-sm text-gray-500">ไม่มีการแจ้งเตือนใหม่</div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -249,6 +266,10 @@
                             @if(auth()->user()->hasAnyRole(['super_admin', 'admin', 'officer', 'mental_officer', 'volunteer']))
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><x-heroicon-o-adjustments-horizontal class="w-5 h-5 inline-block shrink-0" /> แดชบอร์ด</a>
                             @endif
+                            @if(auth()->user()->hasAnyRole(['admin', 'super_admin']))
+                            <a href="{{ route('admin.bookings.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /> จัดการที่พักพิง</a>
+                            @endif
+                            <a href="{{ route('bookings.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /> ประวัติการจอง</a>
                             <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><x-heroicon-o-user class="w-5 h-5 inline-block shrink-0" /> โปรไฟล์</a>
                             @auth
                             <form action="{{ route('family.safe') }}" method="POST" class="sm:hidden">
@@ -261,6 +282,7 @@
                                 <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"><x-heroicon-o-arrow-right-on-rectangle class="w-5 h-5 inline-block shrink-0" /> ออกจากระบบ</button>
                             </form>
                         </div>
+                    </div>
 
                     {{-- Hamburger for mobile → opens right sidebar --}}
                     @if($showBottomNav)
@@ -279,10 +301,18 @@
         {{-- MAIN --}}
         <main class="flex-1 p-3 sm:p-4 lg:p-6 {{ $showBottomNav ? 'has-bottom-nav' : '' }}">
             @if(session('success'))
-            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3" x-data x-init="setTimeout(()=>$el.remove(),5000)">
-                <span class="text-xl"><x-heroicon-o-check-circle class="w-5 h-5 inline-block shrink-0" /></span>
-                <p class="text-green-700 text-sm font-medium">{{ session('success') }}</p>
-            </div>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    Swal.fire({
+                        title: 'สำเร็จ!',
+                        text: '{{ session("success") }}',
+                        icon: 'success',
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: 'ตกลง'
+                    });
+                });
+            </script>
             @endif
             @if(session('error'))
             <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
@@ -406,9 +436,7 @@
             <a href="{{ route('mt3.donation') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
                 <span class="text-base w-6 text-center"><x-heroicon-o-gift class="w-5 h-5 inline-block shrink-0" /></span><span>ศูนย์รับบริจาค</span>
             </a>
-            <a href="{{ route('mt3.ai-matching') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                <span class="text-base w-6 text-center"><x-heroicon-o-cpu-chip class="w-5 h-5 inline-block shrink-0" /></span><span>AI Donation Matching</span>
-            </a>
+
 
             <p class="px-4 pt-3 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">ฟื้นฟูอาชีพและเศรษฐกิจ</p>
             <a href="{{ route('mt3.livelihood') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
@@ -465,6 +493,14 @@
                 <span class="text-base w-6 text-center"><x-heroicon-o-newspaper class="w-5 h-5 inline-block shrink-0" /></span><span>ข่าวสาร & ประกาศ</span>
             </a>
             @auth
+            @if(auth()->user()->hasAnyRole(['admin', 'super_admin']))
+            <a href="{{ route('admin.bookings.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-gray-50 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-clipboard-document-list class="w-5 h-5 inline-block shrink-0" /></span><span>จัดการที่พักพิง</span>
+            </a>
+            @endif
+            <a href="{{ route('bookings.index') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-gray-50 transition-colors">
+                <span class="text-base w-6 text-center"><x-heroicon-o-home-modern class="w-5 h-5 inline-block shrink-0" /></span><span>ประวัติการจองที่พักพิง</span>
+            </a>
             <a href="{{ route('profile.edit') }}" onclick="closeRSidebar()" class="flex items-center gap-3 px-3 py-3 rounded-xl text-base text-gray-700 hover:bg-gray-50 transition-colors">
                 <span class="text-base w-6 text-center"><x-heroicon-o-user class="w-5 h-5 inline-block shrink-0" /></span><span>โปรไฟล์ของฉัน</span>
             </a>

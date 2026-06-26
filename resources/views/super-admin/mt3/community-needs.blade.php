@@ -5,39 +5,94 @@
 @endsection
 @section('content')
 
+@php
+    $mappedNeeds = $needs->map(function($r) {
+        $needsText = [];
+        if($r->food_sets > 0) $needsText[] = 'ข้าวกล่อง/น้ำดื่ม (' . $r->food_sets . ' ชุด)';
+        if($r->medicine_sets > 0) $needsText[] = 'ยารักษาโรค (' . $r->medicine_sets . ' ชุด)';
+        if($r->cleaning_sets > 0) $needsText[] = 'อุปกรณ์ทำความสะอาด (' . $r->cleaning_sets . ' ชุด)';
+        if($r->clothing_sets > 0) $needsText[] = 'เสื้อผ้า/เครื่องนุ่งห่ม (' . $r->clothing_sets . ' ชุด)';
+        
+        $progressText = [
+            'pending' => 'รับข้อมูลประเมิน',
+            'verifying' => 'ตรวจสอบและจัดสรร',
+            'delivering' => 'กำลังจัดส่ง',
+            'completed' => 'ได้รับความช่วยเหลือแล้ว',
+        ];
+
+        return [
+            'raw_id' => $r->id,
+            'id' => '#CM-' . str_pad($r->id, 3, '0', STR_PAD_LEFT),
+            'community_name' => $r->community_name ?? '-',
+            'contact' => $r->user ? $r->user->phone : '-',
+            'population' => $r->population ?? '-',
+            'zip_code' => $r->zip_code ?? '-',
+            'lat' => $r->lat ?? '-',
+            'lng' => $r->lng ?? '-',
+            'needs' => empty($needsText) ? 'ไม่มีระบุ' : implode(', ', $needsText),
+            'status' => $r->status === 'critical' ? 'วิกฤต' : ($r->status === 'urgent' ? 'เร่งด่วน' : 'ปานกลาง'),
+            'progress' => $progressText[$r->progress ?? 'pending'] ?? 'รับข้อมูลประเมิน',
+        ];
+    });
+@endphp
+
+<script>
+    window.mt3CommunityNeedsData = @json($mappedNeeds);
+</script>
+
 <div x-data="{ 
     showModal: false, 
     modalMode: 'add', 
-    currentItem: { id: null, community: '', contact: '', needs: '', status: 'วิกฤต' },
-    items: [
-        { id: '#CM-001', community: 'บ้านหนองบัว', contact: '082-xxx-xxxx', needs: 'น้ำดื่ม 500 แพ็ค, ยารักษาโรค, เครื่องปั่นไฟ', status: 'วิกฤต' },
-        { id: '#CM-002', community: 'ชุมชนริมน้ำ', contact: '085-xxx-xxxx', needs: 'ข้าวกล่อง 200 กล่อง, นมผงเด็ก', status: 'เร่งด่วน' }
-    ],
+    currentItem: { id: null, community_name: '', contact: '', needs: '', status: 'วิกฤต', progress: 'รับข้อมูลประเมิน', population: '', zip_code: '', lat: '', lng: '' },
+    items: window.mt3CommunityNeedsData,
     init() {
-        const stored = localStorage.getItem('mt3_community_needs');
-        if (stored) {
-            this.items = JSON.parse(stored);
-        }
-        this.$watch('items', value => {
-            localStorage.setItem('mt3_community_needs', JSON.stringify(value));
-        });
+        // init
     },
-    saveItem() {
+    async saveItem() {
         if(this.modalMode === 'add') {
             this.currentItem.id = '#CM-' + String(this.items.length + 1).padStart(3, '0');
             this.items.push({...this.currentItem});
+            this.showModal = false;
+            Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'เพิ่มข้อมูลสำเร็จ!', confirmButtonColor: '#4f46e5' });
         } else {
-            const index = this.items.findIndex(i => i.id === this.currentItem.id);
-            if(index > -1) this.items[index] = {...this.currentItem};
+            try {
+                let response = await fetch(`/super-admin/mt3/community-needs/${this.currentItem.raw_id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify(this.currentItem)
+                });
+                if(response.ok) {
+                    const index = this.items.findIndex(i => i.id === this.currentItem.id);
+                    if(index > -1) this.items[index] = {...this.currentItem};
+                    this.showModal = false;
+                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#4f46e5' });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถบันทึกข้อมูลได้', confirmButtonColor: '#ef4444' });
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', confirmButtonColor: '#ef4444' });
+            }
         }
-        this.showModal = false;
-        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: this.modalMode === 'add' ? 'เพิ่มข้อมูลสำเร็จ!' : 'บันทึกการแก้ไขสำเร็จ!', confirmButtonColor: '#4f46e5' });
     },
     deleteItem(id) {
-        Swal.fire({ title: 'ยืนยันการลบข้อมูล?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก' }).then((result) => {
+        Swal.fire({ title: 'ยืนยันการลบข้อมูล?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#9ca3af', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก' }).then(async (result) => {
             if (result.isConfirmed) {
-                this.items = this.items.filter(i => i.id !== id);
-                Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+                let item = this.items.find(i => i.id === id);
+                if (item && item.raw_id) {
+                    try {
+                        let response = await fetch(`/super-admin/mt3/community-needs/${item.raw_id}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                        });
+                        if (response.ok) {
+                            this.items = this.items.filter(i => i.id !== id);
+                            Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+                        }
+                    } catch (e) {}
+                } else {
+                    this.items = this.items.filter(i => i.id !== id);
+                    Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+                }
             }
         });
     },
@@ -45,12 +100,29 @@
         Swal.fire({
             title: 'รายละเอียดความต้องการ',
             html: `
-                <div class='text-left space-y-2 mt-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100'>
-                    <p><span class='font-bold text-gray-900'>ID:</span> ${item.id}</p>
-                    <p><span class='font-bold text-gray-900'>ชุมชน/หมู่บ้าน:</span> ${item.community}</p>
-                    <p><span class='font-bold text-gray-900'>ผู้ติดต่อ:</span> ${item.contact}</p>
-                    <p><span class='font-bold text-gray-900'>ความต้องการหลัก:</span> ${item.needs}</p>
-                    <p><span class='font-bold text-gray-900'>ระดับความเร่งด่วน:</span> <span class='px-2 py-1 rounded bg-gray-200 text-xs font-bold'>${item.status}</span></p>
+                <div class='text-left space-y-3 mt-4 text-sm text-gray-700 bg-gray-50 p-5 rounded-2xl border border-gray-100'>
+                    <div class='grid grid-cols-2 gap-4'>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ID</span> ${item.id}</p>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ผู้ติดต่อ</span> ${item.contact}</p>
+                    </div>
+                    <div class='border-t border-gray-200 pt-3'>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ชุมชน/หมู่บ้าน</span> ${item.community_name}</p>
+                    </div>
+                    <div class='grid grid-cols-2 gap-4 border-t border-gray-200 pt-3'>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ประชากรที่ได้รับผลกระทบ</span> ${item.population} คน</p>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>รหัสไปรษณีย์</span> ${item.zip_code}</p>
+                    </div>
+                    <div class='grid grid-cols-2 gap-4 border-t border-gray-200 pt-3'>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ละติจูด (LAT)</span> ${item.lat}</p>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ลองจิจูด (LNG)</span> ${item.lng}</p>
+                    </div>
+                    <div class='border-t border-gray-200 pt-3'>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ความต้องการหลัก</span> ${item.needs}</p>
+                    </div>
+                    <div class='grid grid-cols-2 gap-4 border-t border-gray-200 pt-3'>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>ระดับความเร่งด่วน</span> <span class='px-3 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-black'>${item.status}</span></p>
+                        <p><span class='font-bold text-gray-900 block text-xs uppercase text-gray-500'>สถานะการดำเนินการ</span> <span class='px-3 py-1 rounded-lg bg-blue-100 text-blue-700 text-xs font-black'>${item.progress}</span></p>
+                    </div>
                 </div>
             `,
             showCancelButton: true,
@@ -97,7 +169,7 @@
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-6 py-4 text-sm text-gray-500" x-text="item.id"></td>
                         <td class="px-6 py-4">
-                            <div class="font-bold text-gray-800" x-text="item.community"></div>
+                            <div class="font-bold text-gray-800" x-text="item.community_name"></div>
                             <div class="text-xs text-gray-500" x-text="'ผู้ติดต่อ: ' + item.contact"></div>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600" x-text="item.needs"></td>
@@ -108,6 +180,15 @@
                                       'bg-orange-100 text-orange-700': item.status === 'เร่งด่วน',
                                       'bg-yellow-100 text-yellow-700': item.status === 'ปานกลาง'
                                   }" x-text="item.status"></span>
+                            <div class="mt-1">
+                                <span class="px-2 py-1 rounded-lg text-xs font-bold"
+                                    :class="{
+                                        'bg-gray-100 text-gray-700': item.progress === 'รับข้อมูลประเมิน',
+                                        'bg-blue-100 text-blue-700': item.progress === 'ตรวจสอบและจัดสรร',
+                                        'bg-indigo-100 text-indigo-700': item.progress === 'กำลังจัดส่ง',
+                                        'bg-emerald-100 text-emerald-700': item.progress === 'ได้รับความช่วยเหลือแล้ว'
+                                    }" x-text="item.progress"></span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-right space-x-2 flex justify-end">
                             <button @click="viewItem(item)" class="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors inline-flex items-center gap-1">
@@ -145,25 +226,65 @@
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                                 <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title" x-text="modalMode === 'add' ? 'เพิ่มข้อมูลชุมชน' : 'แก้ไขข้อมูลชุมชน'"></h3>
                                 <div class="mt-4 space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">ชื่อชุมชน/หมู่บ้าน</label>
-                                        <input type="text" x-model="currentItem.community" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">ชื่อชุมชน/หมู่บ้าน</label>
+                                            <input type="text" x-model="currentItem.community_name" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 sm:text-sm transition-all px-4 py-2.5" required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">ประชากรโดยประมาณ</label>
+                                            <input type="number" x-model="currentItem.population" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 sm:text-sm transition-all px-4 py-2.5">
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">ผู้ติดต่อ</label>
-                                        <input type="text" x-model="currentItem.contact" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">รหัสไปรษณีย์</label>
+                                            <input type="text" x-model="currentItem.zip_code" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 sm:text-sm transition-all px-4 py-2.5">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">ละติจูด (LAT)</label>
+                                            <input type="text" x-model="currentItem.lat" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 sm:text-sm transition-all px-4 py-2.5" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">ลองจิจูด (LNG)</label>
+                                            <input type="text" x-model="currentItem.lng" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 sm:text-sm transition-all px-4 py-2.5" disabled>
+                                        </div>
                                     </div>
+                                    
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">ความต้องการหลัก</label>
-                                        <textarea x-model="currentItem.needs" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" rows="3" required></textarea>
+                                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">ความต้องการหลัก (แก้ไขไม่ได้)</label>
+                                        <textarea x-model="currentItem.needs" class="block w-full rounded-xl border-gray-200 bg-gray-100 shadow-sm text-gray-500 sm:text-sm transition-all px-4 py-3" rows="2" disabled></textarea>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">ระดับความเร่งด่วน</label>
-                                        <select x-model="currentItem.status" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                            <option>วิกฤต</option>
-                                            <option>เร่งด่วน</option>
-                                            <option>ปานกลาง</option>
-                                        </select>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">ระดับความเร่งด่วน</label>
+                                            <select x-model="currentItem.status" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 sm:text-sm font-bold transition-all px-4 py-2.5"
+                                                :class="{
+                                                    'text-red-700': currentItem.status === 'วิกฤต',
+                                                    'text-orange-700': currentItem.status === 'เร่งด่วน',
+                                                    'text-yellow-700': currentItem.status === 'ปานกลาง'
+                                                }">
+                                                <option class="text-gray-900 font-medium">วิกฤต</option>
+                                                <option class="text-gray-900 font-medium">เร่งด่วน</option>
+                                                <option class="text-gray-900 font-medium">ปานกลาง</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">สถานะการดำเนินการ</label>
+                                            <select x-model="currentItem.progress" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 sm:text-sm font-bold transition-all px-4 py-2.5"
+                                                :class="{
+                                                    'text-gray-700': currentItem.progress === 'รับข้อมูลประเมิน',
+                                                    'text-blue-700': currentItem.progress === 'ตรวจสอบและจัดสรร',
+                                                    'text-indigo-700': currentItem.progress === 'กำลังจัดส่ง',
+                                                    'text-emerald-700': currentItem.progress === 'ได้รับความช่วยเหลือแล้ว'
+                                                }">
+                                                <option class="text-gray-900 font-medium">รับข้อมูลประเมิน</option>
+                                                <option class="text-gray-900 font-medium">ตรวจสอบและจัดสรร</option>
+                                                <option class="text-gray-900 font-medium">กำลังจัดส่ง</option>
+                                                <option class="text-gray-900 font-medium">ได้รับความช่วยเหลือแล้ว</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
